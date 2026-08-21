@@ -123,22 +123,21 @@
 <model-viewer
   id="viewer"
   src="MTGI.glb"
+  ios-src="MTGI.usdz"
   alt="3D model of the MTG-I weather satellite"
   ar
   ar-modes="webxr scene-viewer quick-look"
   ar-scale="auto"
   ar-placement="floor"
+  scale="0.1 0.1 0.1"
   camera-controls
+  bounds="tight"
   touch-action="pan-y"
-  auto-rotate
-  rotation-per-second="8deg"
   shadow-intensity="1"
   shadow-softness="0.9"
   exposure="1.05"
   environment-image="neutral"
-  camera-orbit="35deg 75deg 3.2m"
-  min-camera-orbit="auto auto 1.5m"
-  max-camera-orbit="auto auto 6m"
+  camera-orbit="35deg 75deg auto"
 >
   <button slot="ar-button" id="ar-button">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v6m0 8v6M4.9 4.9l4.2 4.2m5.8 5.8l4.2 4.2M2 12h6m8 0h6M4.9 19.1l4.2-4.2m5.8-5.8l4.2-4.2"/></svg>
@@ -150,17 +149,17 @@
 </model-viewer>
 
 <footer>
-  <h1>MTG&#8209;I <span>/ AR</span></h1>
+  <h1>MTG&#8209;I1 <span>/ Scaled AR Model</span></h1>
   <p class="blurb">
-    Meteosat Third Generation Imager &mdash; the ESA/EUMETSAT weather satellite that has been watching Europe's skies from geostationary orbit since December 2022. Rotate it, walk around it, get close to the instrument deck.
+    Meteosat&#8209;12 (MTG&#8209;I1) &mdash; ESA/EUMETSAT's weather satellite, watching Europe and Africa from geostationary orbit since December 2022.
   </p>
   <div class="readout mono">
+    <div>Launch mass<b>3,760 kg</b></div>
+    <div>Bus (stowed)<b>2.3 &times; 2.8 &times; 5.2 m</b></div>
     <div>Orbit<b>36,000 km</b></div>
-    <div>Disc scan<b>10 min</b></div>
-    <div>Channels<b>16</b></div>
     <div>Status<b>Operational</b></div>
   </div>
-  <div class="hint mono">On desktop or without AR support: drag to orbit &middot; pinch/scroll to zoom.</div>
+  <div class="hint mono">Pinch or drag on screen to orbit and inspect detail.</div>
 </footer>
 
 </body>
