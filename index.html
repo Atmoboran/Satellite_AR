@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>MTG-I &mdash; AR Viewer</title>
-<meta name="description" content="View the Meteosat Third Generation Imager satellite in augmented reality." />
+<title>Geostationary Satellites &mdash; AR Viewer</title>
+<meta name="description" content="View Earth's geostationary weather satellites in augmented reality." />
 <script type="module" src="https://unpkg.com/@google/model-viewer@4.3.1/dist/model-viewer.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -55,17 +55,79 @@
   }
   @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
 
+  .hero{
+    margin:0 14px;
+    border:2px solid var(--accent-dim);
+    border-radius:16px;
+    overflow:hidden;
+    background:#070b13;
+  }
+  .hero img{
+    display:block; width:100%; height:auto; max-height:38vh;
+    object-fit:cover;
+  }
+  .hero-cap{
+    padding:9px 14px;
+    font-size:10.5px; letter-spacing:.06em; color:var(--ink-dim);
+    border-top:1px solid var(--line);
+  }
+
   main{
     flex:1;
     padding:22px 20px 28px;
   }
   h1{
-    margin:0 0 4px; font-size:24px; font-weight:600; letter-spacing:-.01em;
+    margin:0 0 4px; font-size:23px; font-weight:600; letter-spacing:-.01em;
   }
   h1 span{color:var(--accent);}
-  p.blurb{
-    margin:0 0 18px; max-width:520px; font-size:14px; line-height:1.6; color:var(--ink-dim);
+  h2{
+    margin:0 0 8px; font-size:14px; font-weight:600; color:var(--ink);
   }
+  p.blurb{
+    margin:0 0 14px; max-width:560px; font-size:14px; line-height:1.6; color:var(--ink-dim);
+  }
+  .explainer{
+    margin:18px 0 24px; padding:16px 16px 4px; max-width:560px;
+    border:1px solid var(--line); border-radius:14px; background:rgba(111,227,201,.04);
+  }
+  .explainer p.blurb:last-child{ margin-bottom:14px; }
+
+  .section-label{
+    font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--accent);
+    margin:0 0 12px;
+  }
+
+  /* satellite picker cards */
+  .picker{
+    display:flex; flex-direction:column; gap:10px; margin-bottom:18px;
+  }
+  .sat-card{
+    display:flex; align-items:center; gap:14px;
+    width:100%; text-align:left;
+    background:#0c1420; border:1px solid var(--line); border-radius:14px;
+    padding:12px 14px; cursor:pointer;
+  }
+  .sat-card.selected{
+    border-color:var(--accent);
+    background:rgba(111,227,201,.08);
+  }
+  .sat-card .swatch{
+    flex:none; width:40px; height:40px; border-radius:10px;
+    display:flex; align-items:center; justify-content:center;
+    background:var(--accent-dim); color:var(--accent); font-size:18px;
+  }
+  .sat-card .info{ flex:1; min-width:0; }
+  .sat-card .name{ font-weight:600; font-size:14px; }
+  .sat-card .desc{ font-size:11.5px; color:var(--ink-dim); margin-top:2px; }
+  .sat-card .check{
+    flex:none; width:20px; height:20px; border-radius:50%;
+    border:1.5px solid var(--line); position:relative;
+  }
+  .sat-card.selected .check{ border-color:var(--accent); }
+  .sat-card.selected .check::after{
+    content:''; position:absolute; inset:4px; border-radius:50%; background:var(--accent);
+  }
+
   .readout{
     display:flex; gap:18px 26px; flex-wrap:wrap; font-size:10px; letter-spacing:.08em;
     color:var(--ink-dim); text-transform:uppercase; margin-bottom:22px;
@@ -142,34 +204,72 @@
 
 <div id="landing">
   <header class="mono">
-    <span><span class="dot"></span><span class="status">Tracking</span> &nbsp;MTG-I1 / Meteosat-12</span>
-    <span>0&deg; Longitude &middot; Geostationary</span>
+    <span><span class="dot"></span><span class="status">Tracking</span> &nbsp;Geostationary Ring</span>
+    <span>36,000 KM &middot; 0&deg;&ndash;137&deg;W</span>
   </header>
 
+  <div class="hero">
+    <img src="year_of_weather_screenshot.PNG" alt="Full-disc Earth composite stitched from EUMETSAT's geostationary satellites, showing storms Dikeledi and Sean, 18 January 2025">
+    <div class="hero-cap mono">EUMETSAT &mdash; "Year of Weather" &middot; 18 Jan 2025</div>
+  </div>
+
   <main>
-    <h1>MTG&#8209;I1 <span>/ Scaled AR Model</span></h1>
-    <p class="blurb">
-      Meteosat&#8209;12 (MTG&#8209;I1) &mdash; ESA/EUMETSAT's weather satellite, watching Europe and Africa from geostationary orbit since its December 2022 launch. Its Flexible Combined Imager scans the full Earth disc every 10 minutes across 16 spectral channels, tracking storms, fog, and volcanic ash as they form.
-    </p>
-    <div class="readout mono">
-      <div>Launch mass<b>3,760 kg</b></div>
-      <div>Bus (stowed)<b>2.3 &times; 2.8 &times; 5.2 m</b></div>
-      <div>Orbit<b>36,000 km</b></div>
-      <div>Instrument<b>FCI, 16 channels</b></div>
-      <div>Scan interval<b>10 min (full disc)</b></div>
-      <div>Design life<b>8.5 years</b></div>
-      <div>Status<b>Operational</b></div>
+    <h1>Watching Earth <span>from Geostationary Orbit</span></h1>
+
+    <div class="explainer">
+      <h2>What is a geostationary satellite?</h2>
+      <p class="blurb">
+        A geostationary satellite orbits 36,000&nbsp;km above the equator at exactly the speed Earth spins &mdash; so from the ground it always hovers over the same spot. That makes it perfect for weather watching: it can stare at the same slice of Earth non&#8209;stop, catching storms as they form and move.
+      </p>
+      <p class="blurb">
+        One satellite alone can't see the whole planet &mdash; it only faces one hemisphere. So space agencies place several of these satellites in a ring around the equator, each covering a different region: Europe &amp; Africa, the Americas, Asia &amp; the Pacific. The image above is what you get when their views are stitched together &mdash; a full picture of Earth's weather, made possible only because every agency freely shares its data with the others.
+      </p>
+    </div>
+
+    <div class="section-label mono">Choose a satellite</div>
+    <div class="picker" id="picker">
+      <button class="sat-card selected" data-sat="mtgi">
+        <span class="swatch">🛰</span>
+        <span class="info">
+          <span class="name">MTG&#8209;I1 / Meteosat&#8209;12</span>
+          <span class="desc">ESA/EUMETSAT &middot; watches Europe &amp; Africa from 0&deg; longitude</span>
+        </span>
+        <span class="check"></span>
+      </button>
+      <button class="sat-card" data-sat="goes">
+        <span class="swatch">🛰</span>
+        <span class="info">
+          <span class="name">GOES&#8209;R</span>
+          <span class="desc">NOAA/NASA &middot; watches the Americas from 137&deg;W longitude</span>
+        </span>
+        <span class="check"></span>
+      </button>
+      <button class="sat-card" data-sat="both">
+        <span class="swatch">🌐</span>
+        <span class="info">
+          <span class="name">Both, side by side</span>
+          <span class="desc">See the two satellites together &mdash; Android AR only; others get a 3D preview</span>
+        </span>
+        <span class="check"></span>
+      </button>
+    </div>
+
+    <div class="readout mono" id="readout">
+      <div>Agency<b id="ro-agency">ESA / EUMETSAT</b></div>
+      <div>Longitude<b id="ro-lon">0&deg;</b></div>
+      <div>Coverage<b id="ro-coverage">Europe &amp; Africa</b></div>
+      <div>Launch mass<b id="ro-mass">3,760 kg</b></div>
     </div>
 
     <button id="ar-launch" disabled>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v6m0 8v6M4.9 4.9l4.2 4.2m5.8 5.8l4.2 4.2M2 12h6m8 0h6M4.9 19.1l4.2-4.2m5.8-5.8l4.2-4.2"/></svg>
       <span>
-        View in AR
+        <span id="ar-launch-label">View in AR</span>
         <span class="sub">Opens your camera</span>
       </span>
     </button>
-    <div class="hint mono">Tap to place the satellite in your space, or spin the 3D model on screen.</div>
-    <div class="build-tag mono">build v6</div>
+    <div class="hint mono" id="hint">Tap to place the satellite in your space, or spin the 3D model on screen.</div>
+    <div class="build-tag mono">build v7</div>
   </main>
 </div>
 
@@ -180,13 +280,11 @@
 
   <model-viewer
     id="viewer"
-    ios-src="MTGI.usdz"
-    alt="3D model of the MTG-I weather satellite"
+    alt="3D model of a geostationary weather satellite"
     ar
     ar-modes="webxr scene-viewer quick-look"
     ar-scale="auto"
     ar-placement="floor"
-    scale="0.1 0.1 0.1"
     camera-controls
     bounds="tight"
     touch-action="pan-y"
@@ -209,23 +307,103 @@
 </div>
 
 <script>
+  var SATS = {
+    mtgi: {
+      src: 'MTGI.glb',
+      iosSrc: 'MTGI.usdz',
+      scale: '0.1 0.1 0.1',
+      label: 'View MTG&#8209;I1 in AR',
+      agency: 'ESA / EUMETSAT',
+      lon: '0°',
+      coverage: 'Europe & Africa',
+      mass: '3,760 kg'
+    },
+    goes: {
+      src: 'GOES-R_1m.glb',
+      iosSrc: null,
+      scale: '1 1 1',
+      label: 'View GOES&#8209;R in AR',
+      agency: 'NOAA / NASA',
+      lon: '137°W',
+      coverage: 'The Americas',
+      mass: '2,857 kg'
+    },
+    both: {
+      src: 'constellation.glb',
+      iosSrc: null,
+      scale: '1 1 1',
+      label: 'View Both in AR',
+      agency: 'EUMETSAT + NOAA/NASA',
+      lon: '0° & 137°W',
+      coverage: 'Europe, Africa & the Americas',
+      mass: '—'
+    }
+  };
+
   var viewerScreen = document.getElementById('viewer-screen');
   var modelViewer = document.getElementById('viewer');
   var arLaunch = document.getElementById('ar-launch');
+  var arLaunchLabel = document.getElementById('ar-launch-label');
+  var hint = document.getElementById('hint');
+  var picker = document.getElementById('picker');
+  var buildTag = document.querySelector('.build-tag');
+
+  var roAgency = document.getElementById('ro-agency');
+  var roLon = document.getElementById('ro-lon');
+  var roCoverage = document.getElementById('ro-coverage');
+  var roMass = document.getElementById('ro-mass');
+
+  var current = 'mtgi';
   var modelReady = false;
 
-  // Preload the model in the background as soon as the page opens, so
-  // that activateAR() can later be called synchronously inside the
-  // click handler. Browsers only allow WebXR/Scene Viewer/Quick Look
-  // to launch from a "fresh" user gesture — if activateAR() runs
-  // inside an async callback (e.g. after waiting for the model to
-  // load on click), the gesture has already expired and AR silently
-  // refuses to start.
+  function isIOS() {
+    return /iP(hone|ad|od)/.test(navigator.userAgent);
+  }
+
+  function loadSat(key) {
+    var sat = SATS[key];
+    current = key;
+    modelReady = false;
+    arLaunch.disabled = true;
+    arLaunchLabel.innerHTML = sat.label;
+    roAgency.textContent = sat.agency;
+    roLon.innerHTML = sat.lon;
+    roCoverage.textContent = sat.coverage;
+    roMass.textContent = sat.mass;
+
+    if (isIOS() && !sat.iosSrc) {
+      // No merged/combined usdz exists yet for iOS Quick Look, so these
+      // selections fall back to the in-page 3D viewer instead of true AR.
+      hint.textContent = 'No AR on this satellite for iPhone yet — spin the 3D model on screen instead.';
+      modelViewer.removeAttribute('ios-src');
+    } else {
+      hint.textContent = 'Tap to place the satellite in your space, or spin the 3D model on screen.';
+      if (sat.iosSrc) {
+        modelViewer.setAttribute('ios-src', sat.iosSrc);
+      } else {
+        modelViewer.removeAttribute('ios-src');
+      }
+    }
+
+    modelViewer.setAttribute('scale', sat.scale);
+    modelViewer.setAttribute('src', sat.src);
+  }
+
   modelViewer.addEventListener('load', function () {
     modelReady = true;
     arLaunch.disabled = false;
   });
-  modelViewer.setAttribute('src', 'MTGI.glb');
+
+  picker.addEventListener('click', function (ev) {
+    var card = ev.target.closest('.sat-card');
+    if (!card) return;
+    var key = card.getAttribute('data-sat');
+    if (key === current) return;
+    var cards = picker.querySelectorAll('.sat-card');
+    for (var i = 0; i < cards.length; i++) cards[i].classList.remove('selected');
+    card.classList.add('selected');
+    loadSat(key);
+  });
 
   arLaunch.addEventListener('click', function () {
     viewerScreen.classList.add('active');
@@ -238,12 +416,13 @@
 
   // Surface AR failures on the build tag instead of failing silently,
   // so we can see *why* AR didn't launch instead of guessing.
-  var buildTag = document.querySelector('.build-tag');
   modelViewer.addEventListener('ar-status', function (ev) {
     if (ev.detail.status === 'failed' && buildTag) {
-      buildTag.textContent = 'build v6 — ar-status: failed';
+      buildTag.textContent = 'build v7 — ar-status: failed';
     }
   });
+
+  loadSat('mtgi');
 </script>
 
 </body>
