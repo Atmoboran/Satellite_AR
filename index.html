@@ -151,7 +151,7 @@
       <div>Status<b>Operational</b></div>
     </div>
 
-    <button id="ar-launch">
+    <button id="ar-launch" disabled>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v6m0 8v6M4.9 4.9l4.2 4.2m5.8 5.8l4.2 4.2M2 12h6m8 0h6M4.9 19.1l4.2-4.2m5.8-5.8l4.2-4.2"/></svg>
       <span>
         View in AR
@@ -201,31 +201,26 @@
   var viewerScreen = document.getElementById('viewer-screen');
   var modelViewer = document.getElementById('viewer');
   var arLaunch = document.getElementById('ar-launch');
-  var modelLoaded = false;
+  var modelReady = false;
 
-  function goToAR() {
-    // AR (WebXR/Scene Viewer/Quick Look) needs a model already loaded
-    // and must be triggered directly from the user gesture, so we show
-    // the 3D viewer as a fallback and try to jump straight into AR.
-    viewerScreen.classList.add('active');
-    if (modelViewer.canActivateAR) {
-      modelViewer.activateAR();
-    }
-  }
+  // Preload the model in the background as soon as the page opens, so
+  // that activateAR() can later be called synchronously inside the
+  // click handler. Browsers only allow WebXR/Scene Viewer/Quick Look
+  // to launch from a "fresh" user gesture — if activateAR() runs
+  // inside an async callback (e.g. after waiting for the model to
+  // load on click), the gesture has already expired and AR silently
+  // refuses to start.
+  modelViewer.addEventListener('load', function () {
+    modelReady = true;
+    arLaunch.disabled = false;
+  });
+  modelViewer.setAttribute('src', 'MTGI.glb');
 
   arLaunch.addEventListener('click', function () {
-    if (modelLoaded) {
-      goToAR();
-      return;
+    viewerScreen.classList.add('active');
+    if (modelReady) {
+      modelViewer.activateAR();
     }
-    arLaunch.disabled = true;
-    modelViewer.addEventListener('load', function onLoad() {
-      modelViewer.removeEventListener('load', onLoad);
-      modelLoaded = true;
-      arLaunch.disabled = false;
-      goToAR();
-    });
-    modelViewer.setAttribute('src', 'MTGI.glb');
   });
 
   document.getElementById('close-viewer').addEventListener('click', function () {
