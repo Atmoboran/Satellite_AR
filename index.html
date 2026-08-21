@@ -248,7 +248,7 @@
         <span class="swatch">🌐</span>
         <span class="info">
           <span class="name">Both, side by side</span>
-          <span class="desc">See the two satellites together &mdash; Android AR only; others get a 3D preview</span>
+          <span class="desc">Compare the two satellites together, life&#8209;size, in the same view</span>
         </span>
         <span class="check"></span>
       </button>
@@ -261,6 +261,9 @@
       <div>Launch mass<b id="ro-mass">3,760 kg</b></div>
     </div>
 
+    <p class="blurb" style="margin-bottom:10px; font-size:12.5px;">
+      Hit <b style="color:var(--ink);">View</b> to open your camera and place a full&#8209;size satellite right in the room with you &mdash; walk around it, get up close to its instruments, and get a real feel for just how big it actually is.
+    </p>
     <button id="ar-launch" disabled>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v6m0 8v6M4.9 4.9l4.2 4.2m5.8 5.8l4.2 4.2M2 12h6m8 0h6M4.9 19.1l4.2-4.2m5.8-5.8l4.2-4.2"/></svg>
       <span>
@@ -269,7 +272,7 @@
       </span>
     </button>
     <div class="hint mono" id="hint">Tap to place the satellite in your space, or spin the 3D model on screen.</div>
-    <div class="build-tag mono">build v7</div>
+    <div class="build-tag mono">build v8</div>
   </main>
 </div>
 
@@ -320,7 +323,7 @@
     },
     goes: {
       src: 'GOES-R_1m.glb',
-      iosSrc: null,
+      iosSrc: 'GOES-R_1m.usdz',
       scale: '1 1 1',
       label: 'View GOES&#8209;R in AR',
       agency: 'NOAA / NASA',
@@ -330,7 +333,7 @@
     },
     both: {
       src: 'constellation.glb',
-      iosSrc: null,
+      iosSrc: 'constellation.usdz',
       scale: '1 1 1',
       label: 'View Both in AR',
       agency: 'EUMETSAT + NOAA/NASA',
@@ -344,7 +347,6 @@
   var modelViewer = document.getElementById('viewer');
   var arLaunch = document.getElementById('ar-launch');
   var arLaunchLabel = document.getElementById('ar-launch-label');
-  var hint = document.getElementById('hint');
   var picker = document.getElementById('picker');
   var buildTag = document.querySelector('.build-tag');
 
@@ -355,10 +357,6 @@
 
   var current = 'mtgi';
   var modelReady = false;
-
-  function isIOS() {
-    return /iP(hone|ad|od)/.test(navigator.userAgent);
-  }
 
   function loadSat(key) {
     var sat = SATS[key];
@@ -371,20 +369,7 @@
     roCoverage.textContent = sat.coverage;
     roMass.textContent = sat.mass;
 
-    if (isIOS() && !sat.iosSrc) {
-      // No merged/combined usdz exists yet for iOS Quick Look, so these
-      // selections fall back to the in-page 3D viewer instead of true AR.
-      hint.textContent = 'No AR on this satellite for iPhone yet — spin the 3D model on screen instead.';
-      modelViewer.removeAttribute('ios-src');
-    } else {
-      hint.textContent = 'Tap to place the satellite in your space, or spin the 3D model on screen.';
-      if (sat.iosSrc) {
-        modelViewer.setAttribute('ios-src', sat.iosSrc);
-      } else {
-        modelViewer.removeAttribute('ios-src');
-      }
-    }
-
+    modelViewer.setAttribute('ios-src', sat.iosSrc);
     modelViewer.setAttribute('scale', sat.scale);
     modelViewer.setAttribute('src', sat.src);
   }
@@ -418,7 +403,7 @@
   // so we can see *why* AR didn't launch instead of guessing.
   modelViewer.addEventListener('ar-status', function (ev) {
     if (ev.detail.status === 'failed' && buildTag) {
-      buildTag.textContent = 'build v7 — ar-status: failed';
+      buildTag.textContent = 'build v8 — ar-status: failed';
     }
   });
 
