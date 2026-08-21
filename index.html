@@ -83,6 +83,7 @@
   }
   #ar-launch svg{width:19px; height:19px; flex:none;}
   #ar-launch .sub{display:block; font-size:11px; font-weight:400; opacity:.75; margin-top:1px;}
+  #ar-launch:disabled{opacity:.6; cursor:wait;}
   .hint{
     margin-top:12px; font-size:11px; color:var(--ink-dim); text-align:center;
   }
@@ -199,14 +200,32 @@
 <script>
   var viewerScreen = document.getElementById('viewer-screen');
   var modelViewer = document.getElementById('viewer');
+  var arLaunch = document.getElementById('ar-launch');
   var modelLoaded = false;
 
-  document.getElementById('ar-launch').addEventListener('click', function () {
-    if (!modelLoaded) {
-      modelViewer.setAttribute('src', 'MTGI.glb');
-      modelLoaded = true;
-    }
+  function goToAR() {
+    // AR (WebXR/Scene Viewer/Quick Look) needs a model already loaded
+    // and must be triggered directly from the user gesture, so we show
+    // the 3D viewer as a fallback and try to jump straight into AR.
     viewerScreen.classList.add('active');
+    if (modelViewer.canActivateAR) {
+      modelViewer.activateAR();
+    }
+  }
+
+  arLaunch.addEventListener('click', function () {
+    if (modelLoaded) {
+      goToAR();
+      return;
+    }
+    arLaunch.disabled = true;
+    modelViewer.addEventListener('load', function onLoad() {
+      modelViewer.removeEventListener('load', onLoad);
+      modelLoaded = true;
+      arLaunch.disabled = false;
+      goToAR();
+    });
+    modelViewer.setAttribute('src', 'MTGI.glb');
   });
 
   document.getElementById('close-viewer').addEventListener('click', function () {
