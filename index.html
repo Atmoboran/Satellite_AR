@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>MTG-I &mdash; AR Viewer</title>
 <meta name="description" content="View the Meteosat Third Generation Imager satellite in augmented reality." />
-<script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+<script type="module" src="https://unpkg.com/@google/model-viewer@4.3.1/dist/model-viewer.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -87,14 +87,24 @@
   .hint{
     margin-top:12px; font-size:11px; color:var(--ink-dim); text-align:center;
   }
+  .build-tag{
+    margin-top:6px; font-size:10px; color:var(--accent-dim); text-align:center; opacity:.7;
+  }
 
   /* ============ AR / VIEWER OVERLAY ============ */
+  /* Kept rendered (not display:none) at all times so model-viewer
+     always has real layout dimensions — AR activation needs those
+     to be already correct at the moment activateAR() is called. */
   #viewer-screen{
-    display:none;
     position:fixed; inset:0; z-index:20;
     background:var(--bg-0);
+    visibility:hidden;
+    pointer-events:none;
   }
-  #viewer-screen.active{ display:block; }
+  #viewer-screen.active{
+    visibility:visible;
+    pointer-events:auto;
+  }
 
   #close-viewer{
     position:absolute; top:16px; left:16px; z-index:22;
@@ -159,6 +169,7 @@
       </span>
     </button>
     <div class="hint mono">Tap to place the satellite in your space, or spin the 3D model on screen.</div>
+    <div class="build-tag mono">build v6</div>
   </main>
 </div>
 
@@ -218,13 +229,20 @@
 
   arLaunch.addEventListener('click', function () {
     viewerScreen.classList.add('active');
-    if (modelReady) {
-      modelViewer.activateAR();
-    }
+    modelViewer.activateAR();
   });
 
   document.getElementById('close-viewer').addEventListener('click', function () {
     viewerScreen.classList.remove('active');
+  });
+
+  // Surface AR failures on the build tag instead of failing silently,
+  // so we can see *why* AR didn't launch instead of guessing.
+  var buildTag = document.querySelector('.build-tag');
+  modelViewer.addEventListener('ar-status', function (ev) {
+    if (ev.detail.status === 'failed' && buildTag) {
+      buildTag.textContent = 'build v6 — ar-status: failed';
+    }
   });
 </script>
 
