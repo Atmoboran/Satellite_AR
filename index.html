@@ -83,6 +83,7 @@
   .readout b{display:block; color:var(--ink); font-size:12px; letter-spacing:0; margin-top:2px;}
 
   #ar-button{
+    position:absolute; right:16px; bottom:152px; z-index:6;
     display:flex; align-items:center; gap:10px;
     background:var(--accent); color:#03110d; border:none;
     font-family:'Inter'; font-weight:600; font-size:14px;
@@ -151,12 +152,15 @@
 <footer>
   <h1>MTG&#8209;I1 <span>/ Scaled AR Model</span></h1>
   <p class="blurb">
-    Meteosat&#8209;12 (MTG&#8209;I1) &mdash; ESA/EUMETSAT's weather satellite, watching Europe and Africa from geostationary orbit since December 2022.
+    Meteosat&#8209;12 (MTG&#8209;I1) &mdash; ESA/EUMETSAT's weather satellite, watching Europe and Africa from geostationary orbit since its December 2022 launch. Its Flexible Combined Imager scans the full Earth disc every 10 minutes across 16 spectral channels, tracking storms, fog, and volcanic ash as they form.
   </p>
   <div class="readout mono">
     <div>Launch mass<b>3,760 kg</b></div>
     <div>Bus (stowed)<b>2.3 &times; 2.8 &times; 5.2 m</b></div>
     <div>Orbit<b>36,000 km</b></div>
+    <div>Instrument<b>FCI, 16 channels</b></div>
+    <div>Scan interval<b>10 min (full disc)</b></div>
+    <div>Design life<b>8.5 years</b></div>
     <div>Status<b>Operational</b></div>
   </div>
   <div class="hint mono">Pinch or drag on screen to orbit and inspect detail.</div>
