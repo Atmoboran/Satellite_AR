@@ -21,25 +21,30 @@
   }
   *{box-sizing:border-box;}
   html,body{
-    margin:0; padding:0; height:100%;
+    margin:0; padding:0; min-height:100%;
     background:
       radial-gradient(1200px 700px at 80% -10%, #0f1c2e 0%, transparent 60%),
       linear-gradient(180deg, var(--bg-0), var(--bg-1));
+    background-attachment:fixed;
     color:var(--ink);
     font-family:'Inter', -apple-system, sans-serif;
-    overflow:hidden;
   }
   .mono{font-family:'Space Mono', ui-monospace, monospace;}
 
+  /* ============ LANDING PAGE ============ */
+  #landing{
+    min-height:100vh;
+    min-height:100dvh;
+    display:flex; flex-direction:column;
+  }
+
   /* top telemetry bar */
   header{
-    position:fixed; top:0; left:0; right:0; z-index:5;
     display:flex; align-items:center; justify-content:space-between;
-    padding:14px 18px;
+    gap:12px; flex-wrap:wrap;
+    padding:18px 20px;
     font-size:11px; letter-spacing:.12em; text-transform:uppercase;
     color:var(--ink-dim);
-    background:linear-gradient(180deg, rgba(5,7,12,.85), transparent);
-    pointer-events:none;
   }
   header .status{color:var(--accent);}
   header .dot{
@@ -50,12 +55,54 @@
   }
   @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
 
-  /* corner brackets, HUD framing */
-  .bracket{position:fixed; width:22px; height:22px; border:2px solid var(--accent-dim); z-index:4; pointer-events:none;}
-  .bracket.tl{top:44px; left:14px; border-right:none; border-bottom:none;}
-  .bracket.tr{top:44px; right:14px; border-left:none; border-bottom:none;}
-  .bracket.bl{bottom:130px; left:14px; border-right:none; border-top:none;}
-  .bracket.br{bottom:130px; right:14px; border-left:none; border-top:none;}
+  main{
+    flex:1;
+    padding:22px 20px 28px;
+  }
+  h1{
+    margin:0 0 4px; font-size:24px; font-weight:600; letter-spacing:-.01em;
+  }
+  h1 span{color:var(--accent);}
+  p.blurb{
+    margin:0 0 18px; max-width:520px; font-size:14px; line-height:1.6; color:var(--ink-dim);
+  }
+  .readout{
+    display:flex; gap:18px 26px; flex-wrap:wrap; font-size:10px; letter-spacing:.08em;
+    color:var(--ink-dim); text-transform:uppercase; margin-bottom:22px;
+    padding-bottom:20px; border-bottom:1px solid var(--line);
+  }
+  .readout b{display:block; color:var(--ink); font-size:13px; letter-spacing:0; margin-top:3px;}
+
+  #ar-launch{
+    display:flex; align-items:center; justify-content:center; gap:10px;
+    width:100%;
+    background:var(--accent); color:#03110d; border:none;
+    font-family:'Inter'; font-weight:600; font-size:15px;
+    padding:16px 20px; border-radius:12px; cursor:pointer;
+    box-shadow:0 8px 24px -6px rgba(111,227,201,.5);
+  }
+  #ar-launch svg{width:19px; height:19px; flex:none;}
+  #ar-launch .sub{display:block; font-size:11px; font-weight:400; opacity:.75; margin-top:1px;}
+  .hint{
+    margin-top:12px; font-size:11px; color:var(--ink-dim); text-align:center;
+  }
+
+  /* ============ AR / VIEWER OVERLAY ============ */
+  #viewer-screen{
+    display:none;
+    position:fixed; inset:0; z-index:20;
+    background:var(--bg-0);
+  }
+  #viewer-screen.active{ display:block; }
+
+  #close-viewer{
+    position:absolute; top:16px; left:16px; z-index:22;
+    display:flex; align-items:center; justify-content:center;
+    width:38px; height:38px; border-radius:50%;
+    background:rgba(5,7,12,.7); border:1px solid var(--line);
+    color:var(--ink); cursor:pointer;
+  }
+  #close-viewer svg{width:18px; height:18px;}
 
   model-viewer{
     width:100%; height:100%;
@@ -63,27 +110,7 @@
     --progress-bar-color: var(--accent);
   }
 
-  /* bottom info panel */
-  footer{
-    position:fixed; left:0; right:0; bottom:0; z-index:5;
-    padding:18px 20px 22px;
-    background:linear-gradient(0deg, rgba(5,7,12,.92) 40%, transparent);
-  }
-  h1{
-    margin:0 0 4px; font-size:22px; font-weight:600; letter-spacing:-.01em;
-  }
-  h1 span{color:var(--accent);}
-  p.blurb{
-    margin:0 0 14px; max-width:480px; font-size:13px; line-height:1.5; color:var(--ink-dim);
-  }
-  .readout{
-    display:flex; gap:18px; flex-wrap:wrap; font-size:10px; letter-spacing:.08em;
-    color:var(--ink-dim); text-transform:uppercase; margin-bottom:16px;
-  }
-  .readout b{display:block; color:var(--ink); font-size:12px; letter-spacing:0; margin-top:2px;}
-
   #ar-button{
-    position:absolute; right:16px; bottom:152px; z-index:6;
     display:flex; align-items:center; gap:10px;
     background:var(--accent); color:#03110d; border:none;
     font-family:'Inter'; font-weight:600; font-size:14px;
@@ -92,79 +119,100 @@
   }
   #ar-button svg{width:18px; height:18px; flex:none;}
   #ar-button .sub{display:block; font-size:10px; font-weight:400; opacity:.75; margin-top:1px;}
-  .hint{
-    margin-top:10px; font-size:11px; color:var(--ink-dim);
-  }
 
-  /* iOS/Android not-AR-capable fallback note */
-  model-viewer:not([ar-status]) #ar-button{opacity:1;}
-
-  #ar-prompt{
-    display:none;
-  }
-  model-viewer[ar-status="session-started"] ~ header,
-  model-viewer[ar-status="session-started"] ~ footer,
-  model-viewer[ar-status="session-started"] ~ .bracket{
-    display:none;
+  .viewer-hint{
+    position:absolute; left:0; right:0; bottom:18px; z-index:21;
+    text-align:center; font-size:11px; color:var(--ink-dim);
+    pointer-events:none;
   }
 </style>
 </head>
 <body>
 
-<div class="bracket tl"></div>
-<div class="bracket tr"></div>
-<div class="bracket bl"></div>
-<div class="bracket br"></div>
+<div id="landing">
+  <header class="mono">
+    <span><span class="dot"></span><span class="status">Tracking</span> &nbsp;MTG-I1 / Meteosat-12</span>
+    <span>0&deg; Longitude &middot; Geostationary</span>
+  </header>
 
-<header class="mono">
-  <span><span class="dot"></span><span class="status">Tracking</span> &nbsp;MTG-I1 / Meteosat-12</span>
-  <span>0&deg; Longitude &middot; Geostationary</span>
-</header>
+  <main>
+    <h1>MTG&#8209;I1 <span>/ Scaled AR Model</span></h1>
+    <p class="blurb">
+      Meteosat&#8209;12 (MTG&#8209;I1) &mdash; ESA/EUMETSAT's weather satellite, watching Europe and Africa from geostationary orbit since its December 2022 launch. Its Flexible Combined Imager scans the full Earth disc every 10 minutes across 16 spectral channels, tracking storms, fog, and volcanic ash as they form.
+    </p>
+    <div class="readout mono">
+      <div>Launch mass<b>3,760 kg</b></div>
+      <div>Bus (stowed)<b>2.3 &times; 2.8 &times; 5.2 m</b></div>
+      <div>Orbit<b>36,000 km</b></div>
+      <div>Instrument<b>FCI, 16 channels</b></div>
+      <div>Scan interval<b>10 min (full disc)</b></div>
+      <div>Design life<b>8.5 years</b></div>
+      <div>Status<b>Operational</b></div>
+    </div>
 
-<model-viewer
-  id="viewer"
-  src="MTGI.glb"
-  ios-src="MTGI.usdz"
-  alt="3D model of the MTG-I weather satellite"
-  ar
-  ar-modes="webxr scene-viewer quick-look"
-  ar-scale="auto"
-  ar-placement="floor"
-  scale="0.1 0.1 0.1"
-  camera-controls
-  bounds="tight"
-  touch-action="pan-y"
-  shadow-intensity="1"
-  shadow-softness="0.9"
-  exposure="1.05"
-  environment-image="neutral"
-  camera-orbit="35deg 75deg auto"
->
-  <button slot="ar-button" id="ar-button">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v6m0 8v6M4.9 4.9l4.2 4.2m5.8 5.8l4.2 4.2M2 12h6m8 0h6M4.9 19.1l4.2-4.2m5.8-5.8l4.2-4.2"/></svg>
-    <span>
-      View in your space
-      <span class="sub">Opens your camera</span>
-    </span>
+    <button id="ar-launch">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v6m0 8v6M4.9 4.9l4.2 4.2m5.8 5.8l4.2 4.2M2 12h6m8 0h6M4.9 19.1l4.2-4.2m5.8-5.8l4.2-4.2"/></svg>
+      <span>
+        View in AR
+        <span class="sub">Opens your camera</span>
+      </span>
+    </button>
+    <div class="hint mono">Tap to place the satellite in your space, or spin the 3D model on screen.</div>
+  </main>
+</div>
+
+<div id="viewer-screen">
+  <button id="close-viewer" aria-label="Close viewer">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
   </button>
-</model-viewer>
 
-<footer>
-  <h1>MTG&#8209;I1 <span>/ Scaled AR Model</span></h1>
-  <p class="blurb">
-    Meteosat&#8209;12 (MTG&#8209;I1) &mdash; ESA/EUMETSAT's weather satellite, watching Europe and Africa from geostationary orbit since its December 2022 launch. Its Flexible Combined Imager scans the full Earth disc every 10 minutes across 16 spectral channels, tracking storms, fog, and volcanic ash as they form.
-  </p>
-  <div class="readout mono">
-    <div>Launch mass<b>3,760 kg</b></div>
-    <div>Bus (stowed)<b>2.3 &times; 2.8 &times; 5.2 m</b></div>
-    <div>Orbit<b>36,000 km</b></div>
-    <div>Instrument<b>FCI, 16 channels</b></div>
-    <div>Scan interval<b>10 min (full disc)</b></div>
-    <div>Design life<b>8.5 years</b></div>
-    <div>Status<b>Operational</b></div>
-  </div>
-  <div class="hint mono">Pinch or drag on screen to orbit and inspect detail.</div>
-</footer>
+  <model-viewer
+    id="viewer"
+    ios-src="MTGI.usdz"
+    alt="3D model of the MTG-I weather satellite"
+    ar
+    ar-modes="webxr scene-viewer quick-look"
+    ar-scale="auto"
+    ar-placement="floor"
+    scale="0.1 0.1 0.1"
+    camera-controls
+    bounds="tight"
+    touch-action="pan-y"
+    shadow-intensity="1"
+    shadow-softness="0.9"
+    exposure="1.05"
+    environment-image="neutral"
+    camera-orbit="35deg 75deg auto"
+  >
+    <button slot="ar-button" id="ar-button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v6m0 8v6M4.9 4.9l4.2 4.2m5.8 5.8l4.2 4.2M2 12h6m8 0h6M4.9 19.1l4.2-4.2m5.8-5.8l4.2-4.2"/></svg>
+      <span>
+        View in your space
+        <span class="sub">Opens your camera</span>
+      </span>
+    </button>
+  </model-viewer>
+
+  <div class="viewer-hint mono">Pinch or drag on screen to orbit and inspect detail.</div>
+</div>
+
+<script>
+  var viewerScreen = document.getElementById('viewer-screen');
+  var modelViewer = document.getElementById('viewer');
+  var modelLoaded = false;
+
+  document.getElementById('ar-launch').addEventListener('click', function () {
+    if (!modelLoaded) {
+      modelViewer.setAttribute('src', 'MTGI.glb');
+      modelLoaded = true;
+    }
+    viewerScreen.classList.add('active');
+  });
+
+  document.getElementById('close-viewer').addEventListener('click', function () {
+    viewerScreen.classList.remove('active');
+  });
+</script>
 
 </body>
 </html>
