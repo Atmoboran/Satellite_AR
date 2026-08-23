@@ -65,7 +65,7 @@
   .poster{
     margin:0 20px 18px;
     position:relative;
-    aspect-ratio:4/5;
+    aspect-ratio:2.2/1;
     overflow:hidden;
   }
   .poster-grid{
@@ -80,24 +80,24 @@
   .q-navy{ grid-column:8/11; grid-row:2/3; background:var(--navy); }
 
   .arch{
-    position:absolute; left:50%; top:38%;
-    width:78%; transform:translate(-50%,-40%);
+    position:absolute; right:6%; top:10%;
+    width:34%;
     color:var(--mint);
   }
   .arch svg{ display:block; width:100%; height:auto; }
 
   .poster-copy{
     position:absolute; left:0; right:0; bottom:0;
-    padding:0 22px 22px;
-    max-width:70%;
+    padding:0 18px 16px;
+    max-width:72%;
   }
   .poster-title{
-    margin:0 0 10px; font-weight:900; text-transform:uppercase;
-    font-size:clamp(24px,8vw,38px); line-height:1; letter-spacing:-.01em;
+    margin:0 0 6px; font-weight:900; text-transform:uppercase;
+    font-size:clamp(20px,7vw,30px); line-height:.98; letter-spacing:-.01em;
   }
   .poster-tagline{
-    margin:0; font-size:11.5px; font-weight:700; letter-spacing:.02em;
-    line-height:1.4; text-transform:uppercase;
+    margin:0; font-size:10px; font-weight:700; letter-spacing:.02em;
+    line-height:1.35; text-transform:uppercase;
   }
 
   /* ============ PHOTO CARD ============ */
@@ -266,8 +266,8 @@
         <svg viewBox="0 0 400 200"><path fill="currentColor" d="M20,200 A180,180 0 0 1 380,200 L310,200 A110,110 0 0 0 90,200 Z"/></svg>
       </div>
       <div class="poster-copy">
-        <h1 class="poster-title">Wie Menschen<br>das Wetter<br>beobachten</h1>
-        <p class="poster-tagline">Wetter, Klima, Wandel.<br>Wir erkl&auml;ren es.</p>
+        <h1 class="poster-title">Wetter&#8209;<br>Satelliten</h1>
+        <p class="poster-tagline">Wie Menschen das Wetter beobachten</p>
       </div>
     </div>
 
@@ -295,7 +295,7 @@
           </span>
           <span class="info">
             <span class="name">MTG&#8209;I1 / Meteosat&#8209;12</span>
-            <span class="desc">ESA/EUMETSAT &middot; beobachtet Europa &amp; Afrika von 0&deg; L&auml;nge</span>
+            <span class="desc">ESA/EUMETSAT &middot; beobachtet Europa &amp; Afrika von 0&deg; L&auml;ngengrad</span>
           </span>
           <span class="check"></span>
         </button>
@@ -305,7 +305,7 @@
           </span>
           <span class="info">
             <span class="name">GOES&#8209;R</span>
-            <span class="desc">NOAA/NASA &middot; beobachtet Amerika von 137&deg;W L&auml;nge</span>
+            <span class="desc">NOAA/NASA &middot; beobachtet Amerika von 137&deg;W L&auml;ngengrad</span>
           </span>
           <span class="check"></span>
         </button>
@@ -315,7 +315,7 @@
           </span>
           <span class="info">
             <span class="name">Beide, nebeneinander</span>
-            <span class="desc">Vergleiche beide Satelliten zusammen, in Originalgr&ouml;&szlig;e, in derselben Ansicht</span>
+            <span class="desc">Vergleiche beide Satelliten zusammen in derselben Ansicht</span>
           </span>
           <span class="check"></span>
         </button>
@@ -329,7 +329,7 @@
       </div>
 
       <p class="blurb cta-explain">
-        Tippe auf <b>Ansehen</b>, um deine Kamera zu &ouml;ffnen und einen Satelliten in Originalgr&ouml;&szlig;e direkt bei dir im Raum zu platzieren &mdash; geh drumherum, schau dir seine Instrumente aus der N&auml;he an und bekomme ein echtes Gef&uuml;hl daf&uuml;r, wie gro&szlig; er wirklich ist.
+        Tippe auf <b>Ansehen</b>, um deine Kamera zu &ouml;ffnen und einen Satelliten direkt bei dir im Raum zu platzieren &mdash; geh drumherum und schau dir seine Instrumente aus der N&auml;he an.
       </p>
       <button id="ar-launch" disabled>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v6m0 8v6M4.9 4.9l4.2 4.2m5.8 5.8l4.2 4.2M2 12h6m8 0h6M4.9 19.1l4.2-4.2m5.8-5.8l4.2-4.2"/></svg>
