@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>SCAPE&deg; &mdash; Wetter&#8209;Satelliten AR</title>
-<meta name="description" content="View Earth's geostationary weather satellites in augmented reality. A SCAPE° project." />
+<title>SCAPE&deg; &mdash; Wettersatelliten in AR</title>
+<meta name="description" content="Erlebe geostation&auml;re Wettersatelliten in Augmented Reality &mdash; ein SCAPE&deg;-Projekt." />
 <script type="module" src="https://unpkg.com/@google/model-viewer@4.3.1/dist/model-viewer.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -93,7 +93,7 @@
   }
   .poster-title{
     margin:0 0 10px; font-weight:900; text-transform:uppercase;
-    font-size:clamp(34px,11vw,54px); line-height:.94; letter-spacing:-.01em;
+    font-size:clamp(24px,8vw,38px); line-height:1; letter-spacing:-.01em;
   }
   .poster-tagline{
     margin:0; font-size:11.5px; font-weight:700; letter-spacing:.02em;
@@ -250,9 +250,9 @@
     <header class="topbar">
       <div class="wordmark">
         <span class="word">SCAPE&deg;</span>
-        <span class="sub">Wetter&nbsp;&nbsp;Klima&nbsp;&nbsp;Mensch</span>
+        <span class="sub">Wetter, Klima, Mensch</span>
       </div>
-      <div class="topbar-tag">Augmented&nbsp;Reality</div>
+      <div class="topbar-tag">AR&#8209;Erlebnis</div>
     </header>
 
     <div class="poster">
@@ -266,28 +266,28 @@
         <svg viewBox="0 0 400 200"><path fill="currentColor" d="M20,200 A180,180 0 0 1 380,200 L310,200 A110,110 0 0 0 90,200 Z"/></svg>
       </div>
       <div class="poster-copy">
-        <h1 class="poster-title">Wetter&#8209;<br>Satelliten</h1>
+        <h1 class="poster-title">Wie Menschen<br>das Wetter<br>beobachten</h1>
         <p class="poster-tagline">Wetter, Klima, Wandel.<br>Wir erkl&auml;ren es.</p>
       </div>
     </div>
 
     <figure class="photo-card">
-      <img src="year_of_weather_screenshot.PNG" alt="Full-disc Earth composite stitched from EUMETSAT's geostationary satellites, showing storms Dikeledi and Sean, 18 January 2025">
-      <figcaption class="photo-cap">EUMETSAT &mdash; &ldquo;Year of Weather&rdquo; &middot; 18 Jan 2025</figcaption>
+      <img src="year_of_weather_screenshot.PNG" alt="Vollscheiben-Erdaufnahme aus EUMETSATs geostation&auml;ren Satelliten, mit den St&uuml;rmen Dikeledi und Sean, 18. Januar 2025">
+      <figcaption class="photo-cap">EUMETSAT &mdash; &bdquo;Year of Weather&ldquo; &middot; 18. Januar 2025</figcaption>
     </figure>
 
     <main>
       <div class="explainer">
-        <h2>What is a geostationary satellite?</h2>
+        <h2>Was ist ein geostation&auml;rer Satellit?</h2>
         <p class="blurb">
-          A geostationary satellite orbits 36,000&nbsp;km above the equator at exactly the speed Earth spins &mdash; so from the ground it always hovers over the same spot. That makes it perfect for weather watching: it can stare at the same slice of Earth non&#8209;stop, catching storms as they form and move.
+          Ein geostation&auml;rer Satellit umkreist die Erde in 36.000&nbsp;km H&ouml;he &uuml;ber dem &Auml;quator &mdash; genau so schnell, wie sich die Erde dreht. Vom Boden aus gesehen steht er deshalb immer &uuml;ber demselben Punkt. Das macht ihn perfekt f&uuml;r die Wetterbeobachtung: Er kann ununterbrochen denselben Ausschnitt der Erde im Blick behalten und Stürme direkt bei ihrer Entstehung verfolgen.
         </p>
         <p class="blurb">
-          One satellite alone can't see the whole planet &mdash; it only faces one hemisphere. So space agencies place several of these satellites in a ring around the equator, each covering a different region: Europe &amp; Africa, the Americas, Asia &amp; the Pacific. The photo above is what you get when their views are stitched together &mdash; a full picture of Earth's weather, made possible only because every agency freely shares its data with the others.
+          Ein einzelner Satellit kann nicht den ganzen Planeten sehen &mdash; er blickt immer nur auf eine H&auml;lfte der Erde. Deshalb platzieren Raumfahrtagenturen mehrere dieser Satelliten in einem Ring um den &Auml;quator, jeder zust&auml;ndig f&uuml;r eine andere Region: Europa &amp; Afrika, Amerika, Asien &amp; den Pazifik. Das Foto oben entsteht, wenn all diese Blicke zusammengesetzt werden &mdash; ein vollst&auml;ndiges Bild des Erdwetters, das nur m&ouml;glich ist, weil jede Agentur ihre Daten frei mit den anderen teilt.
         </p>
       </div>
 
-      <div class="section-label">Choose a satellite</div>
+      <div class="section-label">Satellit ausw&auml;hlen</div>
       <div class="picker" id="picker">
         <button class="sat-card sat-mtgi selected" data-sat="mtgi">
           <span class="icon icon-mtgi" aria-hidden="true">
@@ -295,7 +295,7 @@
           </span>
           <span class="info">
             <span class="name">MTG&#8209;I1 / Meteosat&#8209;12</span>
-            <span class="desc">ESA/EUMETSAT &middot; watches Europe &amp; Africa from 0&deg; longitude</span>
+            <span class="desc">ESA/EUMETSAT &middot; beobachtet Europa &amp; Afrika von 0&deg; L&auml;nge</span>
           </span>
           <span class="check"></span>
         </button>
@@ -305,7 +305,7 @@
           </span>
           <span class="info">
             <span class="name">GOES&#8209;R</span>
-            <span class="desc">NOAA/NASA &middot; watches the Americas from 137&deg;W longitude</span>
+            <span class="desc">NOAA/NASA &middot; beobachtet Amerika von 137&deg;W L&auml;nge</span>
           </span>
           <span class="check"></span>
         </button>
@@ -314,32 +314,32 @@
             <svg viewBox="0 0 400 200"><path fill="currentColor" d="M20,200 A180,180 0 0 1 380,200 L310,200 A110,110 0 0 0 90,200 Z"/></svg>
           </span>
           <span class="info">
-            <span class="name">Both, side by side</span>
-            <span class="desc">Compare the two satellites together, life&#8209;size, in the same view</span>
+            <span class="name">Beide, nebeneinander</span>
+            <span class="desc">Vergleiche beide Satelliten zusammen, in Originalgr&ouml;&szlig;e, in derselben Ansicht</span>
           </span>
           <span class="check"></span>
         </button>
       </div>
 
       <div class="readout" id="readout">
-        <div>Agency<b id="ro-agency">ESA / EUMETSAT</b></div>
-        <div>Longitude<b id="ro-lon">0&deg;</b></div>
-        <div>Coverage<b id="ro-coverage">Europe &amp; Africa</b></div>
-        <div>Launch mass<b id="ro-mass">3,760 kg</b></div>
+        <div>Agentur<b id="ro-agency">ESA / EUMETSAT</b></div>
+        <div>L&auml;nge<b id="ro-lon">0&deg;</b></div>
+        <div>Abdeckung<b id="ro-coverage">Europa &amp; Afrika</b></div>
+        <div>Startmasse<b id="ro-mass">3.760 kg</b></div>
       </div>
 
       <p class="blurb cta-explain">
-        Hit <b>View</b> to open your camera and place a full&#8209;size satellite right in the room with you &mdash; walk around it, get up close to its instruments, and get a real feel for just how big it actually is.
+        Tippe auf <b>Ansehen</b>, um deine Kamera zu &ouml;ffnen und einen Satelliten in Originalgr&ouml;&szlig;e direkt bei dir im Raum zu platzieren &mdash; geh drumherum, schau dir seine Instrumente aus der N&auml;he an und bekomme ein echtes Gef&uuml;hl daf&uuml;r, wie gro&szlig; er wirklich ist.
       </p>
       <button id="ar-launch" disabled>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v6m0 8v6M4.9 4.9l4.2 4.2m5.8 5.8l4.2 4.2M2 12h6m8 0h6M4.9 19.1l4.2-4.2m5.8-5.8l4.2-4.2"/></svg>
         <span>
-          <span id="ar-launch-label">View in AR</span>
-          <span class="sub">Opens your camera</span>
+          <span id="ar-launch-label">In AR ansehen</span>
+          <span class="sub">&Ouml;ffnet deine Kamera</span>
         </span>
       </button>
-      <div class="hint" id="hint">Tap to place the satellite in your space, or spin the 3D model on screen.</div>
-      <div class="build-tag">build v9</div>
+      <div class="hint" id="hint">Tippe, um den Satelliten in deinem Raum zu platzieren, oder drehe das 3D&#8209;Modell auf dem Bildschirm.</div>
+      <div class="build-tag">build v10</div>
     </main>
 
     <footer class="brand-footer">
@@ -349,13 +349,13 @@
 </div>
 
 <div id="viewer-screen">
-  <button id="close-viewer" aria-label="Close viewer">
+  <button id="close-viewer" aria-label="Ansicht schlie&szlig;en">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
   </button>
 
   <model-viewer
     id="viewer"
-    alt="3D model of a geostationary weather satellite"
+    alt="3D&#8209;Modell eines geostation&auml;ren Wettersatelliten"
     ar
     ar-modes="webxr scene-viewer quick-look"
     ar-scale="auto"
@@ -372,13 +372,13 @@
     <button slot="ar-button" id="ar-button">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v6m0 8v6M4.9 4.9l4.2 4.2m5.8 5.8l4.2 4.2M2 12h6m8 0h6M4.9 19.1l4.2-4.2m5.8-5.8l4.2-4.2"/></svg>
       <span>
-        View in your space
-        <span class="sub">Opens your camera</span>
+        In deinem Raum ansehen
+        <span class="sub">&Ouml;ffnet deine Kamera</span>
       </span>
     </button>
   </model-viewer>
 
-  <div class="viewer-hint">Pinch or drag on screen to orbit and inspect detail.</div>
+  <div class="viewer-hint">Wische oder ziehe &uuml;ber den Bildschirm, um das Modell zu drehen und Details zu erkunden.</div>
 </div>
 
 <script>
@@ -387,30 +387,30 @@
       src: 'MTGI.glb',
       iosSrc: 'MTGI.usdz',
       scale: '0.1 0.1 0.1',
-      label: 'View MTG&#8209;I1 in AR',
+      label: 'MTG&#8209;I1 in AR ansehen',
       agency: 'ESA / EUMETSAT',
       lon: '0°',
-      coverage: 'Europe & Africa',
-      mass: '3,760 kg'
+      coverage: 'Europa & Afrika',
+      mass: '3.760 kg'
     },
     goes: {
       src: 'GOES-R_1m.glb',
       iosSrc: 'GOES-R_1m.usdz',
       scale: '1 1 1',
-      label: 'View GOES&#8209;R in AR',
+      label: 'GOES&#8209;R in AR ansehen',
       agency: 'NOAA / NASA',
       lon: '137°W',
-      coverage: 'The Americas',
-      mass: '2,857 kg'
+      coverage: 'Amerika',
+      mass: '2.857 kg'
     },
     both: {
       src: 'constellation.glb',
       iosSrc: 'constellation.usdz',
       scale: '1 1 1',
-      label: 'View Both in AR',
+      label: 'Beide in AR ansehen',
       agency: 'EUMETSAT + NOAA/NASA',
       lon: '0° & 137°W',
-      coverage: 'Europe, Africa & the Americas',
+      coverage: 'Europa, Afrika & Amerika',
       mass: '—'
     }
   };
@@ -475,7 +475,7 @@
   // so we can see *why* AR didn't launch instead of guessing.
   modelViewer.addEventListener('ar-status', function (ev) {
     if (ev.detail.status === 'failed' && buildTag) {
-      buildTag.textContent = 'build v9 — ar-status: failed';
+      buildTag.textContent = 'build v10 — AR-Status: fehlgeschlagen';
     }
   });
 
