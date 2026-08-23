@@ -3,154 +3,198 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Geostationary Satellites &mdash; AR Viewer</title>
-<meta name="description" content="View Earth's geostationary weather satellites in augmented reality." />
+<title>SCAPE&deg; &mdash; Wetter&#8209;Satelliten AR</title>
+<meta name="description" content="View Earth's geostationary weather satellites in augmented reality. A SCAPE° project." />
 <script type="module" src="https://unpkg.com/@google/model-viewer@4.3.1/dist/model-viewer.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg-0:#05070c;
-    --bg-1:#0b1220;
-    --line:#1c2a3f;
-    --ink:#e7edf5;
-    --ink-dim:#7f93ad;
-    --accent:#6fe3c9;
-    --accent-dim:#2e5a51;
-    --danger:#ff7a59;
+    --ink:#111111;
+    --paper:#ffffff;
+    --line:#111111;
+
+    /* SCAPE° palette, sampled from the corporate identity guide */
+    --olive:#6b6b23;
+    --mustard:#d2a716;
+    --orange:#ef8f2c;
+    --rust:#c65a2a;
+    --red:#df2a1e;
+    --purple:#4a2e83;
+    --green:#00954f;
+    --cyan:#1093c4;
+    --navy:#28348f;
+
+    --cream:#f2e2c0;
+    --pastel-yellow:#f6ea79;
+    --bright-yellow:#ffe400;
+    --pastel-blue:#cfe6f6;
+    --pastel-lavender:#dcd6f2;
+    --mint:#4ab48a;
   }
   *{box-sizing:border-box;}
   html,body{
     margin:0; padding:0; min-height:100%;
-    background:
-      radial-gradient(1200px 700px at 80% -10%, #0f1c2e 0%, transparent 60%),
-      linear-gradient(180deg, var(--bg-0), var(--bg-1));
-    background-attachment:fixed;
+    background:var(--paper);
     color:var(--ink);
-    font-family:'Inter', -apple-system, sans-serif;
+    font-family:'Archivo', 'Helvetica Neue', Arial, sans-serif;
   }
-  .mono{font-family:'Space Mono', ui-monospace, monospace;}
+  h1,h2,h3{font-family:inherit;}
+  img{max-width:100%;}
 
-  /* ============ LANDING PAGE ============ */
-  #landing{
-    min-height:100vh;
-    min-height:100dvh;
-    display:flex; flex-direction:column;
+  .wrap{ max-width:600px; margin:0 auto; }
+
+  /* ============ WORDMARK / TOPBAR ============ */
+  .topbar{
+    display:flex; align-items:flex-end; justify-content:space-between;
+    padding:22px 20px 14px;
+  }
+  .wordmark .word{
+    display:block; font-size:26px; font-weight:800; letter-spacing:-.01em; line-height:1;
+  }
+  .wordmark .sub{
+    display:block; margin-top:4px; font-size:10px; font-weight:700;
+    letter-spacing:.14em; text-transform:uppercase;
+  }
+  .topbar-tag{
+    font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
+    text-align:right; color:var(--ink); max-width:120px;
   }
 
-  /* top telemetry bar */
-  header{
-    display:flex; align-items:center; justify-content:space-between;
-    gap:12px; flex-wrap:wrap;
-    padding:18px 20px;
-    font-size:11px; letter-spacing:.12em; text-transform:uppercase;
-    color:var(--ink-dim);
-  }
-  header .status{color:var(--accent);}
-  header .dot{
-    display:inline-block; width:6px; height:6px; border-radius:50%;
-    background:var(--accent); margin-right:6px;
-    box-shadow:0 0 8px var(--accent);
-    animation:pulse 1.8s ease-in-out infinite;
-  }
-  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
-
-  .hero{
-    margin:0 14px;
-    border:2px solid var(--accent-dim);
-    border-radius:16px;
+  /* ============ POSTER HERO ============ */
+  .poster{
+    margin:0 20px 18px;
+    position:relative;
+    aspect-ratio:4/5;
     overflow:hidden;
-    background:#070b13;
   }
-  .hero img{
-    display:block; width:100%; height:auto; max-height:38vh;
-    object-fit:cover;
+  .poster-grid{
+    position:absolute; inset:0;
+    display:grid;
+    grid-template-columns:repeat(10,1fr);
+    grid-template-rows:1fr 1fr;
   }
-  .hero-cap{
-    padding:9px 14px;
-    font-size:10.5px; letter-spacing:.06em; color:var(--ink-dim);
-    border-top:1px solid var(--line);
+  .q-orange{ grid-column:1/6; grid-row:1/2; background:var(--orange); }
+  .q-yellow{ grid-column:6/11; grid-row:1/2; background:var(--pastel-yellow); }
+  .q-cream{ grid-column:1/8; grid-row:2/3; background:var(--cream); }
+  .q-navy{ grid-column:8/11; grid-row:2/3; background:var(--navy); }
+
+  .arch{
+    position:absolute; left:50%; top:38%;
+    width:78%; transform:translate(-50%,-40%);
+    color:var(--mint);
+  }
+  .arch svg{ display:block; width:100%; height:auto; }
+
+  .poster-copy{
+    position:absolute; left:0; right:0; bottom:0;
+    padding:0 22px 22px;
+    max-width:70%;
+  }
+  .poster-title{
+    margin:0 0 10px; font-weight:900; text-transform:uppercase;
+    font-size:clamp(34px,11vw,54px); line-height:.94; letter-spacing:-.01em;
+  }
+  .poster-tagline{
+    margin:0; font-size:11.5px; font-weight:700; letter-spacing:.02em;
+    line-height:1.4; text-transform:uppercase;
   }
 
-  main{
-    flex:1;
-    padding:22px 20px 28px;
+  /* ============ PHOTO CARD ============ */
+  .photo-card{
+    margin:0 20px 26px;
   }
-  h1{
-    margin:0 0 4px; font-size:23px; font-weight:600; letter-spacing:-.01em;
+  .photo-card img{
+    display:block; width:100%; height:auto;
+    border:2px solid var(--ink);
   }
-  h1 span{color:var(--accent);}
-  h2{
-    margin:0 0 8px; font-size:14px; font-weight:600; color:var(--ink);
+  .photo-cap{
+    margin-top:6px; font-size:10.5px; font-weight:600; letter-spacing:.03em; color:var(--ink);
   }
-  p.blurb{
-    margin:0 0 14px; max-width:560px; font-size:14px; line-height:1.6; color:var(--ink-dim);
-  }
-  .explainer{
-    margin:18px 0 24px; padding:16px 16px 4px; max-width:560px;
-    border:1px solid var(--line); border-radius:14px; background:rgba(111,227,201,.04);
-  }
-  .explainer p.blurb:last-child{ margin-bottom:14px; }
 
+  main{ padding:0 20px 30px; }
+
+  /* ============ SECTION LABELS ============ */
   .section-label{
-    font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--accent);
+    font-size:11px; font-weight:800; letter-spacing:.12em; text-transform:uppercase;
     margin:0 0 12px;
   }
 
-  /* satellite picker cards */
-  .picker{
-    display:flex; flex-direction:column; gap:10px; margin-bottom:18px;
+  /* ============ EXPLAINER ============ */
+  .explainer{ margin-bottom:30px; }
+  .explainer h2{
+    margin:0 0 10px; font-size:19px; font-weight:800; letter-spacing:-.01em;
   }
+  p.blurb{
+    margin:0 0 14px; font-size:14.5px; line-height:1.6; color:var(--ink);
+  }
+
+  /* ============ SATELLITE PICKER ============ */
+  .picker{ display:flex; flex-direction:column; gap:10px; margin-bottom:26px; }
   .sat-card{
     display:flex; align-items:center; gap:14px;
     width:100%; text-align:left;
-    background:#0c1420; border:1px solid var(--line); border-radius:14px;
-    padding:12px 14px; cursor:pointer;
+    border:2px solid transparent;
+    padding:14px 16px; cursor:pointer;
   }
-  .sat-card.selected{
-    border-color:var(--accent);
-    background:rgba(111,227,201,.08);
-  }
-  .sat-card .swatch{
-    flex:none; width:40px; height:40px; border-radius:10px;
-    display:flex; align-items:center; justify-content:center;
-    background:var(--accent-dim); color:var(--accent); font-size:18px;
-  }
-  .sat-card .info{ flex:1; min-width:0; }
-  .sat-card .name{ font-weight:600; font-size:14px; }
-  .sat-card .desc{ font-size:11.5px; color:var(--ink-dim); margin-top:2px; }
-  .sat-card .check{
-    flex:none; width:20px; height:20px; border-radius:50%;
-    border:1.5px solid var(--line); position:relative;
-  }
-  .sat-card.selected .check{ border-color:var(--accent); }
-  .sat-card.selected .check::after{
-    content:''; position:absolute; inset:4px; border-radius:50%; background:var(--accent);
-  }
+  .sat-card.selected{ border-color:var(--ink); }
+  .sat-mtgi{ background:var(--cream); }
+  .sat-goes{ background:var(--pastel-yellow); }
+  .sat-both{ background:var(--pastel-blue); }
 
-  .readout{
-    display:flex; gap:18px 26px; flex-wrap:wrap; font-size:10px; letter-spacing:.08em;
-    color:var(--ink-dim); text-transform:uppercase; margin-bottom:22px;
-    padding-bottom:20px; border-bottom:1px solid var(--line);
+  .sat-card .icon{
+    flex:none; width:42px; height:42px;
+    display:flex; align-items:center; justify-content:center;
   }
-  .readout b{display:block; color:var(--ink); font-size:13px; letter-spacing:0; margin-top:3px;}
+  .sat-card .icon svg{ width:100%; height:100%; }
+  .icon-mtgi{ color:var(--orange); }
+  .icon-goes{ color:var(--rust); }
+  .icon-both{ color:var(--navy); }
+
+  .sat-card .info{ flex:1; min-width:0; }
+  .sat-card .name{ font-weight:800; font-size:14.5px; }
+  .sat-card .desc{ font-size:11.5px; font-weight:500; margin-top:2px; line-height:1.4; }
+
+  .sat-card .check{
+    flex:none; width:16px; height:16px; border:2px solid var(--ink); background:var(--paper);
+  }
+  .sat-card.selected .check{ background:var(--ink); }
+
+  /* ============ READOUT ============ */
+  .readout{
+    display:flex; gap:18px 26px; flex-wrap:wrap;
+    margin-bottom:26px; padding:16px 0; border-top:2px solid var(--ink); border-bottom:2px solid var(--ink);
+  }
+  .readout div{ font-size:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
+  .readout b{ display:block; font-size:14px; font-weight:700; letter-spacing:0; margin-top:3px; text-transform:none; }
+
+  /* ============ CTA ============ */
+  .cta-explain{ font-size:13px; }
+  .cta-explain b{ font-weight:800; }
 
   #ar-launch{
     display:flex; align-items:center; justify-content:center; gap:10px;
     width:100%;
-    background:var(--accent); color:#03110d; border:none;
-    font-family:'Inter'; font-weight:600; font-size:15px;
-    padding:16px 20px; border-radius:12px; cursor:pointer;
-    box-shadow:0 8px 24px -6px rgba(111,227,201,.5);
+    background:var(--bright-yellow); color:var(--ink); border:2px solid var(--ink);
+    font-family:inherit; font-weight:800; font-size:15px; text-transform:uppercase; letter-spacing:.02em;
+    padding:16px 20px; cursor:pointer;
   }
   #ar-launch svg{width:19px; height:19px; flex:none;}
-  #ar-launch .sub{display:block; font-size:11px; font-weight:400; opacity:.75; margin-top:1px;}
-  #ar-launch:disabled{opacity:.6; cursor:wait;}
+  #ar-launch .sub{
+    display:block; font-size:10.5px; font-weight:600; text-transform:none; letter-spacing:0; opacity:.75; margin-top:1px;
+  }
+  #ar-launch:disabled{opacity:.45; cursor:wait;}
   .hint{
-    margin-top:12px; font-size:11px; color:var(--ink-dim); text-align:center;
+    margin-top:12px; font-size:11.5px; font-weight:500; color:var(--ink); text-align:center;
   }
   .build-tag{
-    margin-top:6px; font-size:10px; color:var(--accent-dim); text-align:center; opacity:.7;
+    margin-top:6px; font-size:9.5px; font-weight:600; color:var(--ink); text-align:center; opacity:.4;
+  }
+
+  /* ============ FOOTER ============ */
+  .brand-footer{
+    padding:26px 20px 34px; border-top:2px solid var(--ink);
+    font-size:11px; font-weight:800; letter-spacing:.04em; text-transform:uppercase; line-height:1.6;
   }
 
   /* ============ AR / VIEWER OVERLAY ============ */
@@ -159,7 +203,7 @@
      to be already correct at the moment activateAR() is called. */
   #viewer-screen{
     position:fixed; inset:0; z-index:20;
-    background:var(--bg-0);
+    background:#0b0b0b;
     visibility:hidden;
     pointer-events:none;
   }
@@ -171,8 +215,8 @@
   #close-viewer{
     position:absolute; top:16px; left:16px; z-index:22;
     display:flex; align-items:center; justify-content:center;
-    width:38px; height:38px; border-radius:50%;
-    background:rgba(5,7,12,.7); border:1px solid var(--line);
+    width:38px; height:38px;
+    background:var(--bright-yellow); border:2px solid var(--ink);
     color:var(--ink); cursor:pointer;
   }
   #close-viewer svg{width:18px; height:18px;}
@@ -180,22 +224,21 @@
   model-viewer{
     width:100%; height:100%;
     --poster-color: transparent;
-    --progress-bar-color: var(--accent);
+    --progress-bar-color: var(--bright-yellow);
   }
 
   #ar-button{
     display:flex; align-items:center; gap:10px;
-    background:var(--accent); color:#03110d; border:none;
-    font-family:'Inter'; font-weight:600; font-size:14px;
-    padding:14px 20px; border-radius:10px; cursor:pointer;
-    box-shadow:0 8px 24px -6px rgba(111,227,201,.5);
+    background:var(--bright-yellow); color:var(--ink); border:2px solid var(--ink);
+    font-family:'Archivo', sans-serif; font-weight:800; font-size:14px; text-transform:uppercase;
+    padding:14px 20px; cursor:pointer;
   }
   #ar-button svg{width:18px; height:18px; flex:none;}
-  #ar-button .sub{display:block; font-size:10px; font-weight:400; opacity:.75; margin-top:1px;}
+  #ar-button .sub{display:block; font-size:10px; font-weight:600; text-transform:none; opacity:.75; margin-top:1px;}
 
   .viewer-hint{
     position:absolute; left:0; right:0; bottom:18px; z-index:21;
-    text-align:center; font-size:11px; color:var(--ink-dim);
+    text-align:center; font-size:11px; font-weight:600; color:#fff;
     pointer-events:none;
   }
 </style>
@@ -203,77 +246,106 @@
 <body>
 
 <div id="landing">
-  <header class="mono">
-    <span><span class="dot"></span><span class="status">Tracking</span> &nbsp;Geostationary Ring</span>
-    <span>36,000 KM &middot; 0&deg;&ndash;137&deg;W</span>
-  </header>
+  <div class="wrap">
+    <header class="topbar">
+      <div class="wordmark">
+        <span class="word">SCAPE&deg;</span>
+        <span class="sub">Wetter&nbsp;&nbsp;Klima&nbsp;&nbsp;Mensch</span>
+      </div>
+      <div class="topbar-tag">Augmented&nbsp;Reality</div>
+    </header>
 
-  <div class="hero">
-    <img src="year_of_weather_screenshot.PNG" alt="Full-disc Earth composite stitched from EUMETSAT's geostationary satellites, showing storms Dikeledi and Sean, 18 January 2025">
-    <div class="hero-cap mono">EUMETSAT &mdash; "Year of Weather" &middot; 18 Jan 2025</div>
+    <div class="poster">
+      <div class="poster-grid">
+        <div class="q-orange"></div>
+        <div class="q-yellow"></div>
+        <div class="q-cream"></div>
+        <div class="q-navy"></div>
+      </div>
+      <div class="arch" aria-hidden="true">
+        <svg viewBox="0 0 400 200"><path fill="currentColor" d="M20,200 A180,180 0 0 1 380,200 L310,200 A110,110 0 0 0 90,200 Z"/></svg>
+      </div>
+      <div class="poster-copy">
+        <h1 class="poster-title">Wetter&#8209;<br>Satelliten</h1>
+        <p class="poster-tagline">Wetter, Klima, Wandel.<br>Wir erkl&auml;ren es.</p>
+      </div>
+    </div>
+
+    <figure class="photo-card">
+      <img src="year_of_weather_screenshot.PNG" alt="Full-disc Earth composite stitched from EUMETSAT's geostationary satellites, showing storms Dikeledi and Sean, 18 January 2025">
+      <figcaption class="photo-cap">EUMETSAT &mdash; &ldquo;Year of Weather&rdquo; &middot; 18 Jan 2025</figcaption>
+    </figure>
+
+    <main>
+      <div class="explainer">
+        <h2>What is a geostationary satellite?</h2>
+        <p class="blurb">
+          A geostationary satellite orbits 36,000&nbsp;km above the equator at exactly the speed Earth spins &mdash; so from the ground it always hovers over the same spot. That makes it perfect for weather watching: it can stare at the same slice of Earth non&#8209;stop, catching storms as they form and move.
+        </p>
+        <p class="blurb">
+          One satellite alone can't see the whole planet &mdash; it only faces one hemisphere. So space agencies place several of these satellites in a ring around the equator, each covering a different region: Europe &amp; Africa, the Americas, Asia &amp; the Pacific. The photo above is what you get when their views are stitched together &mdash; a full picture of Earth's weather, made possible only because every agency freely shares its data with the others.
+        </p>
+      </div>
+
+      <div class="section-label">Choose a satellite</div>
+      <div class="picker" id="picker">
+        <button class="sat-card sat-mtgi selected" data-sat="mtgi">
+          <span class="icon icon-mtgi" aria-hidden="true">
+            <svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="90" fill="currentColor"/></svg>
+          </span>
+          <span class="info">
+            <span class="name">MTG&#8209;I1 / Meteosat&#8209;12</span>
+            <span class="desc">ESA/EUMETSAT &middot; watches Europe &amp; Africa from 0&deg; longitude</span>
+          </span>
+          <span class="check"></span>
+        </button>
+        <button class="sat-card sat-goes" data-sat="goes">
+          <span class="icon icon-goes" aria-hidden="true">
+            <svg viewBox="0 0 200 200"><path fill="currentColor" d="M10,190 A90,90 0 0 1 190,190 Z"/></svg>
+          </span>
+          <span class="info">
+            <span class="name">GOES&#8209;R</span>
+            <span class="desc">NOAA/NASA &middot; watches the Americas from 137&deg;W longitude</span>
+          </span>
+          <span class="check"></span>
+        </button>
+        <button class="sat-card sat-both" data-sat="both">
+          <span class="icon icon-both" aria-hidden="true">
+            <svg viewBox="0 0 400 200"><path fill="currentColor" d="M20,200 A180,180 0 0 1 380,200 L310,200 A110,110 0 0 0 90,200 Z"/></svg>
+          </span>
+          <span class="info">
+            <span class="name">Both, side by side</span>
+            <span class="desc">Compare the two satellites together, life&#8209;size, in the same view</span>
+          </span>
+          <span class="check"></span>
+        </button>
+      </div>
+
+      <div class="readout" id="readout">
+        <div>Agency<b id="ro-agency">ESA / EUMETSAT</b></div>
+        <div>Longitude<b id="ro-lon">0&deg;</b></div>
+        <div>Coverage<b id="ro-coverage">Europe &amp; Africa</b></div>
+        <div>Launch mass<b id="ro-mass">3,760 kg</b></div>
+      </div>
+
+      <p class="blurb cta-explain">
+        Hit <b>View</b> to open your camera and place a full&#8209;size satellite right in the room with you &mdash; walk around it, get up close to its instruments, and get a real feel for just how big it actually is.
+      </p>
+      <button id="ar-launch" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v6m0 8v6M4.9 4.9l4.2 4.2m5.8 5.8l4.2 4.2M2 12h6m8 0h6M4.9 19.1l4.2-4.2m5.8-5.8l4.2-4.2"/></svg>
+        <span>
+          <span id="ar-launch-label">View in AR</span>
+          <span class="sub">Opens your camera</span>
+        </span>
+      </button>
+      <div class="hint" id="hint">Tap to place the satellite in your space, or spin the 3D model on screen.</div>
+      <div class="build-tag">build v9</div>
+    </main>
+
+    <footer class="brand-footer">
+      Wetter, Klima, Wandel.<br>Wir erkl&auml;ren es. &mdash; SCAPE&deg;
+    </footer>
   </div>
-
-  <main>
-    <h1>Watching Earth <span>from Geostationary Orbit</span></h1>
-
-    <div class="explainer">
-      <h2>What is a geostationary satellite?</h2>
-      <p class="blurb">
-        A geostationary satellite orbits 36,000&nbsp;km above the equator at exactly the speed Earth spins &mdash; so from the ground it always hovers over the same spot. That makes it perfect for weather watching: it can stare at the same slice of Earth non&#8209;stop, catching storms as they form and move.
-      </p>
-      <p class="blurb">
-        One satellite alone can't see the whole planet &mdash; it only faces one hemisphere. So space agencies place several of these satellites in a ring around the equator, each covering a different region: Europe &amp; Africa, the Americas, Asia &amp; the Pacific. The image above is what you get when their views are stitched together &mdash; a full picture of Earth's weather, made possible only because every agency freely shares its data with the others.
-      </p>
-    </div>
-
-    <div class="section-label mono">Choose a satellite</div>
-    <div class="picker" id="picker">
-      <button class="sat-card selected" data-sat="mtgi">
-        <span class="swatch">🛰</span>
-        <span class="info">
-          <span class="name">MTG&#8209;I1 / Meteosat&#8209;12</span>
-          <span class="desc">ESA/EUMETSAT &middot; watches Europe &amp; Africa from 0&deg; longitude</span>
-        </span>
-        <span class="check"></span>
-      </button>
-      <button class="sat-card" data-sat="goes">
-        <span class="swatch">🛰</span>
-        <span class="info">
-          <span class="name">GOES&#8209;R</span>
-          <span class="desc">NOAA/NASA &middot; watches the Americas from 137&deg;W longitude</span>
-        </span>
-        <span class="check"></span>
-      </button>
-      <button class="sat-card" data-sat="both">
-        <span class="swatch">🌐</span>
-        <span class="info">
-          <span class="name">Both, side by side</span>
-          <span class="desc">Compare the two satellites together, life&#8209;size, in the same view</span>
-        </span>
-        <span class="check"></span>
-      </button>
-    </div>
-
-    <div class="readout mono" id="readout">
-      <div>Agency<b id="ro-agency">ESA / EUMETSAT</b></div>
-      <div>Longitude<b id="ro-lon">0&deg;</b></div>
-      <div>Coverage<b id="ro-coverage">Europe &amp; Africa</b></div>
-      <div>Launch mass<b id="ro-mass">3,760 kg</b></div>
-    </div>
-
-    <p class="blurb" style="margin-bottom:10px; font-size:12.5px;">
-      Hit <b style="color:var(--ink);">View</b> to open your camera and place a full&#8209;size satellite right in the room with you &mdash; walk around it, get up close to its instruments, and get a real feel for just how big it actually is.
-    </p>
-    <button id="ar-launch" disabled>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v6m0 8v6M4.9 4.9l4.2 4.2m5.8 5.8l4.2 4.2M2 12h6m8 0h6M4.9 19.1l4.2-4.2m5.8-5.8l4.2-4.2"/></svg>
-      <span>
-        <span id="ar-launch-label">View in AR</span>
-        <span class="sub">Opens your camera</span>
-      </span>
-    </button>
-    <div class="hint mono" id="hint">Tap to place the satellite in your space, or spin the 3D model on screen.</div>
-    <div class="build-tag mono">build v8</div>
-  </main>
 </div>
 
 <div id="viewer-screen">
@@ -306,7 +378,7 @@
     </button>
   </model-viewer>
 
-  <div class="viewer-hint mono">Pinch or drag on screen to orbit and inspect detail.</div>
+  <div class="viewer-hint">Pinch or drag on screen to orbit and inspect detail.</div>
 </div>
 
 <script>
@@ -403,7 +475,7 @@
   // so we can see *why* AR didn't launch instead of guessing.
   modelViewer.addEventListener('ar-status', function (ev) {
     if (ev.detail.status === 'failed' && buildTag) {
-      buildTag.textContent = 'build v8 — ar-status: failed';
+      buildTag.textContent = 'build v9 — ar-status: failed';
     }
   });
 
