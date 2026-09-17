@@ -41,31 +41,35 @@
   }
   h1,h2,h3{font-family:inherit;}
   img{max-width:100%;}
+  button{font-family:inherit;}
 
   .wrap{ max-width:600px; margin:0 auto; }
 
   /* ============ WORDMARK / TOPBAR ============ */
   .topbar{
-    display:flex; align-items:flex-end; justify-content:space-between;
-    padding:22px 20px 14px;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:12px;
+    padding:16px 20px 10px;
   }
   .wordmark .word{
-    display:block; font-size:26px; font-weight:800; letter-spacing:-.01em; line-height:1;
+    display:block; font-size:24px; font-weight:800; letter-spacing:-.01em; line-height:1;
   }
   .wordmark .sub{
-    display:block; margin-top:4px; font-size:10px; font-weight:700;
-    letter-spacing:.14em; text-transform:uppercase;
+    display:block; margin-top:3px; font-size:9.5px; font-weight:700;
+    letter-spacing:.13em; text-transform:uppercase;
   }
-  .topbar-tag{
-    font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
-    text-align:right; color:var(--ink); max-width:120px;
+  .icon-btn{
+    flex:none; width:34px; height:34px;
+    border:2px solid var(--ink); background:var(--paper); color:var(--ink);
+    font-size:16px; font-weight:800; line-height:1; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
   }
 
   /* ============ POSTER HERO ============ */
   .poster{
-    margin:0 20px 18px;
+    margin:0 20px 14px;
     position:relative;
-    aspect-ratio:2.2/1;
+    aspect-ratio:2.6/1;
     overflow:hidden;
   }
   .poster-grid{
@@ -80,30 +84,99 @@
   .q-navy{ grid-column:8/11; grid-row:2/3; background:var(--navy); }
 
   .arch{
-    position:absolute; right:6%; top:10%;
-    width:34%;
+    position:absolute; right:6%; top:8%;
+    width:30%;
     color:var(--mint);
   }
   .arch svg{ display:block; width:100%; height:auto; }
 
   .poster-copy{
     position:absolute; left:0; right:0; bottom:0;
-    padding:0 18px 16px;
+    padding:0 16px 12px;
     max-width:72%;
   }
   .poster-title{
-    margin:0 0 6px; font-weight:900; text-transform:uppercase;
-    font-size:clamp(20px,7vw,30px); line-height:.98; letter-spacing:-.01em;
+    margin:0 0 4px; font-weight:900; text-transform:uppercase;
+    font-size:clamp(17px,6vw,26px); line-height:.98; letter-spacing:-.01em;
   }
   .poster-tagline{
-    margin:0; font-size:10px; font-weight:700; letter-spacing:.02em;
-    line-height:1.35; text-transform:uppercase;
+    margin:0; font-size:9px; font-weight:700; letter-spacing:.02em;
+    line-height:1.3; text-transform:uppercase;
   }
 
-  /* ============ PHOTO CARD ============ */
-  .photo-card{
-    margin:0 20px 26px;
+  main{ padding:0 20px 24px; }
+
+  /* ============ SATELLITE PICKER (compact) ============ */
+  .picker-compact{ display:flex; gap:8px; margin:0 0 10px; }
+  .picker-compact .sat-card{
+    flex:1; display:flex; flex-direction:column; align-items:center; gap:6px;
+    border:2px solid transparent; padding:12px 4px; cursor:pointer;
   }
+  .sat-card.selected{ border-color:var(--ink); }
+  .sat-mtgi{ background:var(--cream); }
+  .sat-goes{ background:var(--pastel-yellow); }
+  .sat-both{ background:var(--pastel-blue); }
+
+  .sat-card .icon{ flex:none; width:28px; height:28px; }
+  .sat-card .icon svg{ width:100%; height:100%; }
+  .icon-mtgi{ color:var(--orange); }
+  .icon-goes{ color:var(--rust); }
+  .icon-both{ color:var(--navy); }
+
+  .sat-card .name{ font-weight:800; font-size:11px; text-transform:uppercase; letter-spacing:.02em; }
+
+  .link-btn{
+    display:block; width:100%; text-align:center;
+    background:none; border:none; padding:9px 0;
+    color:var(--ink); font-size:12px; font-weight:700;
+    text-decoration:underline; text-underline-offset:3px; cursor:pointer;
+  }
+
+  /* ============ CTA ============ */
+  #ar-launch{
+    display:flex; align-items:center; justify-content:center; gap:10px;
+    width:100%; margin-top:6px;
+    background:var(--bright-yellow); color:var(--ink); border:3px solid var(--ink);
+    box-shadow:5px 5px 0 var(--ink);
+    font-family:inherit; font-weight:800; font-size:17px; text-transform:uppercase; letter-spacing:.02em;
+    padding:20px 20px; cursor:pointer;
+  }
+  #ar-launch svg{width:21px; height:21px; flex:none;}
+  #ar-launch .sub{
+    display:block; font-size:10.5px; font-weight:600; text-transform:none; letter-spacing:0; opacity:.75; margin-top:2px;
+  }
+  #ar-launch:disabled{opacity:.45; cursor:wait; box-shadow:none;}
+  .build-tag{
+    margin-top:10px; font-size:9.5px; font-weight:600; color:var(--ink); text-align:center; opacity:.4;
+  }
+
+  /* ============ FOOTER ============ */
+  .brand-footer{
+    padding:20px 20px 30px; border-top:2px solid var(--ink);
+    font-size:11px; font-weight:800; letter-spacing:.04em; text-transform:uppercase; line-height:1.6;
+  }
+
+  /* ============ POPUP DIALOGS ============ */
+  dialog{
+    border:3px solid var(--ink); padding:0;
+    width:calc(100% - 40px); max-width:480px; max-height:78vh;
+    overflow:auto; background:var(--paper); color:var(--ink);
+  }
+  dialog::backdrop{ background:rgba(0,0,0,.55); }
+  .dialog-head{ display:flex; justify-content:flex-end; padding:10px 10px 0; }
+  .dialog-close{
+    width:32px; height:32px; border:2px solid var(--ink); background:var(--bright-yellow);
+    color:var(--ink); font-size:16px; font-weight:800; line-height:1; cursor:pointer;
+  }
+  .dialog-body{ padding:0 22px 26px; }
+  .dialog-body h2{
+    margin:0 0 10px; font-size:18px; font-weight:800; letter-spacing:-.01em;
+  }
+  .dialog-body p.blurb{
+    margin:0 0 14px; font-size:14px; line-height:1.6; color:var(--ink);
+  }
+
+  .photo-card{ margin:16px 0 0; }
   .photo-card img{
     display:block; width:100%; height:auto;
     border:2px solid var(--ink);
@@ -112,90 +185,11 @@
     margin-top:6px; font-size:10.5px; font-weight:600; letter-spacing:.03em; color:var(--ink);
   }
 
-  main{ padding:0 20px 30px; }
-
-  /* ============ SECTION LABELS ============ */
-  .section-label{
-    font-size:11px; font-weight:800; letter-spacing:.12em; text-transform:uppercase;
-    margin:0 0 12px;
-  }
-
-  /* ============ EXPLAINER ============ */
-  .explainer{ margin-bottom:30px; }
-  .explainer h2{
-    margin:0 0 10px; font-size:19px; font-weight:800; letter-spacing:-.01em;
-  }
-  p.blurb{
-    margin:0 0 14px; font-size:14.5px; line-height:1.6; color:var(--ink);
-  }
-
-  /* ============ SATELLITE PICKER ============ */
-  .picker{ display:flex; flex-direction:column; gap:10px; margin-bottom:26px; }
-  .sat-card{
-    display:flex; align-items:center; gap:14px;
-    width:100%; text-align:left;
-    border:2px solid transparent;
-    padding:14px 16px; cursor:pointer;
-  }
-  .sat-card.selected{ border-color:var(--ink); }
-  .sat-mtgi{ background:var(--cream); }
-  .sat-goes{ background:var(--pastel-yellow); }
-  .sat-both{ background:var(--pastel-blue); }
-
-  .sat-card .icon{
-    flex:none; width:42px; height:42px;
-    display:flex; align-items:center; justify-content:center;
-  }
-  .sat-card .icon svg{ width:100%; height:100%; }
-  .icon-mtgi{ color:var(--orange); }
-  .icon-goes{ color:var(--rust); }
-  .icon-both{ color:var(--navy); }
-
-  .sat-card .info{ flex:1; min-width:0; }
-  .sat-card .name{ font-weight:800; font-size:14.5px; }
-  .sat-card .desc{ font-size:11.5px; font-weight:500; margin-top:2px; line-height:1.4; }
-
-  .sat-card .check{
-    flex:none; width:16px; height:16px; border:2px solid var(--ink); background:var(--paper);
-  }
-  .sat-card.selected .check{ background:var(--ink); }
-
-  /* ============ READOUT ============ */
   .readout{
-    display:flex; gap:18px 26px; flex-wrap:wrap;
-    margin-bottom:26px; padding:16px 0; border-top:2px solid var(--ink); border-bottom:2px solid var(--ink);
+    display:flex; gap:16px 22px; flex-wrap:wrap;
   }
   .readout div{ font-size:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
   .readout b{ display:block; font-size:14px; font-weight:700; letter-spacing:0; margin-top:3px; text-transform:none; }
-
-  /* ============ CTA ============ */
-  .cta-explain{ font-size:13px; }
-  .cta-explain b{ font-weight:800; }
-
-  #ar-launch{
-    display:flex; align-items:center; justify-content:center; gap:10px;
-    width:100%;
-    background:var(--bright-yellow); color:var(--ink); border:2px solid var(--ink);
-    font-family:inherit; font-weight:800; font-size:15px; text-transform:uppercase; letter-spacing:.02em;
-    padding:16px 20px; cursor:pointer;
-  }
-  #ar-launch svg{width:19px; height:19px; flex:none;}
-  #ar-launch .sub{
-    display:block; font-size:10.5px; font-weight:600; text-transform:none; letter-spacing:0; opacity:.75; margin-top:1px;
-  }
-  #ar-launch:disabled{opacity:.45; cursor:wait;}
-  .hint{
-    margin-top:12px; font-size:11.5px; font-weight:500; color:var(--ink); text-align:center;
-  }
-  .build-tag{
-    margin-top:6px; font-size:9.5px; font-weight:600; color:var(--ink); text-align:center; opacity:.4;
-  }
-
-  /* ============ FOOTER ============ */
-  .brand-footer{
-    padding:26px 20px 34px; border-top:2px solid var(--ink);
-    font-size:11px; font-weight:800; letter-spacing:.04em; text-transform:uppercase; line-height:1.6;
-  }
 
   /* ============ AR / VIEWER OVERLAY ============ */
   /* Kept rendered (not display:none) at all times so model-viewer
@@ -252,7 +246,7 @@
         <span class="word">SCAPE&deg;</span>
         <span class="sub">Wetter, Klima, Mensch</span>
       </div>
-      <div class="topbar-tag">AR&#8209;Erlebnis</div>
+      <button class="icon-btn" id="info-btn" aria-haspopup="dialog" aria-label="Mehr erfahren">&#9432;</button>
     </header>
 
     <div class="poster">
@@ -271,66 +265,30 @@
       </div>
     </div>
 
-    <figure class="photo-card">
-      <img src="year_of_weather_screenshot.PNG" alt="Vollscheiben-Erdaufnahme aus EUMETSATs geostation&auml;ren Satelliten, mit den St&uuml;rmen Dikeledi und Sean, 18. Januar 2025">
-      <figcaption class="photo-cap">EUMETSAT &mdash; &bdquo;Year of Weather&ldquo; &middot; 18. Januar 2025</figcaption>
-    </figure>
-
     <main>
-      <div class="explainer">
-        <h2>Was ist ein geostation&auml;rer Satellit?</h2>
-        <p class="blurb">
-          Ein geostation&auml;rer Satellit umkreist die Erde in 36.000&nbsp;km H&ouml;he &uuml;ber dem &Auml;quator &mdash; genau so schnell, wie sich die Erde dreht. Vom Boden aus gesehen steht er deshalb immer &uuml;ber demselben Punkt. Das macht ihn perfekt f&uuml;r die Wetterbeobachtung: Er kann ununterbrochen denselben Ausschnitt der Erde im Blick behalten und Stürme direkt bei ihrer Entstehung verfolgen.
-        </p>
-        <p class="blurb">
-          Ein einzelner Satellit kann nicht den ganzen Planeten sehen &mdash; er blickt immer nur auf eine H&auml;lfte der Erde. Deshalb platzieren Raumfahrtagenturen mehrere dieser Satelliten in einem Ring um den &Auml;quator, jeder zust&auml;ndig f&uuml;r eine andere Region: Europa &amp; Afrika, Amerika, Asien &amp; den Pazifik. Das Foto oben entsteht, wenn all diese Blicke zusammengesetzt werden &mdash; ein vollst&auml;ndiges Bild des Erdwetters, das nur m&ouml;glich ist, weil jede Agentur ihre Daten frei mit den anderen teilt.
-        </p>
-      </div>
-
-      <div class="section-label">Satellit ausw&auml;hlen</div>
-      <div class="picker" id="picker">
+      <div class="picker-compact" id="picker">
         <button class="sat-card sat-mtgi selected" data-sat="mtgi">
           <span class="icon icon-mtgi" aria-hidden="true">
             <svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="90" fill="currentColor"/></svg>
           </span>
-          <span class="info">
-            <span class="name">MTG&#8209;I1 / Meteosat&#8209;12</span>
-            <span class="desc">ESA/EUMETSAT &middot; beobachtet Europa &amp; Afrika von 0&deg; L&auml;ngengrad</span>
-          </span>
-          <span class="check"></span>
+          <span class="name">MTG&#8209;I1</span>
         </button>
         <button class="sat-card sat-goes" data-sat="goes">
           <span class="icon icon-goes" aria-hidden="true">
             <svg viewBox="0 0 200 200"><path fill="currentColor" d="M10,190 A90,90 0 0 1 190,190 Z"/></svg>
           </span>
-          <span class="info">
-            <span class="name">GOES&#8209;R</span>
-            <span class="desc">NOAA/NASA &middot; beobachtet Amerika von 137&deg;W L&auml;ngengrad</span>
-          </span>
-          <span class="check"></span>
+          <span class="name">GOES&#8209;R</span>
         </button>
         <button class="sat-card sat-both" data-sat="both">
           <span class="icon icon-both" aria-hidden="true">
             <svg viewBox="0 0 400 200"><path fill="currentColor" d="M20,200 A180,180 0 0 1 380,200 L310,200 A110,110 0 0 0 90,200 Z"/></svg>
           </span>
-          <span class="info">
-            <span class="name">Beide, nebeneinander</span>
-            <span class="desc">Vergleiche beide Satelliten zusammen in derselben Ansicht</span>
-          </span>
-          <span class="check"></span>
+          <span class="name">Beide</span>
         </button>
       </div>
 
-      <div class="readout" id="readout">
-        <div>Agentur<b id="ro-agency">ESA / EUMETSAT</b></div>
-        <div>L&auml;nge<b id="ro-lon">0&deg;</b></div>
-        <div>Abdeckung<b id="ro-coverage">Europa &amp; Afrika</b></div>
-        <div>Startmasse<b id="ro-mass">3.760 kg</b></div>
-      </div>
+      <button class="link-btn" id="sat-info-btn">&#9432; Details zum Satelliten</button>
 
-      <p class="blurb cta-explain">
-        Tippe auf <b>Ansehen</b>, um deine Kamera zu &ouml;ffnen und einen Satelliten direkt bei dir im Raum zu platzieren &mdash; geh drumherum und schau dir seine Instrumente aus der N&auml;he an.
-      </p>
       <button id="ar-launch" disabled>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v6m0 8v6M4.9 4.9l4.2 4.2m5.8 5.8l4.2 4.2M2 12h6m8 0h6M4.9 19.1l4.2-4.2m5.8-5.8l4.2-4.2"/></svg>
         <span>
@@ -338,8 +296,10 @@
           <span class="sub">&Ouml;ffnet deine Kamera</span>
         </span>
       </button>
-      <div class="hint" id="hint">Tippe, um den Satelliten in deinem Raum zu platzieren, oder drehe das 3D&#8209;Modell auf dem Bildschirm.</div>
-      <div class="build-tag">build v10</div>
+
+      <button class="link-btn" id="how-btn">&#9432; Wie funktioniert das?</button>
+
+      <div class="build-tag">build v11</div>
     </main>
 
     <footer class="brand-footer">
@@ -347,6 +307,49 @@
     </footer>
   </div>
 </div>
+
+<dialog id="info-dialog">
+  <div class="dialog-head"><button class="dialog-close" aria-label="Schlie&szlig;en">&times;</button></div>
+  <div class="dialog-body">
+    <h2>Was ist ein geostation&auml;rer Satellit?</h2>
+    <p class="blurb">
+      Ein geostation&auml;rer Satellit umkreist die Erde in 36.000&nbsp;km H&ouml;he &uuml;ber dem &Auml;quator &mdash; genau so schnell, wie sich die Erde dreht. Vom Boden aus gesehen steht er deshalb immer &uuml;ber demselben Punkt. Das macht ihn perfekt f&uuml;r die Wetterbeobachtung: Er kann ununterbrochen denselben Ausschnitt der Erde im Blick behalten und St&uuml;rme direkt bei ihrer Entstehung verfolgen.
+    </p>
+    <p class="blurb">
+      Ein einzelner Satellit kann nicht den ganzen Planeten sehen &mdash; er blickt immer nur auf eine H&auml;lfte der Erde. Deshalb platzieren Raumfahrtagenturen mehrere dieser Satelliten in einem Ring um den &Auml;quator, jeder zust&auml;ndig f&uuml;r eine andere Region: Europa &amp; Afrika, Amerika, Asien &amp; den Pazifik. Das Foto unten entsteht, wenn all diese Blicke zusammengesetzt werden &mdash; ein vollst&auml;ndiges Bild des Erdwetters, das nur m&ouml;glich ist, weil jede Agentur ihre Daten frei mit den anderen teilt.
+    </p>
+    <figure class="photo-card">
+      <img src="year_of_weather_screenshot.PNG" alt="Vollscheiben-Erdaufnahme aus EUMETSATs geostation&auml;ren Satelliten, mit den St&uuml;rmen Dikeledi und Sean, 18. Januar 2025">
+      <figcaption class="photo-cap">EUMETSAT &mdash; &bdquo;Year of Weather&ldquo; &middot; 18. Januar 2025</figcaption>
+    </figure>
+  </div>
+</dialog>
+
+<dialog id="sat-dialog">
+  <div class="dialog-head"><button class="dialog-close" aria-label="Schlie&szlig;en">&times;</button></div>
+  <div class="dialog-body">
+    <h2>Satellit im Detail</h2>
+    <div class="readout" id="readout">
+      <div>Agentur<b id="ro-agency">ESA / EUMETSAT</b></div>
+      <div>L&auml;nge<b id="ro-lon">0&deg;</b></div>
+      <div>Abdeckung<b id="ro-coverage">Europa &amp; Afrika</b></div>
+      <div>Startmasse<b id="ro-mass">3.760 kg</b></div>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="how-dialog">
+  <div class="dialog-head"><button class="dialog-close" aria-label="Schlie&szlig;en">&times;</button></div>
+  <div class="dialog-body">
+    <h2>Wie funktioniert das?</h2>
+    <p class="blurb">
+      Tippe auf <b>In AR ansehen</b>, um deine Kamera zu &ouml;ffnen und den Satelliten direkt bei dir im Raum zu platzieren &mdash; geh drumherum und schau dir seine Instrumente aus der N&auml;he an.
+    </p>
+    <p class="blurb">
+      Auf Ger&auml;ten ohne AR&#8209;Unterst&uuml;tzung kannst du das 3D&#8209;Modell stattdessen mit dem Finger auf dem Bildschirm drehen.
+    </p>
+  </div>
+</dialog>
 
 <div id="viewer-screen">
   <button id="close-viewer" aria-label="Ansicht schlie&szlig;en">
@@ -475,8 +478,24 @@
   // so we can see *why* AR didn't launch instead of guessing.
   modelViewer.addEventListener('ar-status', function (ev) {
     if (ev.detail.status === 'failed' && buildTag) {
-      buildTag.textContent = 'build v10 — AR-Status: fehlgeschlagen';
+      buildTag.textContent = 'build v11 — AR-Status: fehlgeschlagen';
     }
+  });
+
+  // Popup dialogs: one trigger button per dialog, plus a shared close
+  // pattern (× button, or tapping the backdrop outside the dialog box).
+  [
+    ['info-btn', 'info-dialog'],
+    ['sat-info-btn', 'sat-dialog'],
+    ['how-btn', 'how-dialog']
+  ].forEach(function (pair) {
+    var trigger = document.getElementById(pair[0]);
+    var dialog = document.getElementById(pair[1]);
+    trigger.addEventListener('click', function () { dialog.showModal(); });
+    dialog.querySelector('.dialog-close').addEventListener('click', function () { dialog.close(); });
+    dialog.addEventListener('click', function (ev) {
+      if (ev.target === dialog) dialog.close();
+    });
   });
 
   loadSat('mtgi');
