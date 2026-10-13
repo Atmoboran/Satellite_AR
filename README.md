@@ -1,46 +1,103 @@
-# MTG-I AR Viewer
+# SCAPE° — Wettersatellit MTG-I1 in AR
 
-> **Stand Oktober 2026:** Beide Seiten sind auf das SCAPE°-Corporate-Design umgestellt
-> und auf Deutsch. Die Gestaltung liegt in `theme/` (Schrift, Farben, Wortmarke,
-> Claim – siehe `theme/README.md`); für ein anderes Erscheinungsbild genügt es,
-> `theme/` anzupassen. Beide Seiten (`index.html` und `mtg-satellite-ar2/index.html`)
-> werden aus einer Vorlage in `build.py` erzeugt – Texte und Aufbau dort ändern,
-> dann `python3 build.py` ausführen (kopiert `theme/` und `js/` auch in den
-> Unterordner, damit er eigenständig bleibt).
->
-> Layout: Auf dem Handy füllt das Modell den Bildschirm, Infofeld darunter, AR-Knopf
-> auf dem Modell. Am Desktop (ab 1000 px) steht das Modell links, die Erklärung
-> rechts; ein Hinweis sagt, dass AR nur auf Handy oder Tablet geht.
-> `<model-viewer>` ist jetzt auf Version 4.3.1 festgelegt.
->
-> The original English notes follow.
+The European weather satellite Meteosat-12 (MTG-I1) as a 3D model in the
+browser and in augmented reality (AR). Visitors turn the satellite, tap its
+parts (solar wing or body) and, on a phone or tablet, place it in their room
+with the camera and walk around it. Facts, two small tasks and a "Merke" box
+explain what a geostationary weather satellite does; longer explanations sit
+in collapsible topics below.
 
+Two tasks (turn the satellite once all the way round; tap a solar wing)
+unlock the "Merke" box with the key insight: the satellite circles the Earth
+exactly as fast as the Earth turns, so it always stays above the same spot
+and sends a new picture every 10 minutes.
 
-Two files: `index.html` (the viewer) and `MTGI.glb` (your model). Both must stay in the same folder — the page loads the model as a relative path.
+## Two variants – which one is the exhibit version?
 
-## Why it doesn't "just work" as a chat preview
-Mobile AR (camera access, Scene Viewer, AR Quick Look) only works when the page is served over **real HTTPS** from an actual domain — not from a local file, not from an embedded preview iframe. You need to deploy it. That takes about 2 minutes:
+| Page | What it does |
+|---|---|
+| `index.html` | **Free view.** Turns slowly by itself, zoom allowed, AR size chosen by the phone (`ar-scale="auto"`, USDZ for iPhones generated on the fly). Good for visitors' own devices, the web and QR codes. |
+| `mtg-satellite-ar2/index.html` | **True scale.** Size locked to the real satellite (≈ 11.8 m across the solar wings, `ar-scale="fixed"`), no zoom anywhere, a real `MTGI.usdz` so the lock also holds on iPhones. |
 
-## Fastest deploy: GitHub Pages
-1. Create a new public GitHub repo.
-2. Upload `index.html` and `MTGI.glb` to it (drag-and-drop on github.com works fine).
-3. Repo Settings → Pages → Deploy from branch → `main` / root.
-4. Wait ~1 minute, then open `https://<your-username>.github.io/<repo-name>/` on your phone.
+**Exhibit version: `mtg-satellite-ar2/` (true scale)** – its own notes say it
+was built specifically for the museum floor (see
+`mtg-satellite-ar2/README.md` for the size calibration and a test checklist).
+The root `index.html` is the general page view. *This is still to be
+confirmed by the exhibit team;* both variants are complete and identical
+apart from the model settings and a few texts, so the decision is only
+which URL goes on the QR code.
 
-## Equally fast: Netlify Drop
-1. Go to https://app.netlify.com/drop
-2. Drag the whole `mtg-satellite-ar` folder onto the page.
-3. You get an instant `https://random-name.netlify.app` link — open it on your phone.
+## Run
 
-## What happens on each platform
-- **Android (Chrome)** — tapping "View in your space" launches Google Scene Viewer directly from the `.glb`. No extra steps.
-- **iPhone (Safari)** — tapping the button launches Apple's AR Quick Look. Since no `ios-src` is set, `<model-viewer>` auto-generates a USDZ on the fly the first time — no conversion tooling needed on your end for a model this simple (single mesh, no animations).
-- **Desktop / no AR support** — falls back to an orbiting 3D viewer (drag to rotate, scroll to zoom), so the link still works for anyone, it just won't be "AR."
+Serve the folder over HTTP – any static file server or GitHub Pages:
 
-## Sharing it
-Once deployed, share the URL directly, or generate a QR code pointing to it (e.g. via a QR generator site) for physical handouts, posters, or a museum/office placard next to a screen.
+```
+python3 -m http.server 8000      # then open http://localhost:8000/
+```
 
-## If you want to customize
-- Colours and fonts: `theme/`. Copy and page structure: `build.py`.
-- To scale the model differently in AR, adjust `ar-scale` (`"auto"` matches real-world size estimation, or set `"fixed"` to keep exactly the size you model it at).
-- To lock placement to a wall instead of the floor, change `ar-placement="floor"` to `ar-placement="wall"`.
+* The page itself opens by double-click (`file://`), but browsers do not let
+  a page read the 3D model from disk; the page then says so.
+* **AR needs real HTTPS** from a real domain (GitHub Pages, Netlify, …), not
+  a local file or an embedded preview. On Android, "In deinem Raum ansehen"
+  opens Google Scene Viewer; on iPhone/iPad, AR Quick Look. On a computer
+  there is no AR – the page shows a note and the model can be turned there.
+* No requests to third parties: `<model-viewer>` 4.3.1 is self-hosted in
+  `js/vendor/`, fonts are system fonts.
+
+URL switches for staff: `?kiosk` (exhibit mode: back to the start after
+3 minutes without touch). The app has no staff panel.
+
+Controls: drag to turn; zoom with two fingers or Ctrl + mouse wheel (the
+plain mouse wheel scrolls the page). "Drehen" switches the slow automatic
+turn on and off. A tap on the model names the part.
+
+## Files
+
+```
+index.html          structure only (data-t placeholders for every text) – generated by build.py
+build.py            template for both pages; copies css/ js/ content/ theme/ into mtg-satellite-ar2/
+MTGI.glb            3D model (free view)
+css/kit.css         shared SCAPE° components (same in every app)
+css/app.css         layout of this app
+js/view.js          phone/desktop layout switch (loaded in <head>)
+js/texts.js         fills the texts from content/
+js/brand.js         fills logo and footer line from the theme
+js/kit.js           fullscreen button, hint badge, info notes, tasks/Merke, kiosk mode
+js/app.js           viewer settings, "Drehen" switch, tapping parts, tasks, AR status
+js/vendor/          model-viewer-umd.min.js 4.3.1 (Google, Apache-2.0, see model-viewer.LICENSE)
+content/texts.de.js every visible text (edit or translate here); texts that differ
+                    between the two pages are under `variants`
+theme/              the design: font, palette, logo, colours (see theme/README.md)
+mtg-satellite-ar2/  the true-scale variant: own MTGI.glb + MTGI.usdz, generated
+                    index.html and copies of css/ js/ content/ theme/
+```
+
+**After changing anything in `css/`, `js/`, `content/`, `theme/` or the page
+template, run `python3 build.py`** – it rewrites both `index.html` files and
+refreshes the copies in `mtg-satellite-ar2/`, so that folder stays
+self-contained (e.g. for Netlify Drop). Do not edit the copies or the
+generated `index.html` files by hand.
+
+`js/vendor/model-viewer-umd.min.js` is the classic-script (UMD) build of
+`@google/model-viewer` 4.3.1; the plain `model-viewer.min.js` is an ES module
+and would be blocked on `file://`.
+
+## Layout
+
+Phone: poster header, the square 3D stage with the AR button (only where AR
+is possible) and the fullscreen button, then the part readout, hint,
+"Drehen", facts, tasks and Merke box. Desktop (automatic from 1000 px, or
+via the "Desktop-/Handy-Ansicht" toggle, remembered for this app only): the
+3D stage on the left, sized to the screen; everything else on the right.
+While a WebXR AR session runs in the browser, the stage fills the whole
+screen.
+
+## Adapting
+
+Design: `theme/` only (signature colours lavender / navy / pale blue, yellow
+shape, white outline; light and shadow of the 3D view in `THEME.satellit`).
+Texts: `content/texts.de.js` only. Founders Grotesk is used when installed,
+otherwise the system fallback.
+
+Model settings (in `build.py`): `ar-scale` (`auto` or `fixed`),
+`ar-placement` (`floor` or `wall`), camera orbit and zoom limits.

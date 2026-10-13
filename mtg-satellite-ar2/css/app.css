@@ -1,0 +1,25 @@
+/* Satellit (MTG-I1) – layout only (theme variables from theme/theme.css,
+   shared components from css/kit.css). */
+
+/* ---- the 3D model fills its square frame ---- */
+#stage-frame model-viewer {
+  display: block; width: 100%; height: 100%;
+  --poster-color: transparent; --progress-bar-color: var(--progress);
+}
+/* the main action: AR, bottom left in the frame (the fullscreen button sits
+   bottom right). <model-viewer> only shows it where AR is possible. */
+#ar-button { position: absolute; left: 8px; bottom: 8px; z-index: 4; max-width: calc(100% - 64px); text-align: left; }
+#ar-button > span { min-width: 0; }
+
+/* While AR runs (WebXR in the browser), only the model is shown, full screen. */
+#stage-frame:has(model-viewer[ar-status="session-started"]) {
+  position: fixed; inset: 0; z-index: 1000; width: auto !important; height: auto !important;
+  aspect-ratio: auto !important; border: 0; margin: 0 !important;
+}
+#stage-frame:has(model-viewer[ar-status="session-started"]) > .fs-btn,
+#stage-frame:has(model-viewer[ar-status="session-started"]) > .hint-badge { display: none; }
+
+/* ---- right column ---- */
+.desk-note { margin: 4px 0 12px; padding: 10px 12px; background: var(--accent-pale); border: var(--line-width) solid var(--line); font-size: 14px; line-height: 1.45; }
+:root[data-view="desktop"] .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 20px; }
+.lab-post .controls { flex-wrap: nowrap; }
