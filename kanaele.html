@@ -43,13 +43,13 @@
 <main class="page">
   <div class="lab">
     <div class="lab-stage">
+      <div class="chip-ctl outside" role="group" data-t-aria="kanaele.channelAria">
+        <button type="button" class="chip-btn" data-ch="vis" aria-pressed="true"><i></i><span data-t="kanaele.channels.vis.chip"></span></button>
+        <button type="button" class="chip-btn" data-ch="ir" aria-pressed="false"><i></i><span data-t="kanaele.channels.ir.chip"></span></button>
+        <button type="button" class="chip-btn" data-ch="wv" aria-pressed="false"><i></i><span data-t="kanaele.channels.wv.chip"></span></button>
+      </div>
       <div class="stage-frame fill wide dark" id="stage-frame">
         <canvas class="layer" id="image" role="img" data-t-aria="kanaele.stageAria"></canvas>
-        <div class="chip-ctl" role="group" data-t-aria="kanaele.channelAria">
-          <button type="button" class="chip-btn" data-ch="vis" aria-pressed="true"><i></i><span data-t="kanaele.channels.vis.chip"></span></button>
-          <button type="button" class="chip-btn" data-ch="ir" aria-pressed="false"><i></i><span data-t="kanaele.channels.ir.chip"></span></button>
-          <button type="button" class="chip-btn" data-ch="wv" aria-pressed="false"><i></i><span data-t="kanaele.channels.wv.chip"></span></button>
-        </div>
         <p class="stage-note stage-note-top" data-t="kanaele.stageNote"></p>
       </div>
     </div>

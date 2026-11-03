@@ -68,7 +68,8 @@
   position: absolute; left: 10px; bottom: 10px; z-index: 3; pointer-events: none; max-width: calc(100% - 70px);
   font-size: 11px; font-weight: var(--fw-medium); letter-spacing: .05em; text-transform: var(--caps); opacity: .8;
 }
-.stage-frame .hint-badge { top: auto; bottom: 10px; left: 10px; transform: none; max-width: calc(100% - 70px); color: var(--ink); text-align: left; }
+/* chapter stages: hint bottom left (the AR page keeps it top centre, its AR button is bottom left) */
+.stage-frame.fill .hint-badge { top: auto; bottom: 10px; left: 10px; transform: none; max-width: calc(100% - 70px); color: var(--ink); text-align: left; }
 
 /* the small second view in the corner ("Blick des Satelliten") */
 .inset {
@@ -271,7 +272,10 @@
 .probe-grid > div[data-ch="vis"] { --obj: var(--ch-vis); }
 .probe-grid > div[data-ch="ir"] { --obj: var(--ch-ir); }
 .probe-grid > div[data-ch="wv"] { --obj: var(--ch-wv); }
-.stage-note-top { left: auto; right: 10px; bottom: auto; top: 58px; text-align: right; max-width: 45%; color: var(--ink-inverse); }
+.stage-note-top { left: auto; right: 10px; bottom: auto; top: 10px; text-align: right; max-width: 45%; color: var(--ink-inverse); }
+/* chapter 2: the channel buttons sit above the picture, not on it */
+.chip-ctl.outside { position: static; max-width: none; margin: 0 0 8px; }
+:root[data-view="desktop"] .full-stage .lab-stage:has(.chip-ctl.outside) .stage-frame.fill { height: calc(100svh - var(--head-h) - 24px - 50px); }
 #image { cursor: crosshair; touch-action: none; }
 .readout.here { text-transform: none; letter-spacing: 0; font-size: 15px; min-height: 2.9em; margin: 0 0 12px; }
 .readout.here > span:first-child { display: block; font-size: 11px; letter-spacing: .08em; text-transform: var(--caps); }
