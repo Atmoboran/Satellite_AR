@@ -58,11 +58,9 @@ window.TEXTS = {
       description: 'Die Wettersatelliten MTG-I1 (Europa) und GOES-R (USA) in Augmented Reality – zum Drehen, Umrunden und Erkunden.',
       poster: {
         headline: 'Wetter–<br>satelliten in AR',
-        lead: 'Sie schauen aus 36.000 km Höhe auf die Erde: MTG-I1 auf Europa und Afrika, GOES-R auf Amerika. Wähle einen Satelliten, dreh ihn, geh um ihn herum und schau dir alles aus der Nähe an.'
+        lead: 'Beide sind geostationäre Wettersatelliten: Sie stehen 36.000 km hoch über dem Äquator und schauen von dort immer auf dieselbe Erdhälfte – MTG-I1 auf Afrika und Europa, GOES-R auf Amerika. Wähle einen Satelliten, dreh ihn und geh um ihn herum.'
       },
       alt: '3D-Modell des Wettersatelliten MTG-I1',
-      hint: 'Zieh mit dem Finger oder der Maus, um ihn zu drehen. Zoomen: zwei Finger oder Strg + Mausrad.',
-      controlsNote: '<p><b>Ziehen</b> dreht den Satelliten. <b>Zwei Finger</b> auseinander oder <b>Strg + Mausrad</b> zoomen. Mit zwei Fingern schieben oder mit der rechten Maustaste ziehen verschiebt das Bild.</p><p>Wenn du nichts tust, dreht sich der Satellit langsam von selbst.</p>',
       facts: [
         { label: 'Höhe', value: '36.000 km' },
         { label: 'Neues Bild', value: 'alle 10 min' },
@@ -79,8 +77,6 @@ window.TEXTS = {
         lead: 'Dieser Wettersatellit ist fast 12 m breit. Stell ihn mit AR in echter Größe in den Raum und geh um ihn herum.'
       },
       alt: '3D-Modell des Wettersatelliten MTG-I1 in echter Größe',
-      hint: 'Zieh, um ihn zu drehen. Die Größe ist fest, zoomen geht nicht. Geh im AR-Modus näher heran, um Details zu sehen.',
-      controlsNote: '<p><b>Ziehen</b> dreht den Satelliten. Zoomen ist absichtlich aus: So bleibt er in AR genau so groß wie in echt.</p><p>Wenn du nichts tust, dreht sich der Satellit langsam von selbst.</p>',
       facts: [
         { label: 'Startmasse', value: '3760 kg' },
         { label: 'Körper (verstaut)', value: '2,3 × 2,8 × 5,2 m' },
@@ -105,7 +101,7 @@ window.TEXTS = {
       facts: [
         { label: 'Betreiber', value: 'EUMETSAT / ESA' },
         { label: 'Steht über', value: '0° Länge' },
-        { label: 'Blick auf', value: 'Europa, Afrika' },
+        { label: 'Blick auf', value: 'Afrika, Europa' },
         { label: 'Bildsensor', value: '16 Kanäle' }
       ]
     },
@@ -144,10 +140,6 @@ window.TEXTS = {
     phoneNote: 'Dieser Browser oder dieses Handy kann AR nicht starten. Probiere Chrome auf Android oder Safari auf dem iPhone. Auf Android braucht es außerdem „Google Play-Dienste für AR“.',
     failed: 'AR konnte nicht starten. Das 3D-Modell bleibt hier zum Drehen.',
     loadError: 'Das 3D-Modell konnte nicht geladen werden. Öffne die Seite über einen Webserver (nicht als Datei).'
-  },
-
-  controls: {
-    infoAria: 'Bedienung erklären'
   },
 
   part: {

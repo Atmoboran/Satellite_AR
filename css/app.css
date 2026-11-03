@@ -6,10 +6,12 @@
   display: block; width: 100%; height: 100%;
   --poster-color: transparent; --progress-bar-color: var(--progress);
 }
-/* the main action: AR, bottom left in the frame (the fullscreen button sits
-   bottom right). <model-viewer> only shows it where AR is possible. */
-#ar-button { position: absolute; left: 8px; bottom: 8px; z-index: 4; max-width: calc(100% - 64px); text-align: left; }
-#ar-button > span { min-width: 0; }
+/* the main action: AR, a full-width button right below the picture; js/app.js
+   shows it only where AR is possible */
+.ar-launch { display: flex; width: 100%; margin: 10px 0 0; justify-content: flex-start; text-align: left; }
+.ar-launch[hidden] { display: none; }
+.ar-launch > span { min-width: 0; }
+:root[data-view="desktop"] .ar-launch { width: min(100%, calc(100svh - var(--head-h) - var(--fit-offset, 230px))); margin: 10px auto 0; }
 
 /* While AR runs (WebXR in the browser), only the model is shown, full screen. */
 #stage-frame:has(model-viewer[ar-status="session-started"]) {
@@ -329,4 +331,3 @@
 .sat-seg .chip-btn { justify-content: center; min-height: 46px; font-size: 14px; }
 .sat-seg .chip-btn[aria-pressed="true"] { background: var(--active); color: var(--active-ink); }
 .lab-post .hint .info { vertical-align: -6px; }
-#ar-button-firefox { position: absolute; left: 8px; bottom: 8px; z-index: 4; max-width: calc(100% - 64px); text-align: left; text-decoration: none; }

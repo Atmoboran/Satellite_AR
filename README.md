@@ -146,9 +146,10 @@ Every page: phone layout below 1000 px, desktop above (or via the
 1–3: on the desktop the picture fills the left column and the screen height,
 readouts, controls, explanation and tasks sit on the right.
 
-AR page – phone: poster header, the square 3D stage with the AR button (only where AR
-is possible) and the fullscreen button, then the part readout, hint,
-facts and topics (no tasks or Merke box on the AR pages). Desktop (automatic from 1000 px, or
+AR page – phone: poster header, the satellite picker (free view), the square
+3D stage with the fullscreen button, the AR button right below it (only where
+AR is possible, plus the Scene Viewer attempt in Firefox for Android), then
+the part readout, facts and topics (no tasks or Merke box on the AR pages). Desktop (automatic from 1000 px, or
 via the "Desktop-/Handy-Ansicht" toggle, remembered for this app only): the
 3D stage on the left, sized to the screen; everything else on the right.
 While a WebXR AR session runs in the browser, the stage fills the whole

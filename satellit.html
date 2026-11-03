@@ -69,18 +69,18 @@
           camera-orbit="35deg 75deg auto"
           min-camera-orbit="auto auto auto"
           max-camera-orbit="auto auto auto">
-          <button type="button" slot="ar-button" id="ar-button" class="btn primary big">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 2v6m0 8v6M4.9 4.9l4.2 4.2m5.8 5.8l4.2 4.2M2 12h6m8 0h6M4.9 19.1l4.2-4.2m5.8-5.8l4.2-4.2"/></svg>
-            <span><span data-t="ar.label"></span><span class="sub" data-t="ar.sub"></span></span>
-          </button>
+          <span slot="ar-button" hidden></span>
         </model-viewer>
       </div>
+      <!-- AR starts from here, below the picture (js/app.js shows it where AR is possible) -->
+      <button type="button" id="ar-button" class="btn primary big ar-launch" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 2v6m0 8v6M4.9 4.9l4.2 4.2m5.8 5.8l4.2 4.2M2 12h6m8 0h6M4.9 19.1l4.2-4.2m5.8-5.8l4.2-4.2"/></svg>
+        <span><span data-t="ar.label"></span><span class="sub" data-t="ar.sub"></span></span>
+      </button>
     </div>
 
     <div class="lab-post">
       <p class="readout" id="part-readout" aria-live="polite" data-t="part.idle"></p>
-      <p class="hint"><span data-t="page.hint"></span> <button type="button" class="info" aria-controls="controls-note" data-t-aria="controls.infoAria"></button></p>
-      <div class="info-note" id="controls-note" hidden data-t-html="page.controlsNote"></div>
       <p class="desk-note" id="desk-note" hidden data-t="ar.deskNote"></p>
       <p class="desk-note" id="load-error" hidden data-t="ar.loadError"></p>
 

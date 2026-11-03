@@ -37,7 +37,6 @@
     if (S.iosSrc) viewer.setAttribute('ios-src', S.iosSrc); else viewer.removeAttribute('ios-src');
     viewer.src = S.src;
     viewer.alt = S.alt;
-    if (svLink) svLink.href = sceneViewerUrl();
     partReadout.textContent = S.readout;
     S.facts.forEach((f, i) => {
       if (!factCells[i]) return;
@@ -83,7 +82,6 @@
   // viewer can still be opened with an Android intent link (the same one
   // <model-viewer> uses in Chrome); Firefox hands such links to the app.
   // The page itself is the fallback if the intent cannot be opened.
-  let svLink = null;
   const sceneViewerUrl = () => {
     const file = new URL(viewer.src, location.href).href;
     const params = 'file=' + encodeURIComponent(file) + '&mode=ar_preferred&title=' + encodeURIComponent(viewer.alt || '');
@@ -91,28 +89,26 @@
       '#Intent;scheme=https;package=com.google.android.googlequicksearchbox;action=android.intent.action.VIEW;' +
       'S.browser_fallback_url=' + encodeURIComponent(location.href) + ';end;';
   };
-  const sceneViewerButton = () => {
-    if (!svLink) {
-      const tpl = document.getElementById('ar-button');
-      svLink = document.createElement('a');
-      svLink.id = 'ar-button-firefox';
-      svLink.className = tpl.className;
-      svLink.innerHTML = tpl.innerHTML;
-      frame.appendChild(svLink);
-    }
-    svLink.href = sceneViewerUrl();
-  };
+  const ua = navigator.userAgent;
+  const firefoxAndroid = /android/i.test(ua) && /firefox/i.test(ua);
+  const phone = /android|iphone|ipad|ipod/i.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+
+  // ---- the AR button below the picture -----------------------------------------
+  // Shown where <model-viewer> can start AR; in Firefox for Android it opens
+  // Scene Viewer directly (see above).
+  const arButton = document.getElementById('ar-button');
+  arButton.addEventListener('click', () => {
+    if (viewer.canActivateAR) viewer.activateAR();
+    else if (firefoxAndroid) location.href = sceneViewerUrl();
+  });
 
   // ---- AR availability and status ------------------------------------------
   viewer.addEventListener('load', () => {
     loadError.hidden = true;
     deskNote.hidden = !!viewer.canActivateAR;
+    arButton.hidden = !(viewer.canActivateAR || firefoxAndroid);
     // on a phone without AR say why, instead of "open this on a phone"
-    const ua = navigator.userAgent;
-    const phone = /android|iphone|ipad|ipod/i.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
-    const firefoxAndroid = /android/i.test(ua) && /firefox/i.test(ua);
     if (!viewer.canActivateAR && phone) deskNote.textContent = t(firefoxAndroid ? 'ar.firefoxNote' : 'ar.phoneNote');
-    if (!viewer.canActivateAR && firefoxAndroid) sceneViewerButton();
   });
   viewer.addEventListener('error', () => { loadError.hidden = false; });
   viewer.addEventListener('ar-status', e => {
