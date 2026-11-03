@@ -140,7 +140,7 @@ window.TEXTS = {
     sub: 'Öffnet deine Kamera',
     deskNote: 'Augmented Reality (AR) gibt es nur auf dem Handy oder Tablet: Öffne diese Seite dort und tippe auf „In deinem Raum ansehen“.',
     // phones where <model-viewer> offers no AR (it leaves out Firefox on Android on purpose)
-    firefoxNote: 'In Firefox lässt sich AR leider nicht starten. Öffne diese Seite in Chrome (oder Samsung Internet), dann erscheint „In deinem Raum ansehen“.',
+    firefoxNote: 'Firefox: Der Knopf „In deinem Raum ansehen“ öffnet die AR-Ansicht von Google (Scene Viewer). Klappt das nicht, öffne diese Seite in Chrome oder Samsung Internet.',
     phoneNote: 'Dieser Browser oder dieses Handy kann AR nicht starten. Probiere Chrome auf Android oder Safari auf dem iPhone. Auf Android braucht es außerdem „Google Play-Dienste für AR“.',
     failed: 'AR konnte nicht starten. Das 3D-Modell bleibt hier zum Drehen.',
     loadError: 'Das 3D-Modell konnte nicht geladen werden. Öffne die Seite über einen Webserver (nicht als Datei).'

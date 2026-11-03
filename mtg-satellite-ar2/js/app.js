@@ -39,6 +39,7 @@
     if (S.iosSrc) viewer.setAttribute('ios-src', S.iosSrc); else viewer.removeAttribute('ios-src');
     viewer.src = S.src;
     viewer.alt = S.alt;
+    if (svLink) svLink.href = sceneViewerUrl();
     partReadout.textContent = S.readout;
     S.facts.forEach((f, i) => {
       if (!factCells[i]) return;
@@ -51,7 +52,7 @@
       const b = e.target.closest('[data-sat]');
       if (b && b.dataset.sat !== current) setSat(b.dataset.sat);
     });
-    setSat('mtgi');
+    queueMicrotask(() => setSat('mtgi'));   // after the Scene Viewer helpers below exist
   }
 
   // ---- turning by hand: sum up the azimuth the visitor turned --------------
@@ -93,6 +94,31 @@
   // ---- Ctrl + mouse wheel zooms; the plain wheel scrolls the page ----------
   frame.addEventListener('wheel', e => { if (!e.ctrlKey) e.stopPropagation(); }, { capture: true });
 
+  // ---- Firefox on Android: Scene Viewer directly ----------------------------
+  // <model-viewer> offers no AR button in Firefox for Android. Google's AR
+  // viewer can still be opened with an Android intent link (the same one
+  // <model-viewer> uses in Chrome); Firefox hands such links to the app.
+  // The page itself is the fallback if the intent cannot be opened.
+  let svLink = null;
+  const sceneViewerUrl = () => {
+    const file = new URL(viewer.src, location.href).href;
+    const params = 'file=' + encodeURIComponent(file) + '&mode=ar_preferred&title=' + encodeURIComponent(viewer.alt || '');
+    return 'intent://arvr.google.com/scene-viewer/1.2?' + params +
+      '#Intent;scheme=https;package=com.google.android.googlequicksearchbox;action=android.intent.action.VIEW;' +
+      'S.browser_fallback_url=' + encodeURIComponent(location.href) + ';end;';
+  };
+  const sceneViewerButton = () => {
+    if (!svLink) {
+      const tpl = document.getElementById('ar-button');
+      svLink = document.createElement('a');
+      svLink.id = 'ar-button-firefox';
+      svLink.className = tpl.className;
+      svLink.innerHTML = tpl.innerHTML;
+      frame.appendChild(svLink);
+    }
+    svLink.href = sceneViewerUrl();
+  };
+
   // ---- AR availability and status ------------------------------------------
   viewer.addEventListener('load', () => {
     loadError.hidden = true;
@@ -100,7 +126,9 @@
     // on a phone without AR say why, instead of "open this on a phone"
     const ua = navigator.userAgent;
     const phone = /android|iphone|ipad|ipod/i.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
-    if (!viewer.canActivateAR && phone) deskNote.textContent = t(/android/i.test(ua) && /firefox/i.test(ua) ? 'ar.firefoxNote' : 'ar.phoneNote');
+    const firefoxAndroid = /android/i.test(ua) && /firefox/i.test(ua);
+    if (!viewer.canActivateAR && phone) deskNote.textContent = t(firefoxAndroid ? 'ar.firefoxNote' : 'ar.phoneNote');
+    if (!viewer.canActivateAR && firefoxAndroid) sceneViewerButton();
   });
   viewer.addEventListener('error', () => { loadError.hidden = false; });
   viewer.addEventListener('ar-status', e => {

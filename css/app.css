@@ -198,7 +198,10 @@
    bars left and right: the frame is square and the player is scaled to the
    frame's height, so the bars fall outside and the Earth fills the square. */
 .video { position: relative; aspect-ratio: 1 / 1; width: min(100%, 80svh); border: var(--line-width) solid var(--line); background: var(--video-bg); overflow: hidden; isolation: isolate; }
-.video iframe, .video .yt-host { position: absolute; top: 0; left: 50%; width: 177.78%; height: 100%; transform: translateX(-50%); border: 0; display: block; }
+.video .yt-host { position: absolute; inset: 0; }
+/* the player is laid out small (see js/video.js) and scaled to the square's
+   height, centred, so the black bars of the 16:9 stream fall outside */
+.video iframe { position: absolute; top: 0; left: 50%; border: 0; display: block; transform-origin: 0 0; transform: scale(var(--yt-scale, 1)) translateX(-50%); }
 .video-cover { position: absolute; inset: 0; color: var(--ink-inverse); }
 .video-cover .vf { position: absolute; z-index: -2; }
 .video-cover .vf1 { inset: 0; background: var(--c-navy); }
@@ -326,3 +329,4 @@
 .sat-seg .chip-btn { justify-content: center; min-height: 46px; font-size: 14px; }
 .sat-seg .chip-btn[aria-pressed="true"] { background: var(--active); color: var(--active-ink); }
 .lab-post .hint .info { vertical-align: -6px; }
+#ar-button-firefox { position: absolute; left: 8px; bottom: 8px; z-index: 4; max-width: calc(100% - 64px); text-align: left; text-decoration: none; }

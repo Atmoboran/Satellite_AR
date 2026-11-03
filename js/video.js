@@ -14,6 +14,17 @@
   const play = document.getElementById('video-play');
   const status = document.getElementById('video-status');
   let started = false, timer = 0;
+
+  // Quality: YouTube no longer lets an embedded player choose it
+  // (setPlaybackQuality / vq do nothing); it picks it from the player's size
+  // in device pixels. So the player is laid out small – about 480 device
+  // pixels high – and scaled up with CSS to fill the square. Softer, but it
+  // loads less and runs more smoothly on phones.
+  const TARGET = 480;
+  const layoutH = () => Math.max(180, Math.min(box.clientHeight, Math.round(TARGET / (window.devicePixelRatio || 1))));
+  let LH = 0;
+  const fit = () => { if (LH) box.style.setProperty('--yt-scale', String(box.clientHeight / LH)); };
+  window.addEventListener('resize', fit);
   const link = document.getElementById('video-link');
   if (link) link.href = V.url;
 
@@ -54,12 +65,13 @@
       new YT.Player(host, {
         host: 'https://www.youtube-nocookie.com',
         videoId: V.id,
-        width: '100%', height: '100%',
+        width: String(Math.round((LH = layoutH()) * 16 / 9)), height: String(LH),
         // controls: 0 – the square frame crops the sides, where the control
         // bar's buttons would sit; a tap on the picture still pauses.
         playerVars: { autoplay: 1, playsinline: 1, rel: 0, modestbranding: 1, controls: 0, iv_load_policy: 3 },
         events: {
           onReady: e => {
+            fit();
             clearTimeout(timer);
             cover.hidden = true; status.hidden = true;
             try { e.target.playVideo(); } catch (err) { /* the visitor taps play in the player */ }

@@ -36,6 +36,12 @@ loaded from YouTube until a visitor taps "Video abspielen" (privacy note
 beside it). If the owner does not allow embedding (player error 101/150/153)
 or YouTube cannot be reached within 12 s, the flat poster returns with the
 message and a link to the video on YouTube. The page works without it.
+Quality: an embedded player cannot choose its quality any more (YouTube
+ignores `setPlaybackQuality` and `vq`); YouTube picks it from the player's
+size in device pixels. `js/video.js` therefore lays the player out at about
+480 device pixels high and scales it up with CSS to fill the square (the
+stream is 16:9 with the round Earth in the middle; the black sides fall
+outside). Change `TARGET` there for sharper or lighter video.
 Whether this stream may be embedded could not be checked while building
 (YouTube was not reachable) – try it once on the real network. ID and URL are
 in `content/start.de.js`.
@@ -64,6 +70,10 @@ python3 -m http.server 8000      # then open http://localhost:8000/
 
 * The page itself opens by double-click (`file://`), but browsers do not let
   a page read the 3D model from disk; the page then says so.
+* **Firefox for Android:** `<model-viewer>` shows no AR button there on
+  purpose. The page adds its own button that opens Google's Scene Viewer
+  with an Android intent link (as `<model-viewer>` does in Chrome); if that
+  fails, the note under the picture suggests Chrome or Samsung Internet.
 * **AR needs real HTTPS** from a real domain (GitHub Pages, Netlify, …), not
   a local file or an embedded preview. On Android, "In deinem Raum ansehen"
   opens Google Scene Viewer; on iPhone/iPad, AR Quick Look. On a computer
