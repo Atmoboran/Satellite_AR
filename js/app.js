@@ -1,4 +1,5 @@
-// Satellit (MTG-I1): settings of the <model-viewer>, first-hint badge, the
+// Satellit (MTG-I1): settings of the <model-viewer> (its own finger prompt is
+// the only hint how to turn the model), the
 // satellite picker (free view: MTG-I1, GOES-R, both), tapping parts of
 // MTG-I1, AR status. The model always turns slowly by itself
 // (auto-rotate); after a drag it pauses for a moment and goes on.
@@ -21,9 +22,6 @@
   if (look.shadowSoftness != null) viewer.shadowSoftness = look.shadowSoftness;
   if (look.environment) viewer.environmentImage = look.environment;
 
-  // ---- first-hint badge: until the visitor turns the model ----------------
-  const badge = SCAPE.badge(frame);
-  badge.show(t('badge'));
 
 
   // ---- satellite picker (free view only) ------------------------------------
@@ -49,19 +47,14 @@
       const b = e.target.closest('[data-sat]');
       if (b && b.dataset.sat !== current) setSat(b.dataset.sat);
     });
-    queueMicrotask(() => setSat('mtgi'));   // after the Scene Viewer helpers below exist
+    setSat('mtgi');
   }
-
-  // ---- the hint goes once the visitor turns the model by hand ----------------
-  viewer.addEventListener('camera-change', e => {
-    if (e.detail && e.detail.source === 'user-interaction') badge.hide();
-  });
 
   // ---- tapping a part: solar wing or body ---------------------------------
   // The wings stick out far above and below the body (glTF y axis), so the
   // height of the hit point tells them apart.
   let down = null;
-  viewer.addEventListener('pointerdown', e => { down = { x: e.clientX, y: e.clientY }; badge.hide(); });
+  viewer.addEventListener('pointerdown', e => { down = { x: e.clientX, y: e.clientY }; });
   viewer.addEventListener('pointerup', e => {
     if (!down || Math.hypot(e.clientX - down.x, e.clientY - down.y) > 8) { down = null; return; }
     down = null;
@@ -97,7 +90,6 @@
   });
   viewer.addEventListener('error', () => { loadError.hidden = false; });
   viewer.addEventListener('ar-status', e => {
-    if (e.detail.status === 'session-started') badge.hide();
     if (e.detail.status === 'failed') partReadout.textContent = t('ar.failed');
     window.dispatchEvent(new Event('resize'));
   });

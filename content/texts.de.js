@@ -86,7 +86,6 @@ window.TEXTS = {
     }
   },
 
-  badge: 'Zieh am Satelliten, um ihn zu drehen',
 
   // The satellite picker of the free view (satellit.html). Models: MTGI.glb
   // (as before), GOES-R_1m.glb and constellation.glb with their USDZ files for
