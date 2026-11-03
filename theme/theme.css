@@ -95,3 +95,20 @@
   --stage-bg: var(--c-ice);            /* behind the 3D model */
   --progress: var(--c-orange);         /* model-viewer loading bar */
 }
+
+/* ---- Wettersatelliten chapters: dark "space" stages and the chapter colours */
+:root {
+  --stage-dark: var(--c-navy);         /* behind the globe and the satellite image (= THEME.orbits.space) */
+  --mode-leo: var(--c-orange);         /* LEO chip and labels */
+  --mode-geo: var(--c-purple);         /* GEO chip and labels */
+  --seen: var(--c-yellow);             /* "im Blick" swatch (= THEME.orbits.seenNow) */
+  --seen-pale: var(--c-yellow-pale);   /* "schon gesehen" swatch */
+  --place: var(--c-red);               /* Offenbach */
+  --quiz-done: var(--c-pale-green);    /* a solved task */
+  --video-bg: var(--c-navy);
+}
+:root {
+  --ch-vis: var(--c-gold);     /* chapter 2: the three channels */
+  --ch-ir: var(--c-red);
+  --ch-wv: var(--c-teal);
+}

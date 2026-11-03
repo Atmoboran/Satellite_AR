@@ -58,3 +58,44 @@ THEME.satellit = {
   shadowSoftness: 0.9,
   environment: 'neutral'
 };
+
+// ---- Chapter 1 (bahnen.html): the globe with the LEO and GEO orbits -------
+// Flat colours only: day and night are two flat tones each, the instrument's
+// view is a yellow tint (bright now, pale for "seen in the last 12 hours").
+THEME.orbits = {
+  space: '#28348B',                       // stage background (= --stage-dark)
+  oceanDay: '#80C0DA', landDay: '#B0D8C0',
+  oceanNight: '#1F6C8E', landNight: '#007B73',
+  seenNow: '#FFE547',                     // inside the instrument's view right now
+  seenNowMix: 0.72,
+  seenEarlier: '#FFF487',                 // seen within the last 12 hours
+  seenEarlierMix: 0.55,
+  orbit: '#FFFFFF', orbitOther: '#C5B8DB',
+  satellite: '#FFE547', satelliteLine: '#000000',
+  place: '#E41513',                       // Offenbach
+  label: '#FFFFFF'
+};
+
+// ---- Chapter 2 (kanaele.html): the three measuring channels ---------------
+// Each scale is a list of [value, colour] stops; the legend is drawn from it.
+// IR keeps the CD meaning cold = blue, warm = red. Water vapour: moist upper
+// air (cold) white–blue, dry upper air (warmer) olive–gold.
+THEME.channels = {
+  space: '#28348B',
+  coast: '#FFED00',
+  probe: '#E41513',
+  vis: [[0, '#000000'], [1, '#FFFFFF']],
+  ir: [[-72, '#C5B8DB'], [-60, '#442683'], [-45, '#28348B'], [-30, '#3274BA'], [-12, '#98B8DD'],
+       [2, '#F2E4BA'], [16, '#EF887F'], [28, '#EE7518'], [40, '#E41513']],
+  wv: [[-66, '#FFFFFF'], [-54, '#98B8DD'], [-45, '#3274BA'], [-38, '#28348B'], [-31, '#726B1E'], [-24, '#E09F00']]
+};
+
+// ---- Chapter 3 (messen.html): the schematic of passive and active sensing --
+THEME.measure = {
+  sky: '#D4EDF8', space: '#28348B', ground: '#B0D8C0', sea: '#80C0DA', seaDeep: '#1F6C8E',
+  night: '#28348B', nightGround: '#007B73',
+  cloud: '#FFFFFF', cloudLine: '#000000', rain: '#3274BA', aerosol: '#917F5B', vapour: '#62BA91',
+  sun: '#FFD500', sunRay: '#E09F00', heat: '#E41513', vapourRay: '#007B73',
+  radar: '#0097BE', lidar: '#442683', scatter: '#EE7518',
+  satellite: '#FFE547', ink: '#000000', inkInverse: '#FFFFFF', chartBg: '#FFFFFF', grid: '#d9d9d9'
+};

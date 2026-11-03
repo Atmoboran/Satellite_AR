@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mit welchen Augen sieht ein Satellit das Wetter?</title>
+<meta name="description" content="">
+<!-- Chapter 2. Structure only. Design: theme/ · texts: content/ · layout: css/ · behaviour: js/ -->
+<script src="js/view.js" data-app="wettersatelliten"></script>
+<link rel="stylesheet" href="theme/theme.css">
+<link rel="stylesheet" href="css/kit.css">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body class="full-stage">
+
+<header class="top">
+  <a class="logo" href="index.html" data-brand="logo"></a>
+  <div class="top-right">
+    <nav class="nav" data-t-aria="chapters.aria">
+      <a href="index.html"><span data-t="chapters.start"></span></a>
+      <a href="bahnen.html"><span class="num">1</span><span data-t="chapters.one"></span></a>
+      <a href="kanaele.html" aria-current="page"><span class="num">2</span><span data-t="chapters.two"></span></a>
+      <a href="messen.html"><span class="num">3</span><span data-t="chapters.three"></span></a>
+      <a href="satellit.html"><span class="num">4</span><span data-t="chapters.four"></span></a>
+    </nav>
+    <button type="button" class="view-toggle"></button>
+  </div>
+</header>
+
+<div class="poster small">
+  <div class="f f1"></div><div class="f f2"></div><div class="f f3"></div>
+  <svg class="l2" viewBox="0 0 120 120" aria-hidden="true">
+    <circle cx="40" cy="60" r="26" fill="currentColor"/><circle cx="80" cy="60" r="26" fill="currentColor"/>
+  </svg>
+  <svg class="l3" viewBox="0 0 400 400" aria-hidden="true"><circle cx="150" cy="170" r="110"/><circle cx="250" cy="170" r="110"/><circle cx="200" cy="255" r="110"/></svg>
+  <div class="poster-text">
+    <p class="kicker" data-t="kanaele.poster.kicker"></p>
+    <h1 class="headline" data-t-html="kanaele.poster.headline"></h1>
+    <p class="lead" data-t="kanaele.poster.lead"></p>
+  </div>
+</div>
+
+<main class="page">
+  <div class="lab">
+    <div class="lab-stage">
+      <div class="stage-frame fill wide dark" id="stage-frame">
+        <canvas class="layer" id="image" role="img" data-t-aria="kanaele.stageAria"></canvas>
+        <div class="chip-ctl" role="group" data-t-aria="kanaele.channelAria">
+          <button type="button" class="chip-btn" data-ch="vis" aria-pressed="true"><i></i><span data-t="kanaele.channels.vis.chip"></span></button>
+          <button type="button" class="chip-btn" data-ch="ir" aria-pressed="false"><i></i><span data-t="kanaele.channels.ir.chip"></span></button>
+          <button type="button" class="chip-btn" data-ch="wv" aria-pressed="false"><i></i><span data-t="kanaele.channels.wv.chip"></span></button>
+        </div>
+        <p class="stage-note stage-note-top" data-t="kanaele.stageNote"></p>
+      </div>
+    </div>
+
+    <div class="lab-post">
+      <p class="model-note muted" data-t="kanaele.stageNote"></p>
+      <div class="readout-grid cols probe-grid" aria-live="polite">
+        <div data-ch="vis"><span data-t-html="kanaele.readout.vis"></span><b id="ro-vis">–</b></div>
+        <div data-ch="ir"><span data-t-html="kanaele.readout.ir"></span><b id="ro-ir">–</b></div>
+        <div data-ch="wv"><span data-t-html="kanaele.readout.wv"></span><b id="ro-wv">–</b></div>
+      </div>
+      <p class="readout here"><span data-t="kanaele.readout.here"></span> <span id="ro-what" data-t="kanaele.readout.none"></span></p>
+
+      <div class="legend" id="legend">
+        <p class="legend-title" id="legend-title"></p>
+        <canvas id="legend-bar"></canvas>
+        <div class="legend-ticks" id="legend-ticks"></div>
+        <div class="legend-ends"><span id="legend-low"></span><span id="legend-high"></span></div>
+      </div>
+
+      <div class="ctl-row">
+        <button type="button" class="btn icon" id="time-play" aria-pressed="false" data-t-aria="kanaele.controls.playAria">
+          <svg id="time-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4l14 8-14 8V4z" fill="currentColor"/></svg>
+        </button>
+        <label class="select-field range-field">
+          <span class="row"><span class="select-label" data-t="kanaele.controls.time"></span><output id="time-out"></output></span>
+          <input type="range" id="time" min="0" max="24" step="0.25" value="12">
+        </label>
+        <button type="button" class="btn icon" id="coast-btn" aria-pressed="true" data-t-aria="kanaele.controls.coastAria">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 15c3-1 4-5 7-5s3 4 6 3 3-4 5-4"/></svg>
+        </button>
+        <button type="button" class="info" aria-controls="controls-help" data-t-aria="kanaele.controls.infoAria"></button>
+      </div>
+      <div class="info-note" id="controls-help" hidden data-t-html="kanaele.controls.note"></div>
+
+      <div class="mode-card" id="mode-card">
+        <h2 id="mode-title"></h2>
+        <p class="sub" id="mode-sub"></p>
+        <ul id="mode-bullets"></ul>
+      </div>
+
+      <figure class="spectrum">
+        <figcaption class="legend-title" data-t="kanaele.spectrum.title"></figcaption>
+        <svg id="spectrum" viewBox="0 0 400 150" role="img" data-t-aria="kanaele.spectrum.aria"></svg>
+        <ul class="key spectrum-key" aria-hidden="true">
+          <li><i class="ln sun"></i><span data-t="kanaele.spectrum.sun"></span></li>
+          <li><i class="ln earth"></i><span data-t="kanaele.spectrum.earth"></span></li>
+          <li><i class="sw absorb"></i><span data-t="kanaele.spectrum.absorb"></span></li>
+          <li><i class="sw visible"></i><span data-t="kanaele.spectrum.visible"></span></li>
+        </ul>
+      </figure>
+
+      <button type="button" class="btn tasks-open" id="tasks-open" aria-haspopup="dialog" aria-controls="tasks-dialog">
+        <span data-t="tasksDialog.open"></span> <span class="quiz-progress" id="tasks-progress"></span>
+      </button>
+      <div class="merke locked" data-for="channel-tasks">
+        <h3 data-t="kanaele.merke.title"></h3>
+        <p data-t="kanaele.merke.text"></p>
+        <span class="locked-note"></span>
+      </div>
+    </div>
+  </div>
+
+  <dialog class="quiz-dialog" id="tasks-dialog" aria-labelledby="tasks-title">
+    <div class="quiz-head">
+      <h2 id="tasks-title" data-t="tasksDialog.title"></h2>
+      <button type="button" class="quiz-close" id="tasks-close" data-t-aria="tasksDialog.closeAria">&times;</button>
+    </div>
+    <p class="quiz-intro" data-t="tasksDialog.intro"></p>
+    <div id="channel-tasks">
+      <ol class="quiz-list">
+        <li class="quiz-item" data-task="night"><p class="quiz-q" data-t="kanaele.tasks.night"></p><p class="quiz-feedback" data-t="kanaele.tasks.doneNight"></p></li>
+        <li class="quiz-item" data-task="cold"><p class="quiz-q" data-t="kanaele.tasks.cold"></p><p class="quiz-feedback" data-t="kanaele.tasks.doneCold"></p></li>
+        <li class="quiz-item" data-task="fog"><p class="quiz-q" data-t="kanaele.tasks.fog"></p><p class="quiz-feedback" data-t="kanaele.tasks.doneFog"></p></li>
+      </ol>
+    </div>
+  </dialog>
+
+  <div class="topics">
+    <details class="topic"><summary data-t="kanaele.topics.filters.title"></summary><div class="topic-body" data-t-html="kanaele.topics.filters.body"></div></details>
+    <details class="topic"><summary data-t="kanaele.topics.ir.title"></summary><div class="topic-body" data-t-html="kanaele.topics.ir.body"></div></details>
+    <details class="topic"><summary data-t="kanaele.topics.wv.title"></summary><div class="topic-body" data-t-html="kanaele.topics.wv.body"></div></details>
+    <details class="topic"><summary data-t="kanaele.topics.more.title"></summary><div class="topic-body" data-t-html="kanaele.topics.more.body"></div></details>
+    <details class="topic"><summary data-t="kanaele.topics.model.title"></summary><div class="topic-body" data-t-html="kanaele.topics.model.body"></div></details>
+    <details class="topic"><summary data-t="kanaele.topics.sources.title"></summary><div class="topic-body" data-t-html="kanaele.topics.sources.body"></div></details>
+  </div>
+
+  <div class="next-part split">
+    <a class="btn big" href="bahnen.html"><span aria-hidden="true">←</span> <span data-t="chapters.toOne"></span></a>
+    <a class="btn big primary" href="messen.html"><span data-t="chapters.toThree"></span> <span aria-hidden="true">→</span></a>
+  </div>
+</main>
+
+<footer class="foot">
+  <p class="brand-line" data-brand="line"></p>
+</footer>
+
+<script src="theme/theme.js"></script>
+<script src="content/texts.de.js"></script>
+<script src="content/kanaele.de.js"></script>
+<script src="js/texts.js"></script>
+<script src="js/brand.js"></script>
+<script src="js/kit.js"></script>
+<script src="js/tasks-dialog.js"></script>
+<script src="data/land.js"></script>
+<script src="js/geo.js"></script>
+<script src="js/kanaele.js"></script>
+</body>
+</html>

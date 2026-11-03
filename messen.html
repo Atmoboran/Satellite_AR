@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Wie misst ein Satellit eigentlich?</title>
+<meta name="description" content="">
+<!-- Chapter 3. Structure only. Design: theme/ · texts: content/ · layout: css/ · behaviour: js/ -->
+<script src="js/view.js" data-app="wettersatelliten"></script>
+<link rel="stylesheet" href="theme/theme.css">
+<link rel="stylesheet" href="css/kit.css">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body class="full-stage">
+
+<header class="top">
+  <a class="logo" href="index.html" data-brand="logo"></a>
+  <div class="top-right">
+    <nav class="nav" data-t-aria="chapters.aria">
+      <a href="index.html"><span data-t="chapters.start"></span></a>
+      <a href="bahnen.html"><span class="num">1</span><span data-t="chapters.one"></span></a>
+      <a href="kanaele.html"><span class="num">2</span><span data-t="chapters.two"></span></a>
+      <a href="messen.html" aria-current="page"><span class="num">3</span><span data-t="chapters.three"></span></a>
+      <a href="satellit.html"><span class="num">4</span><span data-t="chapters.four"></span></a>
+    </nav>
+    <button type="button" class="view-toggle"></button>
+  </div>
+</header>
+
+<div class="poster small">
+  <div class="f f1"></div><div class="f f2"></div><div class="f f3"></div>
+  <svg class="l2" viewBox="0 0 120 120" aria-hidden="true">
+    <path d="M10 60 A50 50 0 0 0 110 60 Z" fill="currentColor"/>
+    <rect x="48" y="14" width="24" height="18" fill="currentColor"/>
+  </svg>
+  <svg class="l3" viewBox="0 0 400 400" aria-hidden="true"><path d="M40 120 Q200 330 360 120"/><path d="M90 90 Q200 250 310 90"/><path d="M140 60 Q200 170 260 60"/></svg>
+  <div class="poster-text">
+    <p class="kicker" data-t="messen.poster.kicker"></p>
+    <h1 class="headline" data-t-html="messen.poster.headline"></h1>
+    <p class="lead" data-t="messen.poster.lead"></p>
+  </div>
+</div>
+
+<main class="page">
+  <div class="lab">
+    <div class="lab-stage">
+      <div class="stage-frame fill tall-mobile" id="stage-frame">
+        <canvas class="layer" id="scene" role="img" data-t-aria="messen.stageAria"></canvas>
+        <div class="chip-ctl" role="group" data-t-aria="messen.modeAria">
+          <button type="button" class="chip-btn" data-mode="passive" aria-pressed="true"><i></i><span data-t="messen.modes.passive"></span></button>
+          <button type="button" class="chip-btn" data-mode="active" aria-pressed="false"><i></i><span data-t="messen.modes.active"></span></button>
+        </div>
+        <p class="stage-note stage-note-right" data-t="messen.stageNote"></p>
+      </div>
+    </div>
+
+    <div class="lab-post">
+      <div class="seg inst-seg" role="group" data-t-aria="messen.instAria">
+        <button type="button" class="chip-btn" data-inst="vis" data-for="passive"><span data-t="messen.inst.vis.chip"></span></button>
+        <button type="button" class="chip-btn" data-inst="ir" data-for="passive"><span data-t="messen.inst.ir.chip"></span></button>
+        <button type="button" class="chip-btn" data-inst="wv" data-for="passive"><span data-t="messen.inst.wv.chip"></span></button>
+        <button type="button" class="chip-btn" data-inst="radar" data-for="active" hidden><span data-t="messen.inst.radar.chip"></span></button>
+        <button type="button" class="chip-btn" data-inst="lidar" data-for="active" hidden><span data-t="messen.inst.lidar.chip"></span></button>
+        <button type="button" class="chip-btn" data-inst="scatter" data-for="active" hidden><span data-t="messen.inst.scatter.chip"></span></button>
+      </div>
+
+      <div class="ctl-row">
+        <button type="button" class="btn primary text" id="pulse-btn" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3v10M7 9l5 5 5-5"/><path d="M5 18c2 2 12 2 14 0"/></svg>
+          <span data-t="messen.controls.pulse"></span>
+        </button>
+        <button type="button" class="btn icon" id="night-btn" aria-pressed="false" data-t-aria="messen.controls.nightAria">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 14A8 8 0 1 1 10 4a6 6 0 0 0 10 10z"/></svg>
+        </button>
+        <label class="select-field range-field" id="wind-field" hidden>
+          <span class="row"><span class="select-label" data-t="messen.controls.wind"></span><output id="wind-out"></output></span>
+          <input type="range" id="wind" min="0" max="25" step="1" value="6">
+        </label>
+        <button type="button" class="info" aria-controls="controls-help" data-t-aria="messen.controls.infoAria"></button>
+      </div>
+      <div class="info-note" id="controls-help" hidden data-t-html="messen.controls.note"></div>
+
+      <div class="readout-grid cols" aria-live="polite">
+        <div><span id="ro-l1"></span><b id="ro-1"></b></div>
+        <div><span id="ro-l2"></span><b id="ro-2"></b></div>
+        <div><span id="ro-l3"></span><b id="ro-3"></b></div>
+      </div>
+
+      <div class="chart-box">
+        <p class="legend-title" id="chart-title"></p>
+        <canvas id="chart"></canvas>
+      </div>
+
+      <div class="mode-card" id="mode-card">
+        <h2 id="mode-title"></h2>
+        <p class="sub" id="mode-sub"></p>
+        <ul id="mode-bullets"></ul>
+      </div>
+
+      <button type="button" class="btn tasks-open" id="tasks-open" aria-haspopup="dialog" aria-controls="tasks-dialog">
+        <span data-t="tasksDialog.open"></span> <span class="quiz-progress" id="tasks-progress"></span>
+      </button>
+      <div class="merke locked" data-for="measure-tasks">
+        <h3 data-t="messen.merke.title"></h3>
+        <p data-t="messen.merke.text"></p>
+        <span class="locked-note"></span>
+      </div>
+    </div>
+  </div>
+
+  <dialog class="quiz-dialog" id="tasks-dialog" aria-labelledby="tasks-title">
+    <div class="quiz-head">
+      <h2 id="tasks-title" data-t="tasksDialog.title"></h2>
+      <button type="button" class="quiz-close" id="tasks-close" data-t-aria="tasksDialog.closeAria">&times;</button>
+    </div>
+    <p class="quiz-intro" data-t="tasksDialog.intro"></p>
+    <div id="measure-tasks">
+      <ol class="quiz-list">
+        <li class="quiz-item" data-task="night"><p class="quiz-q" data-t="messen.tasks.night"></p><p class="quiz-feedback" data-t="messen.tasks.doneNight"></p></li>
+        <li class="quiz-item" data-task="radar"><p class="quiz-q" data-t="messen.tasks.radar"></p><p class="quiz-feedback" data-t="messen.tasks.doneRadar"></p></li>
+        <li class="quiz-item" data-task="lidar"><p class="quiz-q" data-t="messen.tasks.lidar"></p><p class="quiz-feedback" data-t="messen.tasks.doneLidar"></p></li>
+        <li class="quiz-item" data-task="scatter"><p class="quiz-q" data-t="messen.tasks.scatter"></p><p class="quiz-feedback" data-t="messen.tasks.doneScatter"></p></li>
+      </ol>
+    </div>
+  </dialog>
+
+  <div class="topics">
+    <details class="topic"><summary data-t="messen.topics.camera.title"></summary><div class="topic-body" data-t-html="messen.topics.camera.body"></div></details>
+    <details class="topic"><summary data-t="messen.topics.passive.title"></summary><div class="topic-body" data-t-html="messen.topics.passive.body"></div></details>
+    <details class="topic"><summary data-t="messen.topics.active.title"></summary><div class="topic-body" data-t-html="messen.topics.active.body"></div></details>
+    <details class="topic"><summary data-t="messen.topics.which.title"></summary><div class="topic-body" data-t-html="messen.topics.which.body"></div></details>
+    <details class="topic"><summary data-t="messen.topics.simple.title"></summary><div class="topic-body" data-t-html="messen.topics.simple.body"></div></details>
+    <details class="topic"><summary data-t="messen.topics.sources.title"></summary><div class="topic-body" data-t-html="messen.topics.sources.body"></div></details>
+  </div>
+
+  <div class="next-part split">
+    <a class="btn big" href="kanaele.html"><span aria-hidden="true">←</span> <span data-t="chapters.toTwo"></span></a>
+    <a class="btn big primary" href="satellit.html"><span data-t="chapters.toFour"></span> <span aria-hidden="true">→</span></a>
+  </div>
+</main>
+
+<footer class="foot">
+  <p class="brand-line" data-brand="line"></p>
+</footer>
+
+<script src="theme/theme.js"></script>
+<script src="content/texts.de.js"></script>
+<script src="content/messen.de.js"></script>
+<script src="js/texts.js"></script>
+<script src="js/brand.js"></script>
+<script src="js/kit.js"></script>
+<script src="js/tasks-dialog.js"></script>
+<script src="js/messen.js"></script>
+</body>
+</html>

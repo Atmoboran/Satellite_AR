@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Zwei Perspektiven – LEO und GEO</title>
+<meta name="description" content="">
+<!-- Chapter 1. Structure only. Design: theme/ · texts: content/ · layout: css/ · behaviour: js/ -->
+<script src="js/view.js" data-app="wettersatelliten"></script>
+<link rel="stylesheet" href="theme/theme.css">
+<link rel="stylesheet" href="css/kit.css">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body class="full-stage">
+
+<header class="top">
+  <a class="logo" href="index.html" data-brand="logo"></a>
+  <div class="top-right">
+    <nav class="nav" data-t-aria="chapters.aria">
+      <a href="index.html"><span data-t="chapters.start"></span></a>
+      <a href="bahnen.html" aria-current="page"><span class="num">1</span><span data-t="chapters.one"></span></a>
+      <a href="kanaele.html"><span class="num">2</span><span data-t="chapters.two"></span></a>
+      <a href="messen.html"><span class="num">3</span><span data-t="chapters.three"></span></a>
+      <a href="satellit.html"><span class="num">4</span><span data-t="chapters.four"></span></a>
+    </nav>
+    <button type="button" class="view-toggle"></button>
+  </div>
+</header>
+
+<div class="poster small">
+  <div class="f f1"></div><div class="f f2"></div><div class="f f3"></div>
+  <svg class="l2" viewBox="0 0 120 120" aria-hidden="true">
+    <path d="M60 10 A50 50 0 0 1 60 110 Z" fill="currentColor"/>
+    <circle cx="28" cy="60" r="12" fill="currentColor"/>
+  </svg>
+  <svg class="l3" viewBox="0 0 400 400" aria-hidden="true"><circle cx="200" cy="200" r="60"/><ellipse cx="200" cy="200" rx="190" ry="60"/><ellipse cx="200" cy="200" rx="30" ry="78" transform="rotate(12 200 200)"/></svg>
+  <div class="poster-text">
+    <p class="kicker" data-t="bahnen.poster.kicker"></p>
+    <h1 class="headline" data-t-html="bahnen.poster.headline"></h1>
+    <p class="lead" data-t="bahnen.poster.lead"></p>
+  </div>
+</div>
+
+<main class="page">
+  <div class="lab">
+    <div class="lab-stage">
+      <div class="stage-frame fill dark grab" id="stage-frame">
+        <canvas class="layer" id="globe" role="img" data-t-aria="bahnen.stageAria"></canvas>
+        <div class="chip-ctl" role="group" data-t-aria="bahnen.modeAria">
+          <button type="button" class="chip-btn" id="mode-leo" data-mode="leo" aria-pressed="true"><i></i><span data-t="bahnen.modes.leo.chip"></span></button>
+          <button type="button" class="chip-btn" id="mode-geo" data-mode="geo" aria-pressed="false"><i></i><span data-t="bahnen.modes.geo.chip"></span></button>
+        </div>
+        <div class="inset" aria-hidden="true"><canvas id="inset-canvas"></canvas><span class="inset-label" data-t="bahnen.insetLabel"></span></div>
+      </div>
+    </div>
+
+    <div class="lab-post">
+      <div class="readout-grid cols" aria-live="polite">
+        <div><span data-t="bahnen.readout.time"></span><b id="ro-time"></b></div>
+        <div><span data-t="bahnen.readout.below"></span><b id="ro-below"></b></div>
+        <div><span data-t="bahnen.readout.place"></span><b id="ro-place"></b></div>
+      </div>
+
+      <div class="ctl-row">
+        <button type="button" class="btn icon primary" id="sim-play" data-t-aria="bahnen.controls.pauseAria">
+          <svg id="play-icon" viewBox="0 0 24 24" aria-hidden="true"></svg>
+        </button>
+        <label class="select-field">
+          <span class="select-label" data-t="bahnen.controls.speed"></span>
+          <select id="speed-select">
+            <option value="60" data-t="bahnen.controls.speeds.0"></option>
+            <option value="300" data-t="bahnen.controls.speeds.1" selected></option>
+            <option value="1800" data-t="bahnen.controls.speeds.2"></option>
+          </select>
+        </label>
+        <button type="button" class="btn icon" id="sim-reset" data-t-aria="bahnen.controls.resetAria">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5"/></svg>
+        </button>
+        <button type="button" class="btn icon" id="sim-follow" aria-pressed="false" data-t-aria="bahnen.controls.followAria">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M4 12h16M12 4c3 3 3 13 0 16"/></svg>
+        </button>
+        <button type="button" class="info" aria-controls="controls-help" data-t-aria="bahnen.controls.infoAria"></button>
+      </div>
+      <div class="info-note" id="controls-help" hidden data-t-html="bahnen.controls.note"></div>
+
+      <ul class="key" aria-hidden="true">
+        <li><i class="sw now"></i><span data-t="bahnen.key.now"></span></li>
+        <li><i class="sw earlier"></i><span data-t="bahnen.key.earlier"></span></li>
+        <li><i class="sw night"></i><span data-t="bahnen.key.night"></span></li>
+        <li><i class="sw place"></i><span data-t="bahnen.key.place"></span></li>
+      </ul>
+
+      <div class="mode-card" id="mode-card">
+        <h2 id="mode-title"></h2>
+        <p class="sub" id="mode-sub"></p>
+        <ul id="mode-bullets"></ul>
+      </div>
+      <div class="facts-2" id="mode-facts"></div>
+
+      <button type="button" class="btn tasks-open" id="tasks-open" aria-haspopup="dialog" aria-controls="tasks-dialog">
+        <span data-t="tasksDialog.open"></span> <span class="quiz-progress" id="tasks-progress"></span>
+      </button>
+      <div class="merke locked" data-for="orbit-tasks">
+        <h3 data-t="bahnen.merke.title"></h3>
+        <p data-t="bahnen.merke.text"></p>
+        <span class="locked-note"></span>
+      </div>
+    </div>
+  </div>
+
+  <dialog class="quiz-dialog" id="tasks-dialog" aria-labelledby="tasks-title">
+    <div class="quiz-head">
+      <h2 id="tasks-title" data-t="tasksDialog.title"></h2>
+      <button type="button" class="quiz-close" id="tasks-close" data-t-aria="tasksDialog.closeAria">&times;</button>
+    </div>
+    <p class="quiz-intro" data-t="tasksDialog.intro"></p>
+    <div id="orbit-tasks">
+      <ol class="quiz-list">
+        <li class="quiz-item" data-task="geo"><p class="quiz-q" data-t="bahnen.tasks.geo"></p><p class="quiz-feedback" data-t="bahnen.tasks.doneGeo"></p></li>
+        <li class="quiz-item" data-task="pass"><p class="quiz-q" data-t="bahnen.tasks.pass"></p><p class="quiz-feedback" data-t="bahnen.tasks.donePass"></p></li>
+        <li class="quiz-item" data-task="day"><p class="quiz-q" data-t="bahnen.tasks.day"></p><p class="quiz-feedback" data-t="bahnen.tasks.doneDay"></p></li>
+      </ol>
+    </div>
+  </dialog>
+
+  <div class="topics">
+    <details class="topic"><summary data-t="bahnen.topics.why.title"></summary><div class="topic-body" data-t-html="bahnen.topics.why.body"></div></details>
+    <details class="topic"><summary data-t="bahnen.topics.leo.title"></summary><div class="topic-body" data-t-html="bahnen.topics.leo.body"></div></details>
+    <details class="topic"><summary data-t="bahnen.topics.geo.title"></summary><div class="topic-body" data-t-html="bahnen.topics.geo.body"></div></details>
+    <details class="topic"><summary data-t="bahnen.topics.simple.title"></summary><div class="topic-body" data-t-html="bahnen.topics.simple.body"></div></details>
+    <details class="topic"><summary data-t="bahnen.topics.sources.title"></summary><div class="topic-body" data-t-html="bahnen.topics.sources.body"></div></details>
+  </div>
+
+  <div class="next-part split">
+    <a class="btn big" href="index.html"><span aria-hidden="true">←</span> <span data-t="chapters.toStart"></span></a>
+    <a class="btn big primary" href="kanaele.html"><span data-t="chapters.toTwo"></span> <span aria-hidden="true">→</span></a>
+  </div>
+</main>
+
+<footer class="foot">
+  <p class="brand-line" data-brand="line"></p>
+</footer>
+
+<script src="theme/theme.js"></script>
+<script src="content/texts.de.js"></script>
+<script src="content/bahnen.de.js"></script>
+<script src="js/texts.js"></script>
+<script src="js/brand.js"></script>
+<script src="js/kit.js"></script>
+<script src="js/tasks-dialog.js"></script>
+<script src="data/land.js"></script>
+<script src="js/geo.js"></script>
+<script src="js/bahnen.js"></script>
+</body>
+</html>

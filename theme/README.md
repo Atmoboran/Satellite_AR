@@ -10,6 +10,7 @@ this folder (look) and `content/` (words):
 |---|---|
 | `theme.css` | Font stack and weights, the palette (`--c-…`), colour roles (`--ink`, `--paper`, `--primary`, `--active`, `--accent`, `--merke`, `--stage-bg` …), the poster header colours (`--f1`–`--f3`, `--shape`, `--outline`), footer colours, corner radius, wordmark styling (`.logo`). The app-specific block at the end sets this app's signature colour combination. |
 | `theme.js` | `brand`: name, wordmark HTML, footer line, title suffix, favicon, browser colour. `font`: font for canvas text. `palette`, `data` (temperature scale, T/H, two-object colours) and an object per app with every colour it draws with. |
+| | Chapters of this app: `orbits` (globe in chapter 1: day/night, land/sea, "seen now" / "seen earlier" tints), `channels` (chapter 2: the colour scales of the three channels as value/colour stops – the legends are drawn from them), `measure` (chapter 3: the schematic). |
 
 Rules:
 

@@ -1,10 +1,13 @@
-# Builds both pages of the app from one template so they stay identical:
-#   index.html                     free view (turns by itself, zoom, AR size adjustable)
+# Builds both AR pages (chapter 4) from one template so they stay identical:
+#   satellit.html                  free view (turns by itself, zoom, AR size adjustable),
+#                                  part of the chapter app (header navigation, prev/next)
 #   mtg-satellite-ar2/index.html   true scale (size locked, no zoom, real USDZ for iPhones)
 # The pages differ only in the <model-viewer> settings and in the text set
 # they pick from content/texts.de.js (<html data-variant="…">).
 # It also copies css/, js/, content/ and theme/ into the subfolder so that
-# folder stays self-contained (e.g. for Netlify Drop).
+# folder stays self-contained (e.g. for Netlify Drop); that page therefore
+# has no links to the chapters. The start page (index.html) and chapters
+# 1-3 (bahnen.html, kanaele.html, messen.html) are written by hand.
 # Run after changing the template, css/, js/, content/ or theme/:  python3 build.py
 import os
 import shutil
@@ -27,8 +30,8 @@ PAGE = Template('''<!DOCTYPE html>
 <body>
 
 <header class="top">
-  <span class="logo" data-brand="logo"></span>
-  <div class="top-right">
+  $logo
+  <div class="top-right">$nav
     <button type="button" class="view-toggle"></button>
   </div>
 </header>
@@ -112,7 +115,7 @@ PAGE = Template('''<!DOCTYPE html>
     <details class="topic"><summary data-t="topics.job.title"></summary><div class="topic-body" data-t-html="topics.job.body"></div></details>
     <details class="topic"><summary data-t="topics.size.title"></summary><div class="topic-body" data-t-html="topics.size.body"></div></details>
     <details class="topic"><summary data-t="topics.ar.title"></summary><div class="topic-body" data-t-html="topics.ar.body"></div></details>
-  </div>
+  </div>$pager
 </main>
 
 <footer class="foot">
@@ -131,14 +134,24 @@ PAGE = Template('''<!DOCTYPE html>
 </html>
 ''')
 
+NAV = '\n    <nav class="nav" data-t-aria="chapters.aria">\n      <a href="index.html"><span data-t="chapters.start"></span></a>\n      <a href="bahnen.html"><span class="num">1</span><span data-t="chapters.one"></span></a>\n      <a href="kanaele.html"><span class="num">2</span><span data-t="chapters.two"></span></a>\n      <a href="messen.html"><span class="num">3</span><span data-t="chapters.three"></span></a>\n      <a href="satellit.html" aria-current="page"><span class="num">4</span><span data-t="chapters.four"></span></a>\n    </nav>'
+PAGER = '\n\n  <div class="next-part split">\n    <a class="btn big" href="messen.html"><span aria-hidden="true">←</span> <span data-t="chapters.toThree"></span></a>\n    <a class="btn big primary" href="index.html"><span data-t="chapters.toStart"></span> <span aria-hidden="true">→</span></a>\n  </div>'
+
+# folder -> (file name, settings)
 VARIANTS = {
     '.': dict(
+        file='satellit.html',
+        logo='<a class="logo" href="index.html" data-brand="logo"></a>',
+        nav=NAV, pager=PAGER,
         variant='standard',
         title='MTG-I1 – Wettersatellit in AR',
         ios='', arscale='auto',
         extra='\n          auto-rotate\n          rotation-per-second="8deg"',
         orbit='35deg 75deg auto', minorbit='auto auto auto', maxorbit='auto auto auto'),
     'mtg-satellite-ar2': dict(
+        file='index.html',
+        logo='<span class="logo" data-brand="logo"></span>',
+        nav='', pager='',
         variant='truescale',
         title='MTG-I1 in Originalgröße – Wettersatellit in AR',
         ios='\n          ios-src="MTGI.usdz"', arscale='fixed',
@@ -147,14 +160,17 @@ VARIANTS = {
 }
 
 SHARED = ('css', 'js', 'content', 'theme')
+# files of the start page and chapters 1-3, not needed by the standalone AR page
+CHAPTER_ONLY = shutil.ignore_patterns('start.de.js', 'bahnen.*', 'kanaele.*', 'messen.*',
+                                      'geo.js', 'video.js', 'tasks-dialog.js')
 
 here = os.path.dirname(os.path.abspath(__file__))
 for folder, v in VARIANTS.items():
     out = os.path.join(here, folder)
-    with open(os.path.join(out, 'index.html'), 'w', encoding='utf-8') as f:
+    with open(os.path.join(out, v['file']), 'w', encoding='utf-8') as f:
         f.write(PAGE.substitute(v))
     if folder != '.':
         for d in SHARED:
             shutil.rmtree(os.path.join(out, d), ignore_errors=True)
-            shutil.copytree(os.path.join(here, d), os.path.join(out, d))
+            shutil.copytree(os.path.join(here, d), os.path.join(out, d), ignore=CHAPTER_ONLY)
 print('ok')

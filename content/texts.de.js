@@ -4,8 +4,11 @@
 // around runtime values. This app has no location-specific lines (other
 // apps mark them with a LOCAL comment).
 //
-// The app has two pages built from one template (build.py): the free view
-// (index.html) and the true-scale view (mtg-satellite-ar2/index.html). Texts
+// The texts of the start page and chapters 1–3 are in content/start.de.js,
+// bahnen.de.js, kanaele.de.js and messen.de.js. This file holds what every
+// page shares, plus chapter 4: the satellite in AR. That one has two pages
+// built from one template (build.py): the free view (satellit.html) and the
+// true-scale view (mtg-satellite-ar2/index.html). Texts
 // that differ between them sit in `variants`; the page picks its set through
 // <html data-variant="…"> and finds it under `page`.
 window.TEXTS = {
@@ -25,8 +28,31 @@ window.TEXTS = {
     devLink: '(dev)'
   },
 
+  // Header navigation and the prev/next buttons (every page).
+  chapters: {
+    aria: 'Kapitel',
+    start: 'Start',
+    one: 'Bahnen',
+    two: 'Kanäle',
+    three: 'Messen',
+    four: 'AR',
+    toStart: 'Zum Start',
+    toOne: 'Kapitel 1: Zwei Perspektiven',
+    toTwo: 'Kapitel 2: Mit welchen Augen?',
+    toThree: 'Kapitel 3: Wie misst ein Satellit?',
+    toFour: 'Kapitel 4: Der Satellit in AR'
+  },
+
+  // The tasks pop-up of chapters 1–3 (js/tasks-dialog.js).
+  tasksDialog: {
+    open: 'Aufgaben',
+    title: 'Aufgaben',
+    closeAria: 'Aufgaben schließen',
+    intro: 'Sie haken sich von selbst ab, sobald du sie geschafft hast.'
+  },
+
   variants: {
-    // index.html – free view: turns by itself, zoom allowed, AR size adjustable.
+    // satellit.html – free view: turns by itself, zoom allowed, AR size adjustable.
     standard: {
       pageTitle: 'MTG-I1 – Wettersatellit in AR',
       description: 'Der Wettersatellit Meteosat-12 (MTG-I1) in Augmented Reality – zum Drehen, Umrunden und Erkunden.',
@@ -130,7 +156,10 @@ window.TEXTS = {
   }
 };
 
-// Pick the texts of this page's variant.
-TEXTS.page = TEXTS.variants[document.documentElement.dataset.variant] || TEXTS.variants.standard;
-TEXTS.pageTitle = TEXTS.page.pageTitle;
-TEXTS.description = TEXTS.page.description;
+// The AR pages (<html data-variant="…">) pick the texts of their variant.
+// The chapter pages set pageTitle and description in their own content file.
+if (document.documentElement.dataset.variant) {
+  TEXTS.page = TEXTS.variants[document.documentElement.dataset.variant] || TEXTS.variants.standard;
+  TEXTS.pageTitle = TEXTS.page.pageTitle;
+  TEXTS.description = TEXTS.page.description;
+}
