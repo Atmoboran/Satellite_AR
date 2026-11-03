@@ -5,10 +5,10 @@
 //   passive: VIS – sunlight reflected by cloud and ground (not at night)
 //            IR  – heat radiation from the ground and the (cold) cloud top
 //            WV  – emission of the water vapour layer; heat from below is swallowed
-//   active:  radar / lidar – a pulse goes straight down, echoes come back in the
-//            order of their height (time of flight = distance); the lidar is
-//            stopped by the thick cloud. Scatterometer – a slanted pulse onto
-//            the sea; the rougher (windier) the sea, the stronger the echo.
+//   active:  one simulation (radar-like): a pulse goes straight down, echoes
+//            come back in the order of their height (time of flight = distance),
+//            their strength tells how much is there. Lidar and scatterometer
+//            are only named in the texts.
 (() => {
   'use strict';
   const C = window.THEME.measure, T = window.TEXTS.messen;
@@ -23,15 +23,12 @@
   const instChips = [...document.querySelectorAll('.chip-btn[data-inst]')];
   const pulseBtn = document.getElementById('pulse-btn');
   const nightBtn = document.getElementById('night-btn');
-  const windField = document.getElementById('wind-field');
-  const windIn = document.getElementById('wind');
-  const windOut = document.getElementById('wind-out');
   const badge = SCAPE.badge(frame);
   const tasks = SCAPE.taskDialog('measure-tasks');
 
   const state = {
-    mode: 'passive', inst: { passive: 'vis', active: 'radar' }, night: false, wind: 6,
-    packets: [], pulse: null, echoes: [], scatterResult: null,
+    mode: 'passive', inst: { passive: 'vis', active: 'pulse' }, night: false,
+    packets: [], pulse: null, echoes: [],
     arrivals: { sun: 0, ground: 0, cloud: 0, vapour: 0 }, seenNight: { vis: false, ir: false }
   };
   const inst = () => state.inst[state.mode];
@@ -128,23 +125,14 @@
     // ground: land and sea
     ctx.fillStyle = night ? C.nightGround : C.ground; ctx.fillRect(0, g.yG, g.seaX, H - g.yG);
     ctx.fillStyle = night ? C.seaDeep : C.sea; ctx.fillRect(g.seaX, g.yG, W - g.seaX, H - g.yG);
-    // waves (scatterometer: the wind roughens the sea)
-    const amp = state.mode === 'active' && inst() === 'scatter' ? 0.6 + state.wind * 0.22 : 1.2;
+    // waves
+    const amp = 1.2;
     ctx.strokeStyle = C.seaDeep; ctx.lineWidth = 1.5; ctx.beginPath();
     for (let x = g.seaX; x <= W; x += 2) { const y = g.yG + 1 + amp * g.s * (1 + Math.sin((x + now / 30) / (6 * g.s))); if (x === g.seaX) ctx.moveTo(x, y); else ctx.lineTo(x, y); }
     ctx.stroke();
-    if (state.mode === 'active' && inst() === 'scatter') {
-      // wind arrows over the sea
-      ctx.strokeStyle = C.ink; ctx.lineWidth = 1.5;
-      const n = Math.round(state.wind / 5);
-      for (let i = 0; i < n; i++) {
-        const y = g.yG - (10 + i * 12) * g.s, x = g.seaX + 12 + ((i * 37 + now / 20 * (0.3 + state.wind / 25)) % (W - g.seaX - 50));
-        ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + 22 * g.s, y); ctx.lineTo(x + 17 * g.s, y - 4 * g.s); ctx.moveTo(x + 22 * g.s, y); ctx.lineTo(x + 17 * g.s, y + 4 * g.s); ctx.stroke();
-      }
-    }
     ctx.strokeStyle = C.ink; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(0, g.yG); ctx.lineTo(W, g.yG); ctx.stroke();
     label(T.scene.land, 10, g.yG + (H - g.yG) / 2, 'left', night ? C.inkInverse : C.ink);
-    label(T.scene.sea, W - 10, g.yG + (H - g.yG) / 2 + 3, 'right', night ? C.inkInverse : C.ink);
+    label(T.scene.sea, g.seaX + 10, g.yG + (H - g.yG) / 2 + 3, 'left', night ? C.inkInverse : C.ink);
     // sun or night
     if (state.mode === 'passive' && !night) {
       const [sx, sy] = g.sun;
@@ -223,29 +211,22 @@
   };
 
   // ---- active: pulses and echoes ----
-  // targets straight below the satellite: height (km), echo strength for radar and lidar
+  // targets straight below the satellite: height (km) and echo strength
+  // (as for a radar: rain and cloud strong, thin ice cloud weak, dust none)
   const TARGETS = [
-    { key: 'cirrus', h: 10.5, radar: 0.12, lidar: 0.75 },
-    { key: 'dust', h: 6, radar: 0, lidar: 0.4 },
-    { key: 'cloud', h: 3.9, radar: 0.45, lidar: 1, blocks: 'lidar' },
-    { key: 'cloud', h: 2.6, radar: 0.55, lidar: 0 },
-    { key: 'cloud', h: 1.4, radar: 0.6, lidar: 0 },
-    { key: 'rain', h: 0.6, radar: 0.85, lidar: 0 },
-    { key: 'ground', h: 0, radar: 1, lidar: 0 }
+    { key: 'cirrus', h: 10.5, s: 0.15 },
+    { key: 'cloud', h: 3.9, s: 0.45 },
+    { key: 'cloud', h: 2.6, s: 0.55 },
+    { key: 'cloud', h: 1.4, s: 0.6 },
+    { key: 'rain', h: 0.6, s: 0.85 },
+    { key: 'ground', h: 0, s: 1 }
   ];
-  const scatterEcho = w => Math.min(1, 0.04 + Math.pow(w / 25, 0.75) * 0.96);
 
   const sendPulse = () => {
     if (state.mode !== 'active') return;
     badge.hide();
-    const which = inst();
     state.echoes = [];
-    state.scatterResult = null;
-    if (which === 'scatter') {
-      state.pulse = { which, d: 0, from: [g.sat[0] + 12 * g.s, g.sat[1] + 16 * g.s], to: g.target, done: false, wind: state.wind };
-    } else {
-      state.pulse = { which, y: g.sat[1] + 16 * g.s, hit: new Set(), stopY: which === 'lidar' ? g.km(3.9) : g.yG, done: false, pending: 0 };
-    }
+    state.pulse = { y: g.sat[1] + 16 * g.s, hit: new Set(), stopY: g.yG, pending: 0 };
     pulseBtn.disabled = true;
   };
   pulseBtn.addEventListener('click', sendPulse);
@@ -254,25 +235,14 @@
     const p = state.pulse;
     if (!p) return;
     const v = SPEED() * 0.75;
-    if (p.which === 'scatter') {
-      if (p.d === null) return;
-      const L = Math.hypot(p.to[0] - p.from[0], p.to[1] - p.from[1]);
-      p.d += v * dt;
-      if (p.d >= L) {
-        p.d = null;
-        const e = scatterEcho(p.wind);
-        addPacket([p.to, p.from], C.scatter, 1 + 4 * e, { echo: { scatter: true, strength: e, wind: p.wind } });
-      }
-      return;
-    }
     if (p.y === null) return;
     p.y += v * dt;
     for (const [i, tg] of TARGETS.entries()) {
       const ty = g.km(tg.h);
       if (p.hit.has(i) || p.y < ty || ty > p.stopY + 1) continue;
       p.hit.add(i);
-      const s = tg[p.which];
-      if (s > 0) { p.pending++; addPacket([[g.xb, ty], [g.xb, g.sat[1] + 16 * g.s]], p.which === 'radar' ? C.radar : C.lidar, 1 + 3.5 * s, { echo: { key: tg.key, h: tg.h, strength: s } }); }
+      p.pending++;
+      addPacket([[g.xb, ty], [g.xb, g.sat[1] + 16 * g.s]], C.radar, 1 + 3.5 * tg.s, { echo: { key: tg.key, h: tg.h, strength: tg.s } });
     }
     if (p.y >= p.stopY) p.y = null;
   };
@@ -280,21 +250,9 @@
   const drawPulse = () => {
     const p = state.pulse;
     if (!p) return;
-    if (p.which === 'scatter') {
-      ctx.strokeStyle = C.scatter; ctx.globalAlpha = 0.18; ctx.lineWidth = 6 * g.s;
-      ctx.beginPath(); ctx.moveTo(p.from[0], p.from[1]); ctx.lineTo(p.to[0], p.to[1]); ctx.stroke(); ctx.globalAlpha = 1;
-      if (p.d !== null) {
-        const L = Math.hypot(p.to[0] - p.from[0], p.to[1] - p.from[1]), f = p.d / L;
-        const x = p.from[0] + (p.to[0] - p.from[0]) * f, y = p.from[1] + (p.to[1] - p.from[1]) * f;
-        const ang = Math.atan2(p.to[1] - p.from[1], p.to[0] - p.from[0]);
-        ctx.strokeStyle = C.scatter; ctx.lineWidth = 4 * g.s;
-        ctx.beginPath(); ctx.arc(x - Math.cos(ang) * 14 * g.s, y - Math.sin(ang) * 14 * g.s, 14 * g.s, ang - 0.7, ang + 0.7); ctx.stroke();
-      }
-      return;
-    }
     // the beam straight down
-    const col = p.which === 'radar' ? C.radar : C.lidar;
-    const top = g.sat[1] + 16 * g.s, half = p.which === 'radar' ? W * 0.045 : 2 * g.s;
+    const col = C.radar;
+    const top = g.sat[1] + 16 * g.s, half = W * 0.045;
     ctx.fillStyle = col; ctx.globalAlpha = 0.16;
     ctx.beginPath(); ctx.moveTo(g.xb - 2, top); ctx.lineTo(g.xb + 2, top);
     const bottom = p.stopY;
@@ -314,7 +272,6 @@
     cctx.fillStyle = C.chartBg; cctx.fillRect(0, 0, cw, ch);
     cctx.font = '12px ' + window.THEME.font; cctx.fillStyle = C.ink; cctx.textBaseline = 'middle';
     const title = document.getElementById('chart-title');
-    const which = inst();
     if (state.mode === 'passive') {
       title.textContent = T.chart.passiveTitle;
       const parts = ['sun', 'ground', 'cloud', 'vapour'];
@@ -331,28 +288,6 @@
       });
       return;
     }
-    if (which === 'scatter') {
-      title.textContent = T.chart.windTitle;
-      const x0 = 34, x1 = cw - 12, y0 = ch - 26, y1 = 12;
-      const X = w => x0 + w / 25 * (x1 - x0), Y = s => y0 - s * (y0 - y1);
-      cctx.strokeStyle = C.grid; cctx.lineWidth = 1;
-      for (const w of [0, 5, 10, 15, 20, 25]) { cctx.beginPath(); cctx.moveTo(X(w), y0); cctx.lineTo(X(w), y1); cctx.stroke(); cctx.textAlign = 'center'; cctx.fillStyle = C.ink; cctx.fillText(String(w), X(w), y0 + 10); }
-      cctx.textAlign = 'right'; cctx.fillText(T.chart.windAxis, x1, y0 + 21);
-      cctx.save(); cctx.translate(12, (y0 + y1) / 2); cctx.rotate(-Math.PI / 2); cctx.textAlign = 'center'; cctx.fillText(T.chart.strength, 0, 0); cctx.restore();
-      cctx.strokeStyle = C.scatter; cctx.lineWidth = 2.5; cctx.beginPath();
-      for (let w = 0; w <= 25; w += 0.5) { if (!w) cctx.moveTo(X(w), Y(scatterEcho(w))); else cctx.lineTo(X(w), Y(scatterEcho(w))); }
-      cctx.stroke();
-      cctx.strokeStyle = C.ink; cctx.lineWidth = 1.5; cctx.beginPath(); cctx.moveTo(x0, y1); cctx.lineTo(x0, y0); cctx.lineTo(x1, y0); cctx.stroke();
-      const r = state.scatterResult;
-      if (r) {
-        cctx.fillStyle = C.ink; cctx.beginPath(); cctx.arc(X(r.wind), Y(r.strength), 6, 0, 2 * Math.PI); cctx.fill();
-        cctx.setLineDash([4, 3]); cctx.beginPath(); cctx.moveTo(x0, Y(r.strength)); cctx.lineTo(X(r.wind), Y(r.strength)); cctx.lineTo(X(r.wind), y0); cctx.stroke(); cctx.setLineDash([]);
-        cctx.textAlign = r.wind > 14 ? 'right' : 'left';
-        cctx.font = '500 12px ' + window.THEME.font;
-        cctx.fillText(T.chart.windResult(r.wind), X(r.wind) + (r.wind > 14 ? -10 : 10), Math.max(y1 + 8, Y(r.strength) - 12));
-      }
-      return;
-    }
     // echo profile: height (km) against echo strength
     title.textContent = T.chart.profile;
     const x0 = 40, x1 = cw - 70, y0 = ch - 14, y1 = 10;
@@ -360,7 +295,7 @@
     cctx.strokeStyle = C.grid; cctx.lineWidth = 1; cctx.textAlign = 'right'; cctx.fillStyle = C.ink;
     for (const h of [0, 3, 6, 9, 12]) { cctx.beginPath(); cctx.moveTo(x0, Y(h)); cctx.lineTo(x1, Y(h)); cctx.stroke(); cctx.fillText(h + ' km', x0 - 5, Y(h)); }
     cctx.strokeStyle = C.ink; cctx.lineWidth = 1.5; cctx.beginPath(); cctx.moveTo(x0, y1); cctx.lineTo(x0, y0); cctx.stroke();
-    const col = which === 'radar' ? C.radar : C.lidar;
+    const col = C.radar;
     const seen = new Set();
     for (const e of state.echoes) {
       const bh = Math.max(5, (y0 - y1) / 12 * (e.key === 'ground' ? 0.45 : 0.8));
@@ -383,7 +318,7 @@
     instChips.forEach(c => { c.hidden = c.dataset.for !== state.mode; c.setAttribute('aria-pressed', String(c.dataset.inst === key)); });
     pulseBtn.hidden = state.mode !== 'active';
     nightBtn.hidden = state.mode !== 'passive';
-    windField.hidden = !(state.mode === 'active' && key === 'scatter');
+    document.querySelector('.inst-seg').hidden = state.mode !== 'passive';
     document.getElementById('mode-card').style.setProperty('--obj', state.mode === 'passive' ? 'var(--c-gold)' : 'var(--c-cyan)');
     document.getElementById('mode-title').textContent = I.title;
     document.getElementById('mode-sub').innerHTML = I.sub;
@@ -396,7 +331,7 @@
   };
 
   const clearRun = () => {
-    state.packets = []; state.pulse = null; state.echoes = []; state.scatterResult = null; pulseBtn.disabled = false;
+    state.packets = []; state.pulse = null; state.echoes = []; pulseBtn.disabled = false;
     for (const k in state.arrivals) state.arrivals[k] = 0;
   };
   const checkNight = () => {
@@ -409,8 +344,6 @@
     state.night = !state.night; nightBtn.setAttribute('aria-pressed', String(state.night));
     clearRun(); checkNight();
   });
-  const syncWind = () => { state.wind = Number(windIn.value); windOut.textContent = T.controls.windValue(state.wind); };
-  windIn.addEventListener('input', syncWind);
 
   // ============ LOOP ============
   let last = performance.now();
@@ -429,15 +362,12 @@
         p.dead = true;
         if (p.src) state.arrivals[p.src] += 1;
         if (p.echo) {
-          if (p.echo.scatter) { state.scatterResult = { wind: p.echo.wind, strength: p.echo.strength }; state.pulse = null; pulseBtn.disabled = false; if (p.echo.wind > 15) tasks.done('scatter'); }
-          else {
-            state.echoes.push(p.echo);
-            const pu = state.pulse;
-            if (pu && --pu.pending === 0 && pu.y === null) {
-              pulseBtn.disabled = false;
-              tasks.done(pu.which);
-              state.pulse = null;
-            }
+          state.echoes.push(p.echo);
+          const pu = state.pulse;
+          if (pu && --pu.pending === 0 && pu.y === null) {
+            pulseBtn.disabled = false;
+            tasks.done('pulse');
+            state.pulse = null;
           }
         }
       }
@@ -456,7 +386,6 @@
   resize();
   window.addEventListener('resize', resize);
   if (window.ResizeObserver) new ResizeObserver(resize).observe(frame);
-  syncWind();
   updateUI();
   requestAnimationFrame(loop);
 

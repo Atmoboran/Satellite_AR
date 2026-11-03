@@ -53,41 +53,16 @@ TEXTS.messen = {
       ],
       source: 'Wasserdampf in 5–10 km Höhe', measures: 'Feuchte oben', night: 'ja'
     },
-    radar: {
-      chip: 'Radar',
-      title: 'Aktiv: Radar',
-      sub: 'Mikrowellen-Impulse · z. B. EarthCARE (94 GHz), GPM',
+    pulse: {
+      title: 'Aktiv: selbst ein Signal senden',
+      sub: 'z. B. Radar, Lidar oder Scatterometer',
       bullets: [
-        'Das Radar schickt einen kurzen <b>Mikrowellen-Impuls</b> nach unten.',
-        'Wolkentröpfchen und vor allem <b>Regentropfen</b> werfen einen Teil davon zurück. Das Radar dringt auch durch dicke Wolken bis zum Boden.',
-        'Aus der <b>Laufzeit</b> des Echos ergibt sich die Höhe, aus seiner <b>Stärke</b>, wie viel Wasser dort ist.',
-        'Staub und dünne Eiswolken bemerkt das Radar kaum.'
+        'Das Instrument schickt einen kurzen <b>Impuls</b> nach unten – hier wie bei einem Radar Mikrowellen.',
+        'Wolken, <b>Regentropfen</b> und der Boden werfen einen Teil davon zurück. Der Satellit fängt diese <b>Echos</b> auf.',
+        'Aus der <b>Laufzeit</b> eines Echos ergibt sich, aus welcher Höhe es kommt; aus seiner <b>Stärke</b>, wie viel Wasser dort ist.',
+        'Andere aktive Instrumente arbeiten genauso: Ein <b>Lidar</b> schickt Laserlicht und sieht dünne Wolken und Staub; ein <b>Scatterometer</b> zielt schräg aufs Meer und misst daran den Wind.'
       ],
-      signal: 'Mikrowellen', time: '2,6 ms', measures: 'Regen, Wolken'
-    },
-    lidar: {
-      chip: 'Lidar',
-      title: 'Aktiv: Lidar',
-      sub: 'Laser-Impulse · z. B. EarthCARE (355 nm), CALIPSO',
-      bullets: [
-        'Das Lidar schickt kurze <b>Laserblitze</b> nach unten – Licht statt Mikrowellen.',
-        'Schon kleinste Teilchen werfen Licht zurück: <b>dünne Eiswolken</b> und <b>Staub</b> (Aerosole) in der Luft.',
-        'Dicke Wolken verschlucken das Laserlicht: Darunter sieht das Lidar nichts mehr.',
-        'Radar und Lidar ergänzen sich – darum fliegen sie auf EarthCARE zusammen.'
-      ],
-      signal: 'Laserlicht', time: '2,6 ms', measures: 'Wolken, Staub'
-    },
-    scatter: {
-      chip: 'Scatterometer',
-      title: 'Aktiv: Scatterometer',
-      sub: 'Schräge Mikrowellen-Impulse · z. B. ASCAT auf Metop',
-      bullets: [
-        'Das Scatterometer schickt Mikrowellen <b>schräg</b> auf das Meer.',
-        'Ist die Meeresoberfläche glatt, wird das Signal wie von einem Spiegel weggelenkt – kaum etwas kommt zurück.',
-        'Wind kräuselt das Wasser: Je <b>stärker der Wind</b>, desto rauer die Oberfläche und desto stärker das Echo.',
-        'Aus mehreren Blickrichtungen ergeben sich Windstärke und Windrichtung über dem Meer.'
-      ],
-      signal: 'Mikrowellen, schräg', time: 'etwa 8 ms', measures: 'Wind über dem Meer'
+      signal: 'Mikrowellen', time: '2,6 ms', measures: 'Regen, Wolken, Höhe'
     }
   },
 
@@ -105,13 +80,10 @@ TEXTS.messen = {
     height: 'Höhe',
     strength: 'Stärke des Echos',
     waiting: 'Sende einen Impuls, um das Echo zu sehen.',
-    windTitle: 'Echo und Windstärke',
-    windAxis: 'Wind in m/s',
     passiveTitle: 'Was kommt beim Satelliten an?',
     parts: { sun: 'Sonnenlicht', ground: 'Wärme vom Boden', cloud: 'Wärme der Wolke', vapour: 'Strahlung des Wasserdampfs' },
     nothing: 'nichts',
-    labels: { cirrus: 'Eiswolke', dust: 'Staub', cloud: 'Wolke', rain: 'Regen', ground: 'Boden' },
-    windResult: v => 'Gemessen: Wind etwa ' + v + ' m/s'
+    labels: { cirrus: 'Eiswolke', cloud: 'Wolke', rain: 'Regen', ground: 'Boden' }
   },
 
   scene: { night: 'Nacht', vapour: 'Wasserdampf', dust: 'Staub', cirrus: 'Eiswolke', sea: 'Meer', land: 'Land' },
@@ -119,19 +91,13 @@ TEXTS.messen = {
   controls: {
     pulse: 'Impuls senden',
     nightAria: 'Tag oder Nacht',
-    wind: 'Wind',
-    windValue: v => v + ' m/s',
     infoAria: 'Bedienung erklären',
-    note: '<p>Oben im Bild wählst du das Messprinzip: <b>passiv</b> (Strahlung empfangen) oder <b>aktiv</b> (selbst ein Signal senden). Darunter den Kanal oder das Instrument.</p><p>Passiv: <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 14A8 8 0 1 1 10 4a6 6 0 0 0 10 10z"/></svg></span> schaltet zwischen Tag und Nacht um.</p><p>Aktiv: <b>Impuls senden</b> schickt ein Signal los. Rechts unten im Diagramm erscheinen die Echos – in der Reihenfolge, in der sie zurückkommen. Beim Scatterometer stellst du mit dem Regler die Windstärke ein.</p><p>Alles läuft in Zeitlupe: In Wirklichkeit ist ein Radar-Impuls nach 2 bis 3 Tausendstelsekunden wieder zurück.</p>'
+    note: '<p>Oben im Bild wählst du das Messprinzip: <b>passiv</b> (Strahlung empfangen) oder <b>aktiv</b> (selbst ein Signal senden). Darunter den Kanal oder das Instrument.</p><p>Passiv: <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 14A8 8 0 1 1 10 4a6 6 0 0 0 10 10z"/></svg></span> schaltet zwischen Tag und Nacht um.</p><p>Aktiv: <b>Impuls senden</b> schickt ein Signal los. Im Diagramm erscheinen die Echos – in der Reihenfolge, in der sie zurückkommen.</p><p>Alles läuft in Zeitlupe: In Wirklichkeit ist ein Radar-Impuls nach 2 bis 3 Tausendstelsekunden wieder zurück.</p>'
   },
 
   tasks: {
-    radar: 'Schick mit dem Radar einen Impuls los. Von wo kommen Echos zurück?',
-    doneRadar: 'Von der Wolke, vom Regen und vom Boden. Das Echo aus größerer Höhe ist zuerst da – so wird aus der Laufzeit eine Höhe.',
-    lidar: 'Jetzt das Lidar: Kommt sein Licht durch die dicke Wolke bis zum Boden?',
-    doneLidar: 'Nein – die dicke Wolke verschluckt das Laserlicht. Dafür sieht das Lidar die Eiswolke und den Staub, die das Radar kaum bemerkt.',
-    scatter: 'Stell beim Scatterometer starken Wind ein (mehr als 15 m/s) und miss.',
-    doneScatter: 'Starker Wind, raue See, starkes Echo. So messen Satelliten den Wind über den Ozeanen – auch dort, wo keine Wetterstation steht.',
+    pulse: 'Aktiv: Schick einen Impuls los. Von wo kommen Echos zurück – und welches kommt zuerst?',
+    donePulse: 'Zuerst das Echo der hohen Eiswolke, dann Wolke und Regen, zuletzt der Boden. Je weiter weg, desto länger braucht das Echo – so wird aus der Laufzeit eine Höhe.',
     night: 'Passiv: Schalte auf Nacht und probiere „Sichtbar“ und „Infrarot“. Welcher Kanal misst noch etwas?',
     doneNight: 'Nur der Infrarotkanal (und der Wasserdampfkanal): Wärmestrahlung gibt es auch ohne Sonne.'
   },

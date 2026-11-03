@@ -59,9 +59,6 @@
         <button type="button" class="chip-btn" data-inst="vis" data-for="passive"><span data-t="messen.inst.vis.chip"></span></button>
         <button type="button" class="chip-btn" data-inst="ir" data-for="passive"><span data-t="messen.inst.ir.chip"></span></button>
         <button type="button" class="chip-btn" data-inst="wv" data-for="passive"><span data-t="messen.inst.wv.chip"></span></button>
-        <button type="button" class="chip-btn" data-inst="radar" data-for="active" hidden><span data-t="messen.inst.radar.chip"></span></button>
-        <button type="button" class="chip-btn" data-inst="lidar" data-for="active" hidden><span data-t="messen.inst.lidar.chip"></span></button>
-        <button type="button" class="chip-btn" data-inst="scatter" data-for="active" hidden><span data-t="messen.inst.scatter.chip"></span></button>
       </div>
 
       <div class="ctl-row">
@@ -72,10 +69,6 @@
         <button type="button" class="btn icon" id="night-btn" aria-pressed="false" data-t-aria="messen.controls.nightAria">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 14A8 8 0 1 1 10 4a6 6 0 0 0 10 10z"/></svg>
         </button>
-        <label class="select-field range-field" id="wind-field" hidden>
-          <span class="row"><span class="select-label" data-t="messen.controls.wind"></span><output id="wind-out"></output></span>
-          <input type="range" id="wind" min="0" max="25" step="1" value="6">
-        </label>
         <button type="button" class="info" aria-controls="controls-help" data-t-aria="messen.controls.infoAria"></button>
       </div>
       <div class="info-note" id="controls-help" hidden data-t-html="messen.controls.note"></div>
@@ -117,9 +110,7 @@
     <div id="measure-tasks">
       <ol class="quiz-list">
         <li class="quiz-item" data-task="night"><p class="quiz-q" data-t="messen.tasks.night"></p><p class="quiz-feedback" data-t="messen.tasks.doneNight"></p></li>
-        <li class="quiz-item" data-task="radar"><p class="quiz-q" data-t="messen.tasks.radar"></p><p class="quiz-feedback" data-t="messen.tasks.doneRadar"></p></li>
-        <li class="quiz-item" data-task="lidar"><p class="quiz-q" data-t="messen.tasks.lidar"></p><p class="quiz-feedback" data-t="messen.tasks.doneLidar"></p></li>
-        <li class="quiz-item" data-task="scatter"><p class="quiz-q" data-t="messen.tasks.scatter"></p><p class="quiz-feedback" data-t="messen.tasks.doneScatter"></p></li>
+        <li class="quiz-item" data-task="pulse"><p class="quiz-q" data-t="messen.tasks.pulse"></p><p class="quiz-feedback" data-t="messen.tasks.donePulse"></p></li>
       </ol>
     </div>
   </dialog>
