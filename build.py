@@ -53,7 +53,7 @@ PAGE = Template('''<!DOCTYPE html>
 </div>
 
 <main class="page">
-  <div class="lab">
+  <div class="lab">$picker
     <div class="lab-stage">
       <div class="stage-frame square fit" id="stage-frame">
         <model-viewer
@@ -78,17 +78,12 @@ PAGE = Template('''<!DOCTYPE html>
 
     <div class="lab-post">
       <p class="readout" id="part-readout" aria-live="polite" data-t="part.idle"></p>
-      <p class="hint" data-t="page.hint"></p>
-
-      <div class="controls">
-        <button type="button" class="btn" id="rotate-btn" aria-pressed="false" data-t="controls.rotate"></button>
-        <button type="button" class="info" aria-controls="controls-note" data-t-aria="controls.infoAria"></button>
-      </div>
+      <p class="hint"><span data-t="page.hint"></span> <button type="button" class="info" aria-controls="controls-note" data-t-aria="controls.infoAria"></button></p>
       <div class="info-note" id="controls-note" hidden data-t-html="page.controlsNote"></div>
       <p class="desk-note" id="desk-note" hidden data-t="ar.deskNote"></p>
       <p class="desk-note" id="load-error" hidden data-t="ar.loadError"></p>
 
-      <div class="readout-grid facts" role="group" data-t-aria="facts.aria">
+      <div class="readout-grid facts" id="facts" role="group" data-t-aria="facts.aria">
         <div><span data-t="page.facts.0.label"></span><b data-t="page.facts.0.value"></b></div>
         <div><span data-t="page.facts.1.label"></span><b data-t="page.facts.1.value"></b></div>
         <div><span data-t="page.facts.2.label"></span><b data-t="page.facts.2.value"></b></div>
@@ -111,6 +106,7 @@ PAGE = Template('''<!DOCTYPE html>
   </div>
 
   <div class="topics">
+    <details class="topic"><summary data-t="topics.goes.title"></summary><div class="topic-body" data-t-html="topics.goes.body"></div></details>
     <details class="topic"><summary data-t="topics.orbit.title"></summary><div class="topic-body" data-t-html="topics.orbit.body"></div></details>
     <details class="topic"><summary data-t="topics.job.title"></summary><div class="topic-body" data-t-html="topics.job.body"></div></details>
     <details class="topic"><summary data-t="topics.size.title"></summary><div class="topic-body" data-t-html="topics.size.body"></div></details>
@@ -137,25 +133,35 @@ PAGE = Template('''<!DOCTYPE html>
 NAV = '\n    <nav class="nav" data-t-aria="chapters.aria">\n      <a href="index.html"><span data-t="chapters.start"></span></a>\n      <a href="bahnen.html"><span class="num">1</span><span data-t="chapters.one"></span></a>\n      <a href="kanaele.html"><span class="num">2</span><span data-t="chapters.two"></span></a>\n      <a href="messen.html"><span class="num">3</span><span data-t="chapters.three"></span></a>\n      <a href="satellit.html" aria-current="page"><span class="num">4</span><span data-t="chapters.four"></span></a>\n    </nav>'
 PAGER = '\n\n  <div class="next-part split">\n    <a class="btn big" href="messen.html"><span aria-hidden="true">←</span> <span data-t="chapters.toThree"></span></a>\n    <a class="btn big primary" href="index.html"><span data-t="chapters.toStart"></span> <span aria-hidden="true">→</span></a>\n  </div>'
 
+# free view only: choose the satellite (the true-scale page is calibrated for MTG-I1)
+PICKER = '''
+    <div class="lab-pre">
+      <div class="seg sat-seg" id="sat-picker" role="group" data-t-aria="sats.aria">
+        <button type="button" class="chip-btn" data-sat="mtgi" aria-pressed="true"><span data-t="sats.mtgi.chip"></span></button>
+        <button type="button" class="chip-btn" data-sat="goes" aria-pressed="false"><span data-t="sats.goes.chip"></span></button>
+        <button type="button" class="chip-btn" data-sat="both" aria-pressed="false"><span data-t="sats.both.chip"></span></button>
+      </div>
+    </div>'''
+
 # folder -> (file name, settings)
 VARIANTS = {
     '.': dict(
         file='satellit.html',
         logo='<a class="logo" href="index.html" data-brand="logo"></a>',
-        nav=NAV, pager=PAGER,
+        nav=NAV, pager=PAGER, picker=PICKER,
         variant='standard',
-        title='MTG-I1 – Wettersatellit in AR',
+        title='Wettersatelliten in AR',
         ios='', arscale='auto',
         extra='\n          auto-rotate\n          rotation-per-second="8deg"',
         orbit='35deg 75deg auto', minorbit='auto auto auto', maxorbit='auto auto auto'),
     'mtg-satellite-ar2': dict(
         file='index.html',
         logo='<span class="logo" data-brand="logo"></span>',
-        nav='', pager='',
+        nav='', pager='', picker='',
         variant='truescale',
         title='MTG-I1 in Originalgröße – Wettersatellit in AR',
         ios='\n          ios-src="MTGI.usdz"', arscale='fixed',
-        extra='\n          disable-zoom',
+        extra='\n          auto-rotate\n          rotation-per-second="8deg"\n          disable-zoom',
         orbit='35deg 75deg 15m', minorbit='auto auto 15m', maxorbit='auto auto 15m'),
 }
 

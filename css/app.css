@@ -320,3 +320,9 @@
 .zoom-btn { width: 40px; height: 40px; padding: 0; display: flex; align-items: center; justify-content: center; border: var(--line-width) solid var(--line); background: var(--paper); color: var(--ink); cursor: pointer; touch-action: manipulation; }
 .zoom-btn svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.4; }
 :root[data-view="desktop"] .zoom-btn:hover { background: var(--accent-pale); }
+
+/* chapter 4: satellite picker above the 3D view */
+.sat-seg { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin: 0 0 4px; }
+.sat-seg .chip-btn { justify-content: center; min-height: 46px; font-size: 14px; }
+.sat-seg .chip-btn[aria-pressed="true"] { background: var(--active); color: var(--active-ink); }
+.lab-post .hint .info { vertical-align: -6px; }

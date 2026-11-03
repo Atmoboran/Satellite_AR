@@ -1,12 +1,13 @@
 // Satellit (MTG-I1): settings of the <model-viewer>, first-hint badge, the
-// "Drehen" switch, tapping parts of the satellite, tasks, AR status.
+// satellite picker (free view: MTG-I1, GOES-R, both), tapping parts of
+// MTG-I1, tasks, AR status. The model always turns slowly by itself
+// (auto-rotate); after a drag it pauses for a moment and goes on.
 // <model-viewer> itself is self-hosted in js/vendor/ (loaded before this file).
 (() => {
   'use strict';
 
   const viewer = document.getElementById('viewer');
   const frame = document.getElementById('stage-frame');
-  const rotateBtn = document.getElementById('rotate-btn');
   const partReadout = document.getElementById('part-readout');
   const deskNote = document.getElementById('desk-note');
   const loadError = document.getElementById('load-error');
@@ -27,10 +28,31 @@
   // ---- tasks ---------------------------------------------------------------
   const tasks = SCAPE.tasks(document.getElementById('sat-tasks'));
 
-  // ---- "Drehen": slow turn on/off --------------------------------------------
-  const syncRotate = () => rotateBtn.setAttribute('aria-pressed', String(!!viewer.autoRotate));
-  rotateBtn.addEventListener('click', () => { viewer.autoRotate = !viewer.autoRotate; syncRotate(); });
-  syncRotate();
+  // ---- satellite picker (free view only) ------------------------------------
+  const picker = document.getElementById('sat-picker');
+  const factCells = [...document.querySelectorAll('#facts > div')];
+  let current = 'mtgi';
+  const setSat = key => {
+    const S = t('sats.' + key);
+    current = key;
+    picker.querySelectorAll('[data-sat]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.sat === key)));
+    if (S.iosSrc) viewer.setAttribute('ios-src', S.iosSrc); else viewer.removeAttribute('ios-src');
+    viewer.src = S.src;
+    viewer.alt = S.alt;
+    partReadout.textContent = S.readout;
+    S.facts.forEach((f, i) => {
+      if (!factCells[i]) return;
+      factCells[i].querySelector('span').textContent = f.label;
+      factCells[i].querySelector('b').textContent = f.value;
+    });
+  };
+  if (picker) {
+    picker.addEventListener('click', e => {
+      const b = e.target.closest('[data-sat]');
+      if (b && b.dataset.sat !== current) setSat(b.dataset.sat);
+    });
+    setSat('mtgi');
+  }
 
   // ---- turning by hand: sum up the azimuth the visitor turned --------------
   // Only turns made by the visitor count (not the slow automatic turn).
@@ -58,6 +80,7 @@
   viewer.addEventListener('pointerup', e => {
     if (!down || Math.hypot(e.clientX - down.x, e.clientY - down.y) > 8) { down = null; return; }
     down = null;
+    if (current !== 'mtgi') return;      // the parts are known for MTG-I1 only
     const hit = viewer.positionAndNormalFromPoint(e.clientX, e.clientY);   // window coordinates
     if (!hit) return;
     const size = viewer.getDimensions();
