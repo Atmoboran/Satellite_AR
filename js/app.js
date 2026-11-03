@@ -77,36 +77,21 @@
   // ---- Ctrl + mouse wheel zooms; the plain wheel scrolls the page ----------
   frame.addEventListener('wheel', e => { if (!e.ctrlKey) e.stopPropagation(); }, { capture: true });
 
-  // ---- Firefox on Android: Scene Viewer directly ----------------------------
-  // <model-viewer> offers no AR button in Firefox for Android. Google's AR
-  // viewer can still be opened with an Android intent link (the same one
-  // <model-viewer> uses in Chrome); Firefox hands such links to the app.
-  // The page itself is the fallback if the intent cannot be opened.
-  const sceneViewerUrl = () => {
-    const file = new URL(viewer.src, location.href).href;
-    const params = 'file=' + encodeURIComponent(file) + '&mode=ar_preferred&title=' + encodeURIComponent(viewer.alt || '');
-    return 'intent://arvr.google.com/scene-viewer/1.2?' + params +
-      '#Intent;scheme=https;package=com.google.android.googlequicksearchbox;action=android.intent.action.VIEW;' +
-      'S.browser_fallback_url=' + encodeURIComponent(location.href) + ';end;';
-  };
   const ua = navigator.userAgent;
   const firefoxAndroid = /android/i.test(ua) && /firefox/i.test(ua);
   const phone = /android|iphone|ipad|ipod/i.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
 
   // ---- the AR button below the picture -----------------------------------------
-  // Shown where <model-viewer> can start AR; in Firefox for Android it opens
-  // Scene Viewer directly (see above).
+  // Shown only where <model-viewer> can start AR (not in Firefox for Android,
+  // see README).
   const arButton = document.getElementById('ar-button');
-  arButton.addEventListener('click', () => {
-    if (viewer.canActivateAR) viewer.activateAR();
-    else if (firefoxAndroid) location.href = sceneViewerUrl();
-  });
+  arButton.addEventListener('click', () => { if (viewer.canActivateAR) viewer.activateAR(); });
 
   // ---- AR availability and status ------------------------------------------
   viewer.addEventListener('load', () => {
     loadError.hidden = true;
     deskNote.hidden = !!viewer.canActivateAR;
-    arButton.hidden = !(viewer.canActivateAR || firefoxAndroid);
+    arButton.hidden = !viewer.canActivateAR;
     // on a phone without AR say why, instead of "open this on a phone"
     if (!viewer.canActivateAR && phone) deskNote.textContent = t(firefoxAndroid ? 'ar.firefoxNote' : 'ar.phoneNote');
   });

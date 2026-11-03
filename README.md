@@ -70,10 +70,13 @@ python3 -m http.server 8000      # then open http://localhost:8000/
 
 * The page itself opens by double-click (`file://`), but browsers do not let
   a page read the 3D model from disk; the page then says so.
-* **Firefox for Android:** `<model-viewer>` shows no AR button there on
-  purpose. The page adds its own button that opens Google's Scene Viewer
-  with an Android intent link (as `<model-viewer>` does in Chrome); if that
-  fails, the note under the picture suggests Chrome or Samsung Internet.
+* **Firefox for Android: no AR.** `<model-viewer>` deliberately offers no AR
+  there (it only uses Scene Viewer on Android when the browser is not
+  Firefox), so no AR button appears; the page tells Firefox users to switch
+  to Chrome or Samsung Internet. Opening Google's Scene Viewer directly with
+  an Android intent link (`intent://arvr.google.com/scene-viewer/1.2?…`) was
+  tried and did not work in Firefox on a real phone, so it was taken out
+  again (it is in the git history, commit e5be4e4).
 * **AR needs real HTTPS** from a real domain (GitHub Pages, Netlify, …), not
   a local file or an embedded preview. On Android, "In deinem Raum ansehen"
   opens Google Scene Viewer; on iPhone/iPad, AR Quick Look. On a computer
@@ -148,7 +151,7 @@ readouts, controls, explanation and tasks sit on the right.
 
 AR page – phone: poster header, the satellite picker (free view), the square
 3D stage with the fullscreen button, the AR button right below it (only where
-AR is possible, plus the Scene Viewer attempt in Firefox for Android), then
+AR is possible), then
 the part readout, facts and topics (no tasks or Merke box on the AR pages). Desktop (automatic from 1000 px, or
 via the "Desktop-/Handy-Ansicht" toggle, remembered for this app only): the
 3D stage on the left, sized to the screen; everything else on the right.
