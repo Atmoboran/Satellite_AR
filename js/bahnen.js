@@ -2,8 +2,10 @@
 // like Metop) and one in geostationary orbit (GEO, like Meteosat-12).
 // The globe is drawn pixel by pixel in flat CD colours: land/sea, day/night,
 // the area the satellite's imager sees right now (yellow) and, for LEO, what
-// it has seen in the last 12 hours (pale yellow). Earth and orbits are to
-// scale; only the satellite symbols are far too big.
+// it has seen during its last 5 orbits (pale yellow; older stripes fade out,
+// so there is always a fresh one). Earth and orbits are to scale; only the
+// satellite symbols are far too big. Drag turns the view; pinch, Ctrl + wheel
+// or the +/− buttons zoom (towards the finger or the mouse pointer).
 // The small view in the corner shows the Earth as seen from the satellite.
 (() => {
   'use strict';
@@ -22,7 +24,8 @@
   const GEO_R = R + 35786;
   const GEO_LON = 0;                         // Meteosat-12 at 0°
   const GEO_VIEW = Math.acos(R / GEO_R);     // edge of the Earth disc seen from GEO (≈ 81°)
-  const MEMORY = 12 * 3600;                  // "seen in the last 12 hours"
+  const KEEP_ORBITS = 5;                     // pale yellow: what the last 5 orbits saw
+  const MEMORY = KEEP_ORBITS * LEO_T;        // ≈ 8.4 hours
   const SUN = [1, 0, 0];
 
   const earthAngle = t => ((START_UTC - 12) * 3600 + t) * W_E;   // Greenwich faces the Sun at 12:00 UTC
@@ -54,28 +57,30 @@
     U0 = bestU;
   })();
 
-  // What the LEO imager has seen: time of the last look, 1° cells.
-  const seen = new Float64Array(360 * 180);
+  // What the LEO imager has seen: time of the last look, ½° cells.
+  const CPD = 2, GW = 360 * CPD, GH = 180 * CPD;
+  const seen = new Float64Array(GW * GH);
   const markSeen = (sub, t) => {
     const [lonS, latS] = G.toLonLat(sub);
     const rho = SWATH / D2R;
     const sphi = Math.sin(latS * D2R), cphi = Math.cos(latS * D2R), crho = Math.cos(SWATH);
-    const j0 = Math.max(0, Math.floor(90 - latS - rho)), j1 = Math.min(179, Math.ceil(90 - latS + rho));
+    const j0 = Math.max(0, Math.floor((90 - latS - rho) * CPD)), j1 = Math.min(GH - 1, Math.ceil((90 - latS + rho) * CPD));
     for (let j = j0; j <= j1; j++) {
-      const lat = (89.5 - j) * D2R;
+      const lat = (90 - (j + 0.5) / CPD) * D2R;
       const den = Math.cos(lat) * cphi;
       const cosd = den > 1e-9 ? (crho - Math.sin(lat) * sphi) / den : -2;
       if (cosd >= 1) continue;
       const half = cosd <= -1 ? 180 : Math.acos(cosd) / D2R;
-      const i0 = Math.floor(lonS - half + 180), i1 = Math.ceil(lonS + half + 180);
-      for (let i = i0; i <= i1; i++) seen[j * 360 + (((i % 360) + 360) % 360)] = t;
+      const i0 = Math.floor((lonS - half + 180) * CPD), i1 = Math.ceil((lonS + half + 180) * CPD);
+      for (let i = i0; i <= i1; i++) seen[j * GW + (((i % GW) + GW) % GW)] = t;
     }
   };
 
   // ============ STATE ============
   const state = {
     mode: 'leo', t: 0, playing: true, follow: false,
-    az: 0, el: 28 * D2R, zoom: 0,
+    az: 0, el: 28 * D2R, zoom: 0,             // zoom: 0 = LEO framing … 1 = GEO framing (animated)
+    mag: 1, panX: 0, panY: 0,                 // the visitor's zoom and the offset of the picture
     lastSeen: { leo: -Infinity, geo: -Infinity },
     leoTime: 0, geoTime: 0
   };
@@ -83,8 +88,10 @@
     state.t = 0; state.leoTime = 0; state.geoTime = 0;
     state.lastSeen.leo = -Infinity; state.lastSeen.geo = -Infinity;
     seen.fill(-1e12);
-    state.az = earthAngle(0) + (place.lon + 4) * D2R;
-    state.el = 28 * D2R;
+    // look at the place; in GEO (camera turning with the Earth) at the satellite
+    state.az = state.follow ? (GEO_LON + 8) * D2R : earthAngle(0) + (place.lon + 4) * D2R;
+    state.el = (state.mode === 'geo' ? 12 : 28) * D2R;
+    state.mag = 1; state.panX = 0; state.panY = 0;
     checkPlace();
   };
 
@@ -115,19 +122,22 @@
   // ============ COLOURS ============
   const rgb = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
   const mix = (a, b, f) => a.map((v, i) => Math.round(v + (b[i] - v) * f));
-  // index: (land ? 1 : 0) + (night ? 2 : 0); then + 4 × (0 plain, 1 now, 2 earlier)
+  // index: (land ? 1 : 0) + (night ? 2 : 0); then + 4 × (0 plain, 1 now,
+  // 2 … 6 seen 0 … 4 orbits ago: the older, the paler – flat steps, no gradient)
   const PAL = (() => {
     const base = [C.oceanDay, C.landDay, C.oceanNight, C.landNight].map(rgb);
     const now = rgb(C.seenNow), earlier = rgb(C.seenEarlier);
-    return [...base, ...base.map(c => mix(c, now, C.seenNowMix)), ...base.map(c => mix(c, earlier, C.seenEarlierMix))];
+    const out = [...base, ...base.map(c => mix(c, now, C.seenNowMix))];
+    for (let a = 0; a < KEEP_ORBITS; a++) out.push(...base.map(c => mix(c, earlier, C.seenEarlierMix * (1 - a / KEEP_ORBITS))));
+    return out;
   })();
   const SPACE = rgb(C.space);
 
   // ============ CAMERA ============
   // The camera looks at the Earth's centre from direction D (azimuth, elevation),
   // in space or – with "Mitdrehen" – turning with the Earth.
-  const camera = () => {
-    const az = state.az + (state.follow ? earthAngle(state.t) : 0);
+  const camera = (fixedFrame = false) => {
+    const az = state.az + (state.follow && !fixedFrame ? earthAngle(state.t) : 0);
     const D = [Math.cos(state.el) * Math.cos(az), Math.cos(state.el) * Math.sin(az), Math.sin(state.el)];
     const right = G.norm(G.cross([0, 0, 1], D));
     const up = G.cross(D, right);
@@ -161,40 +171,75 @@
     return { k, ex, ey, lon, lat };
   };
 
-  const drawGlobe = (cam, cx, cy, rad, sub, rho, useMemory) => {
-    const n = Math.max(8, Math.min(560, Math.round(2 * rad * DPR)));
-    if (buf.width !== n) { buf.width = n; buf.height = n; img = null; }
-    if (!img) img = bctx.createImageData(n, n);
-    const d = img.data;
-    const ea = earthAngle(state.t), ca = Math.cos(ea), sa = Math.sin(ea);
+  // Only the part of the disc that is on screen is computed, at most
+  // MAX_BUF pixels across, so zooming in stays sharp and fast.
+  const MAX_BUF = 720;
+  // Per pixel, everything that only depends on the camera is cached: the
+  // unit vector (in space, or Earth-fixed while "Mitdrehen" is on), its
+  // latitude row and its longitude. Each frame then only shifts the
+  // longitude by the Earth's rotation – no trigonometry per pixel.
+  let cache = null;
+  const buildCache = (key, bw, bh, x0, y0, sx, sy, cx, cy, rad, cam) => {
+    const n = bw * bh, m = mask();
+    const c = { key, VX: new Float32Array(n), VY: new Float32Array(n), VZ: new Float32Array(n),
+      LON: new Float32Array(n), ROW: new Int32Array(n), GROW: new Int32Array(n), IN: new Uint8Array(n) };
     const { D, right, up } = cam;
-    const crho = Math.cos(rho), t = state.t, m = mask();
-    for (let py = 0; py < n; py++) {
-      const y = 1 - (py + 0.5) * 2 / n;
-      for (let pxi = 0; pxi < n; pxi++) {
-        const x = (pxi + 0.5) * 2 / n - 1;
-        const o = (py * n + pxi) * 4;
-        const r2 = x * x + y * y;
-        if (r2 > 1) { d[o + 3] = 0; continue; }
+    for (let py = 0; py < bh; py++) {
+      const y = (cy - (y0 + (py + 0.5) * sy)) / rad;
+      for (let pxi = 0; pxi < bw; pxi++) {
+        const i = py * bw + pxi, x = (x0 + (pxi + 0.5) * sx - cx) / rad, r2 = x * x + y * y;
+        if (r2 > 1) continue;
         const z = Math.sqrt(1 - r2);
-        const px = x * right[0] + y * up[0] + z * D[0];
-        const py3 = x * right[1] + y * up[1] + z * D[1];
-        const pz = x * right[2] + y * up[2] + z * D[2];
-        const e = earthIndex(px, py3, pz, ca, sa);
-        let k = e.k;
-        if (e.ex * sub[0] + e.ey * sub[1] + pz * sub[2] > crho) k += 4;
-        else if (useMemory) {
-          const j = Math.min(179, Math.floor((0.5 - e.lat / Math.PI) * 180));
-          const i = Math.min(359, Math.floor((e.lon / (2 * Math.PI) + 0.5) * 360));
-          if (t - seen[j * 360 + i] < MEMORY) k += 8;
-        }
-        const col = PAL[k];
-        d[o] = col[0]; d[o + 1] = col[1]; d[o + 2] = col[2]; d[o + 3] = 255;
+        const vx = x * right[0] + y * up[0] + z * D[0], vy = x * right[1] + y * up[1] + z * D[1], vz = x * right[2] + y * up[2] + z * D[2];
+        const lat = Math.asin(Math.max(-1, Math.min(1, vz)));
+        c.IN[i] = 1; c.VX[i] = vx; c.VY[i] = vy; c.VZ[i] = vz;
+        c.LON[i] = Math.atan2(vy, vx);
+        c.ROW[i] = Math.min(m.h - 1, Math.floor((0.5 - lat / Math.PI) * m.h));
+        c.GROW[i] = Math.min(GH - 1, Math.floor((0.5 - lat / Math.PI) * GH));
       }
+    }
+    return c;
+  };
+
+  const drawGlobe = (cam, cx, cy, rad, sub, rho, useMemory) => {
+    const x0 = Math.max(0, Math.floor(cx - rad)), x1 = Math.min(W, Math.ceil(cx + rad));
+    const y0 = Math.max(0, Math.floor(cy - rad)), y1 = Math.min(H, Math.ceil(cy + rad));
+    if (x1 <= x0 || y1 <= y0) return;
+    const f = Math.min(DPR, MAX_BUF / Math.max(x1 - x0, y1 - y0));
+    const bw = Math.max(4, Math.round((x1 - x0) * f)), bh = Math.max(4, Math.round((y1 - y0) * f));
+    if (buf.width !== bw || buf.height !== bh) { buf.width = bw; buf.height = bh; img = null; }
+    if (!img) img = bctx.createImageData(bw, bh);
+    const sx = (x1 - x0) / bw, sy = (y1 - y0) / bh;
+    // with "Mitdrehen" the camera stands still relative to the Earth: cache in that frame
+    const camC = state.follow ? camera(true) : cam;
+    const key = [x0, y0, x1, y1, bw, bh, cx, cy, rad, ...camC.D, ...camC.right, state.follow].join(',');
+    if (!cache || cache.key !== key) cache = buildCache(key, bw, bh, x0, y0, sx, sy, cx, cy, rad, camC);
+    const { VX, VY, VZ, LON, ROW, GROW, IN } = cache;
+    const d = img.data, m = mask(), mw = m.w, md = m.data;
+    const ea = earthAngle(state.t), ca = Math.cos(ea), sa = Math.sin(ea);
+    const follow = state.follow, shift = follow ? 0 : ea, TAU = 2 * Math.PI;
+    const crho = Math.cos(rho), t = state.t, s0 = sub[0], s1 = sub[1], s2 = sub[2];
+    for (let i = 0, n = bw * bh; i < n; i++) {
+      const o = i * 4;
+      if (!IN[i]) { d[o + 3] = 0; continue; }
+      let lon = LON[i] - shift;
+      lon -= TAU * Math.floor((lon + Math.PI) / TAU);
+      const lf = lon / TAU + 0.5;
+      let ex, ey, sunDot;
+      if (follow) { ex = VX[i]; ey = VY[i]; sunDot = ca * ex - sa * ey; }       // Earth-fixed → space: rotate by +ea
+      else { const px = VX[i], py = VY[i]; ex = ca * px + sa * py; ey = -sa * px + ca * py; sunDot = px; }
+      let k = md[ROW[i] * mw + Math.min(mw - 1, (lf * mw) | 0)] + (sunDot < 0 ? 2 : 0);
+      if (ex * s0 + ey * s1 + VZ[i] * s2 > crho) k += 4;
+      else if (useMemory) {
+        const age = t - seen[GROW[i] * GW + Math.min(GW - 1, (lf * GW) | 0)];
+        if (age < MEMORY) k += 8 + 4 * Math.floor(age / LEO_T);
+      }
+      const col = PAL[k];
+      d[o] = col[0]; d[o + 1] = col[1]; d[o + 2] = col[2]; d[o + 3] = 255;
     }
     bctx.putImageData(img, 0, 0);
     ctx.imageSmoothingEnabled = true;
-    ctx.drawImage(buf, cx - rad, cy - rad, 2 * rad, 2 * rad);
+    ctx.drawImage(buf, x0, y0, x1 - x0, y1 - y0);
     ctx.beginPath(); ctx.arc(cx, cy, rad, 0, 2 * Math.PI);
     ctx.strokeStyle = C.label; ctx.globalAlpha = 0.5; ctx.lineWidth = 1.5; ctx.stroke(); ctx.globalAlpha = 1;
   };
@@ -270,15 +315,32 @@
     ctx.fillText(s, x, y);
   };
 
+  // Scale (px per km) and the Earth's centre on screen. LEO: the Earth fills
+  // two thirds of the picture. GEO: as big as possible while the satellite
+  // (in front of and below the Earth when the camera faces it) still fits.
+  // Then the visitor's zoom and offset on top.
+  const baseFraming = () => {
+    const z = state.zoom, ease = z * z * (3 - 2 * z), m = Math.min(W, H);
+    const kLeo = 0.33 * m / R;
+    const drop = GEO_R * Math.sin(state.el);                   // the satellite's offset below the centre, in km
+    const kGeo = Math.min(0.36 * m / R, 0.80 * H / (Math.abs(drop) + R + 1500));
+    const top = Math.min(-R, drop) * kGeo, bottom = Math.max(R, drop) * kGeo;
+    const cyGeo = H / 2 - (top + bottom) / 2;
+    return {
+      k: Math.exp(Math.log(kLeo) + (Math.log(kGeo) - Math.log(kLeo)) * ease),
+      cy: H * 0.54 + (cyGeo - H * 0.54) * ease
+    };
+  };
+  const framing = () => {
+    const b = baseFraming();
+    return { k: b.k * state.mag, cx: W / 2 + state.panX, cy: b.cy + state.panY };
+  };
+
   const draw = () => {
     ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
     ctx.fillStyle = C.space; ctx.fillRect(0, 0, W, H);
     const cam = camera();
-    const z = state.zoom, ease = z * z * (3 - 2 * z);
-    const kLeo = 0.33 * Math.min(W, H) / R;
-    const kGeo = Math.min(0.46 * W / GEO_R, 0.40 * H / (GEO_R * Math.abs(Math.sin(state.el)) + R));
-    const k = Math.exp(Math.log(kLeo) + (Math.log(kGeo) - Math.log(kLeo)) * ease);
-    const cx = W / 2, cy = H * (0.54 - 0.02 * ease);
+    const { k, cx, cy } = framing();
     const t = state.t, mode = state.mode;
     const sp = satPos(mode, t), ss = project(sp, cam, cx, cy, k);
     const sub = G.norm(toFixed(sp, t));
@@ -416,8 +478,24 @@
   };
 
   // ============ INPUT ============
+  // "Mitdrehen": keep the picture where it is when switching
+  const setFollow = on => {
+    if (on === state.follow) return;
+    const ea = earthAngle(state.t);
+    state.az += on ? -ea : ea;
+    state.follow = on;
+    followBtn.setAttribute('aria-pressed', String(on));
+  };
   const setMode = mode => {
+    if (mode === state.mode) return;
     state.mode = mode;
+    // GEO: the camera turns with the Earth and faces the satellite, so the
+    // satellite stays in the (now closer) picture; LEO: back to space-fixed.
+    // GEO is also seen from lower down, so the satellite sits just below the
+    // Earth and the Earth can be drawn big.
+    if (mode === 'geo') { setFollow(true); state.az = (GEO_LON + 8) * D2R; state.el = 12 * D2R; }
+    else { setFollow(false); state.el = 28 * D2R; }
+    state.mag = 1; state.panX = 0; state.panY = 0;
     chips.forEach(c => { c.setAttribute('aria-pressed', String(c.dataset.mode === mode)); c.classList.remove('attn'); });
     setModeCard();
     updateReadouts();
@@ -427,25 +505,70 @@
 
   playBtn.addEventListener('click', () => { state.playing = !state.playing; syncPlay(); });
   document.getElementById('sim-reset').addEventListener('click', () => { resetModel(); updateReadouts(); });
-  followBtn.addEventListener('click', () => {
-    // keep the picture where it is when switching
-    const ea = earthAngle(state.t);
-    state.az += state.follow ? ea : -ea;
-    state.follow = !state.follow;
-    followBtn.setAttribute('aria-pressed', String(state.follow));
-  });
+  followBtn.addEventListener('click', () => setFollow(!state.follow));
 
-  let drag = null;
-  canvas.addEventListener('pointerdown', e => { drag = { x: e.clientX, y: e.clientY }; canvas.setPointerCapture(e.pointerId); badge.hide(); });
-  canvas.addEventListener('pointermove', e => {
-    if (!drag) return;
-    state.az -= (e.clientX - drag.x) * 0.008;
-    state.el = Math.max(-75 * D2R, Math.min(80 * D2R, state.el + (e.clientY - drag.y) * 0.008));
-    drag = { x: e.clientX, y: e.clientY };
+  // ---- zoom: towards a point on screen (finger, mouse pointer, centre) ----
+  const MAG_MIN = { leo: 0.6, geo: 0.3 }, MAG_MAX = 14;
+  const zoomAt = (factor, ax, ay) => {
+    const b = baseFraming();
+    const mag = Math.max(MAG_MIN[state.mode], Math.min(MAG_MAX, state.mag * factor));
+    const f = mag / state.mag;
+    // the point under (ax, ay) stays where it is
+    const cx = W / 2 + state.panX, cy = b.cy + state.panY;
+    state.panX = ax - (ax - cx) * f - W / 2;
+    state.panY = ay - (ay - cy) * f - b.cy;
+    state.mag = mag;
+    clampPan();
+  };
+  // the Earth's centre may move at most one Earth radius off the middle
+  const clampPan = () => {
+    const lim = Math.max(0, R * baseFraming().k * state.mag);
+    if (state.mag <= 1) { state.panX *= state.mag; state.panY *= state.mag; }
+    state.panX = Math.max(-lim, Math.min(lim, state.panX));
+    state.panY = Math.max(-lim, Math.min(lim, state.panY));
+  };
+  const local = e => { const r = canvas.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+  document.getElementById('zoom-in').addEventListener('click', () => { zoomAt(1.6, W / 2, H / 2); badge.hide(); });
+  document.getElementById('zoom-out').addEventListener('click', () => { zoomAt(1 / 1.6, W / 2, H / 2); badge.hide(); });
+  // Ctrl + wheel (also a trackpad pinch) zooms; the plain wheel scrolls the page
+  canvas.addEventListener('wheel', e => {
+    if (!e.ctrlKey) return;
+    e.preventDefault();
+    const [x, y] = local(e);
+    zoomAt(Math.exp(-e.deltaY * 0.01), x, y);
+  }, { passive: false });
+
+  // ---- one finger turns the view, two fingers zoom and move it ----
+  const pointers = new Map();
+  let pinch = null;
+  const pinchState = () => {
+    const [a, b] = [...pointers.values()];
+    return { d: Math.hypot(a[0] - b[0], a[1] - b[1]) || 1, mx: (a[0] + b[0]) / 2, my: (a[1] + b[1]) / 2 };
+  };
+  canvas.addEventListener('pointerdown', e => {
+    canvas.setPointerCapture(e.pointerId);
+    pointers.set(e.pointerId, local(e));
+    badge.hide();
+    if (pointers.size === 2) pinch = pinchState();
   });
-  const endDrag = () => { drag = null; };
-  canvas.addEventListener('pointerup', endDrag);
-  canvas.addEventListener('pointercancel', endDrag);
+  canvas.addEventListener('pointermove', e => {
+    if (!pointers.has(e.pointerId)) return;
+    const prev = pointers.get(e.pointerId), now = local(e);
+    pointers.set(e.pointerId, now);
+    if (pointers.size >= 2 && pinch) {
+      const p = pinchState();
+      state.panX += p.mx - pinch.mx; state.panY += p.my - pinch.my;
+      zoomAt(p.d / pinch.d, p.mx, p.my);
+      pinch = p;
+    } else if (pointers.size === 1) {
+      const sens = 0.008 / Math.sqrt(state.mag);
+      state.az -= (now[0] - prev[0]) * sens;
+      state.el = Math.max(-75 * D2R, Math.min(80 * D2R, state.el + (now[1] - prev[1]) * sens));
+    }
+  });
+  const endPointer = e => { pointers.delete(e.pointerId); if (pointers.size < 2) pinch = null; };
+  canvas.addEventListener('pointerup', endPointer);
+  canvas.addEventListener('pointercancel', endPointer);
 
   // ============ LOOP ============
   let last = performance.now(), roTimer = 0;

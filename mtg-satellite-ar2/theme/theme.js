@@ -69,7 +69,7 @@ THEME.orbits = {
   seenNow: '#FFE547',                     // inside the instrument's view right now
   seenNowMix: 0.72,
   seenEarlier: '#FFF487',                 // seen within the last 12 hours
-  seenEarlierMix: 0.55,
+  seenEarlierMix: 0.6,                    // the last orbit; each older one paler
   orbit: '#FFFFFF', orbitOther: '#C5B8DB',
   satellite: '#FFE547', satelliteLine: '#000000',
   place: '#E41513',                       // Offenbach
