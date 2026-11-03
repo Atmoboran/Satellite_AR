@@ -97,6 +97,10 @@
   viewer.addEventListener('load', () => {
     loadError.hidden = true;
     deskNote.hidden = !!viewer.canActivateAR;
+    // on a phone without AR say why, instead of "open this on a phone"
+    const ua = navigator.userAgent;
+    const phone = /android|iphone|ipad|ipod/i.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+    if (!viewer.canActivateAR && phone) deskNote.textContent = t(/android/i.test(ua) && /firefox/i.test(ua) ? 'ar.firefoxNote' : 'ar.phoneNote');
   });
   viewer.addEventListener('error', () => { loadError.hidden = false; });
   viewer.addEventListener('ar-status', e => {
