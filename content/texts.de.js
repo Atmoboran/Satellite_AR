@@ -156,17 +156,6 @@ window.TEXTS = {
     body: 'Satellitenkörper – darin stecken die Kameras'
   },
 
-  tasks: {
-    title: 'Aufgaben',
-    turn: 'Dreh den Satelliten einmal ganz herum.',
-    wing: 'Tippe bei MTG-I1 auf einen Solarflügel.'
-  },
-
-  merke: {
-    title: 'Merke',
-    text: 'Ein geostationärer Wettersatellit wie MTG-I1 kreist so schnell um die Erde, wie sie sich dreht. Darum bleibt er immer über derselben Stelle. Von dort macht er alle 10 Minuten ein neues Bild seiner Erdhälfte.'
-  },
-
   facts: { aria: 'Steckbrief des Satelliten' },
 
   topics: {

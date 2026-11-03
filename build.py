@@ -89,19 +89,6 @@ PAGE = Template('''<!DOCTYPE html>
         <div><span data-t="page.facts.2.label"></span><b data-t="page.facts.2.value"></b></div>
         <div><span data-t="page.facts.3.label"></span><b data-t="page.facts.3.value"></b></div>
       </div>
-
-      <div class="tasks" id="sat-tasks">
-        <h3 data-t="tasks.title"></h3>
-        <ul>
-          <li data-task="turn"><span class="box"></span><span data-t="tasks.turn"></span></li>
-          <li data-task="wing"><span class="box"></span><span data-t="tasks.wing"></span></li>
-        </ul>
-      </div>
-      <div class="merke locked" data-for="sat-tasks">
-        <h3 data-t="merke.title"></h3>
-        <p data-t="merke.text"></p>
-        <span class="locked-note"></span>
-      </div>
     </div>
   </div>
 

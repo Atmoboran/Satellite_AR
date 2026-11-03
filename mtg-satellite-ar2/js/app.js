@@ -1,6 +1,6 @@
 // Satellit (MTG-I1): settings of the <model-viewer>, first-hint badge, the
 // satellite picker (free view: MTG-I1, GOES-R, both), tapping parts of
-// MTG-I1, tasks, AR status. The model always turns slowly by itself
+// MTG-I1, AR status. The model always turns slowly by itself
 // (auto-rotate); after a drag it pauses for a moment and goes on.
 // <model-viewer> itself is self-hosted in js/vendor/ (loaded before this file).
 (() => {
@@ -25,8 +25,6 @@
   const badge = SCAPE.badge(frame);
   badge.show(t('badge'));
 
-  // ---- tasks ---------------------------------------------------------------
-  const tasks = SCAPE.tasks(document.getElementById('sat-tasks'));
 
   // ---- satellite picker (free view only) ------------------------------------
   const picker = document.getElementById('sat-picker');
@@ -55,22 +53,9 @@
     queueMicrotask(() => setSat('mtgi'));   // after the Scene Viewer helpers below exist
   }
 
-  // ---- turning by hand: sum up the azimuth the visitor turned --------------
-  // Only turns made by the visitor count (not the slow automatic turn).
-  const TAU = 2 * Math.PI;
-  let lastTheta = null;
-  let turned = 0;
+  // ---- the hint goes once the visitor turns the model by hand ----------------
   viewer.addEventListener('camera-change', e => {
-    const theta = viewer.getCameraOrbit().theta;
-    if (e.detail && e.detail.source === 'user-interaction') {
-      badge.hide();
-      if (lastTheta !== null) {
-        const d = ((theta - lastTheta) % TAU + TAU * 1.5) % TAU - Math.PI;   // wrapped to −π…π
-        turned += d;
-        if (Math.abs(turned) >= TAU * 0.95) tasks.done('turn');
-      }
-    }
-    lastTheta = theta;
+    if (e.detail && e.detail.source === 'user-interaction') badge.hide();
   });
 
   // ---- tapping a part: solar wing or body ---------------------------------
@@ -88,7 +73,6 @@
     const center = viewer.getBoundingBoxCenter();
     const isWing = Math.abs(hit.position.y - center.y) > 0.15 * size.y;
     partReadout.textContent = t(isWing ? 'part.wing' : 'part.body');
-    if (isWing) tasks.done('wing');
   });
 
   // ---- Ctrl + mouse wheel zooms; the plain wheel scrolls the page ----------
