@@ -188,13 +188,16 @@
 .poster.start .headline { font-size: clamp(42px, 6.6vw, 100px); }
 :root[data-view="desktop"] .poster.start { min-height: 0; padding-bottom: 36px; }
 .intro-block { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px 40px; margin: 6px 0 30px; }
-:root[data-view="desktop"] .intro-block { grid-template-columns: minmax(0, 1.65fr) minmax(280px, 1fr); align-items: start; }
+:root[data-view="desktop"] .intro-block { grid-template-columns: minmax(0, 1.1fr) minmax(280px, 1fr); align-items: start; }
 .intro-text p { font-size: 18px; line-height: 1.5; margin: 0 0 12px; max-width: 34em; }
 .intro-text .claim { font-weight: var(--fw-medium); font-size: 13px; letter-spacing: .07em; text-transform: var(--caps); margin-top: 18px; }
 
 /* 16:9 video with a flat CD poster in front until the visitor starts it */
-.video { position: relative; aspect-ratio: 16 / 9; border: var(--line-width) solid var(--line); background: var(--video-bg); overflow: hidden; isolation: isolate; }
-.video iframe, .video .yt-host { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; }
+/* The EUMETSAT stream is 16:9 with the round Earth in the middle and black
+   bars left and right: the frame is square and the player is scaled to the
+   frame's height, so the bars fall outside and the Earth fills the square. */
+.video { position: relative; aspect-ratio: 1 / 1; width: min(100%, 80svh); border: var(--line-width) solid var(--line); background: var(--video-bg); overflow: hidden; isolation: isolate; }
+.video iframe, .video .yt-host { position: absolute; top: 0; left: 50%; width: 177.78%; height: 100%; transform: translateX(-50%); border: 0; display: block; }
 .video-cover { position: absolute; inset: 0; color: var(--ink-inverse); }
 .video-cover .vf { position: absolute; z-index: -2; }
 .video-cover .vf1 { inset: 0; background: var(--c-navy); }

@@ -55,7 +55,9 @@
         host: 'https://www.youtube-nocookie.com',
         videoId: V.id,
         width: '100%', height: '100%',
-        playerVars: { autoplay: 1, playsinline: 1, rel: 0, modestbranding: 1 },
+        // controls: 0 – the square frame crops the sides, where the control
+        // bar's buttons would sit; a tap on the picture still pauses.
+        playerVars: { autoplay: 1, playsinline: 1, rel: 0, modestbranding: 1, controls: 0, iv_load_policy: 3 },
         events: {
           onReady: e => {
             clearTimeout(timer);
