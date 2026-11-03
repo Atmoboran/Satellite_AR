@@ -21,10 +21,19 @@
   // pixels high – and scaled up with CSS to fill the square. Softer, but it
   // loads less and runs more smoothly on phones.
   const TARGET = 480;
-  const layoutH = () => Math.max(180, Math.min(box.clientHeight, Math.round(TARGET / (window.devicePixelRatio || 1))));
-  let LH = 0;
-  const fit = () => { if (LH) box.style.setProperty('--yt-scale', String(box.clientHeight / LH)); };
+  // YouTube needs at least 200 × 200 CSS pixels, so never smaller than that.
+  const layoutH = () => Math.max(200, Math.min(box.clientHeight, Math.round(TARGET / (window.devicePixelRatio || 1))));
+  // Scale the player from its real, measured size (whatever YouTube made of
+  // it) to the square's height and centre it – in pixels, no percentages.
+  const fit = () => {
+    const f = box.querySelector('iframe');
+    if (!f || !f.offsetWidth || !f.offsetHeight) return;
+    const s = box.clientHeight / f.offsetHeight;
+    f.style.transform = 'scale(' + s + ')';
+    f.style.left = ((box.clientWidth - f.offsetWidth * s) / 2) + 'px';
+  };
   window.addEventListener('resize', fit);
+  if (window.ResizeObserver) new ResizeObserver(fit).observe(box);
   const link = document.getElementById('video-link');
   if (link) link.href = V.url;
 
@@ -65,13 +74,13 @@
       new YT.Player(host, {
         host: 'https://www.youtube-nocookie.com',
         videoId: V.id,
-        width: String(Math.round((LH = layoutH()) * 16 / 9)), height: String(LH),
+        width: String(Math.round(layoutH() * 16 / 9)), height: String(layoutH()),
         // controls: 0 – the square frame crops the sides, where the control
         // bar's buttons would sit; a tap on the picture still pauses.
         playerVars: { autoplay: 1, playsinline: 1, rel: 0, modestbranding: 1, controls: 0, iv_load_policy: 3 },
         events: {
           onReady: e => {
-            fit();
+            fit(); setTimeout(fit, 500); setTimeout(fit, 2000);
             clearTimeout(timer);
             cover.hidden = true; status.hidden = true;
             try { e.target.playVideo(); } catch (err) { /* the visitor taps play in the player */ }
