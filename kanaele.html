@@ -57,6 +57,13 @@
 
     <div class="lab-post">
       <p class="model-note muted" data-t="kanaele.stageNote"></p>
+      <div class="readout-grid cols probe-grid" aria-live="polite">
+        <div data-ch="vis"><span data-t-html="kanaele.readout.vis"></span><b id="ro-vis">–</b></div>
+        <div data-ch="ir"><span data-t-html="kanaele.readout.ir"></span><b id="ro-ir">–</b></div>
+        <div data-ch="wv"><span data-t-html="kanaele.readout.wv"></span><b id="ro-wv">–</b></div>
+      </div>
+      <p class="readout here"><span data-t="kanaele.readout.here"></span> <span id="ro-what" data-t="kanaele.readout.none"></span></p>
+
       <p class="legend-title" data-t="kanaele.sceneTitle"></p>
       <div class="seg scene-seg" role="group" data-t-aria="kanaele.sceneAria">
         <button type="button" class="chip-btn" data-scene="herbst" aria-pressed="true"><span data-t="kanaele.scenes.herbst.label"></span></button>

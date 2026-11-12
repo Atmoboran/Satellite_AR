@@ -7,18 +7,43 @@ TEXTS.kanaele = {
   poster: {
     kicker: 'Kapitel 3',
     headline: 'Mit welchen<br>Augen?',
-    lead: 'Ein Wettersatellit misst Strahlung in verschiedenen Wellenlängen. Jeder Messkanal verrät etwas anderes über dieselbe Wetterlage. Schalte um, wechsle die Wetterlage und vergleiche.'
+    lead: 'Ein Wettersatellit misst Strahlung in verschiedenen Wellenlängen. Jeder Messkanal verrät etwas anderes über dieselbe Wetterlage. Schalte um, wechsle die Wetterlage, tippe ins Bild und vergleiche.'
   },
 
   stageAria: 'Satellitenbild von Europa, Nordafrika und dem Atlantik aus der Sicht eines geostationären Wettersatelliten im gewählten Messkanal.',
   channelAria: 'Messkanal wählen',
   stageNote: 'Berechnetes Beispiel · Blick von Meteosat',
   computing: 'Wetterlage wird berechnet …',
+  badge: 'Tippe ins Bild: Was misst der Satellit hier?',
+  readout: {
+    vis: 'Sichtbar 0,6 <span class="nc">µm</span>',
+    ir: 'Infrarot 10,5 <span class="nc">µm</span>',
+    wv: 'Wasserdampf 6,3 <span class="nc">µm</span>',
+    here: 'Was ist hier?',
+    none: 'Tippe ins Bild',
+    night: 'dunkel'
+  },
+  // what the model has put at the tapped point
+  what: {
+    space: 'Weltraum – hinter dem Rand der Erde',
+    cb: 'Gewitterwolke (Cumulonimbus) – Oberkante etwa 12 km hoch',
+    highCloud: 'Hohe, dicke Wolken an einer Front oder einem Tief',
+    frontMid: 'Mittelhohe Wolken (3–6 km)',
+    cirrus: 'Dünne Eiswolken (Cirrus) in etwa 10 km Höhe',
+    fog: 'Nebel bzw. Hochnebel – Oberkante nur etwa 1 km hoch',
+    cumulus: 'Niedrige Haufen- oder Schauerwolken',
+    deck: 'Flache Wolkendecke (Stratocumulus) über kühlem Meer',
+    lowOther: 'Tiefe Wolken (unter 2 km)',
+    sea: 'Meer, wolkenfrei',
+    land: 'Land, wolkenfrei',
+    desert: 'Wüste (Sahara), wolkenfrei',
+    snow: 'Schnee am Boden – keine Wolke!'
+  },
   sceneTitle: 'Wetterlage',
   sceneAria: 'Wetterlage wählen',
   scenes: {
     herbst: { label: 'Herbst', text: '<b>Oktober:</b> Ein Tief über dem Atlantik schickt eine Kaltfront nach Europa. Über Mitteleuropa liegt unter einem Hoch zäher Nebel, über dem warmen Mittelmeer brodeln Gewitter.' },
-    sommer: { label: 'Sommer', text: '<b>Juli, Nachmittag:</b> Vor einer Kaltfront wachsen über Frankreich, Deutschland und den Alpen kräftige Gewitter. Vor Portugal und Marokko liegt eine flache Wolkendecke über dem kühlen Meer, die Sahara ist glühend heiß.' },
+    sommer: { label: 'Sommer', text: '<b>Juli, Nachmittag:</b> Heiße, feuchte Luft liegt über Europa. In der Nachmittagshitze wachsen über Frankreich, Deutschland, den Alpen und dem Balkan einzelne kräftige Gewitter. Vor Portugal und Marokko liegt eine flache Wolkendecke über dem kühlen Meer, die Sahara ist glühend heiß.' },
     winter: { label: 'Winter', text: '<b>Januar:</b> Kalte Luft aus dem Norden. Skandinavien und Osteuropa sind verschneit, über der Nordsee entstehen in der Kaltluft Schauerwolken. Über Norditalien dreht sich ein Mittelmeertief (Genuatief), in Ungarn hält sich Nebel.' }
   },
 
@@ -75,7 +100,7 @@ TEXTS.kanaele = {
     day: 'Tag',
     night: 'Nacht',
     infoAria: 'Bedienung erklären',
-    note: '<p><b>Sichtbar / Infrarot / Wasserdampf</b> über dem Bild wählt den Messkanal. Der Satellit tastet die Erde dabei Zeile für Zeile ab – von Süden nach Norden.</p><p><b>Wetterlage</b> wechselt zwischen drei typischen Situationen. <b>Tag / Nacht</b> zeigt dieselbe Lage mit und ohne Sonnenlicht – die Wolken bleiben dabei stehen.</p>'
+    note: '<p><b>Sichtbar / Infrarot / Wasserdampf</b> über dem Bild wählt den Messkanal. Der Satellit tastet die Erde dabei Zeile für Zeile ab – von Süden nach Norden.</p><p><b>Wetterlage</b> wechselt zwischen drei typischen Situationen. <b>Tag / Nacht</b> zeigt dieselbe Lage mit und ohne Sonnenlicht – die Wolken bleiben dabei stehen.</p><p><b>Tippen</b> ins Bild setzt das rote Fadenkreuz: Darunter stehen die Messwerte aller drei Kanäle an dieser Stelle.</p>'
   },
 
   spectrum: {

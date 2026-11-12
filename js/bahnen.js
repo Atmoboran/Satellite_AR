@@ -24,6 +24,8 @@
   const GEO_R = R + 35786;
   const GEO_LON = 0;                         // Meteosat-12 at 0°
   const GEO_VIEW = Math.acos(R / GEO_R);     // edge of the Earth disc seen from GEO (≈ 81°)
+  // GEO starts two zoom steps (+/− buttons, factor 1.6 each) further out
+  const startMag = () => (state && state.mode === 'geo' ? 1 / (1.6 * 1.6) : 1);
   const KEEP_ORBITS = 5;                     // pale yellow: what the last 5 orbits saw
   // Stripes are kept and removed as whole orbits; an orbit counts from the
   // southernmost point of the track, so no stripe ends in mid-picture.
@@ -93,7 +95,7 @@
     // look at the place; in GEO (camera turning with the Earth) at the satellite
     state.az = state.follow ? (GEO_LON + 8) * D2R : earthAngle(0) + (place.lon + 4) * D2R;
     state.el = (state.mode === 'geo' ? 12 : 28) * D2R;
-    state.mag = 1; state.panX = 0; state.panY = 0;
+    state.mag = startMag(); state.panX = 0; state.panY = 0;
     checkPlace();
   };
 
@@ -485,7 +487,7 @@
     // Earth and the Earth can be drawn big.
     if (mode === 'geo') { setFollow(true); state.az = (GEO_LON + 8) * D2R; state.el = 12 * D2R; }
     else { setFollow(false); state.el = 28 * D2R; }
-    state.mag = 1; state.panX = 0; state.panY = 0;
+    state.mag = startMag(); state.panX = 0; state.panY = 0;
     chips.forEach(c => { c.setAttribute('aria-pressed', String(c.dataset.mode === mode)); c.classList.remove('attn'); });
     setModeCard();
     updateReadouts();
@@ -498,7 +500,7 @@
   followBtn.addEventListener('click', () => setFollow(!state.follow));
 
   // ---- zoom: towards a point on screen (finger, mouse pointer, centre) ----
-  const MAG_MIN = { leo: 0.6, geo: 0.3 }, MAG_MAX = 14;
+  const MAG_MIN = { leo: 0.6, geo: 0.15 }, MAG_MAX = 14;
   const zoomAt = (factor, ax, ay) => {
     const b = baseFraming();
     const mag = Math.max(MAG_MIN[state.mode], Math.min(MAG_MAX, state.mag * factor));

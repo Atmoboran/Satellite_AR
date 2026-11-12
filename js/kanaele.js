@@ -123,13 +123,13 @@
     sommer: {
       decl: 21.5, day: 14, night: 2,
       sea: [27, 0.38], land: [29, 0.5], desert: 37, med: 2, ampLand: 8,
-      lows: [{ c: [-12, 57], comma: true, dry: [44, 58],
-        cold: [[-10, 56], [-5, 53], [-1.5, 50], [-1, 46.5], [-3.5, 43.5]],
-        warm: [[-10, 56], [-3, 58.5], [5, 59.5]] }],
-      // a line of thunderstorms ahead of the front, over France, Germany, the Alps and the Balkans
-      storms: [[3.2, 50.6, 0.9], [5.6, 49.3, 1.2], [8.4, 48.2, 1.0], [10.6, 47.0, 1.15], [13.4, 46.4, 0.8],
-               [16.8, 45.6, 0.9], [20.2, 44.6, 0.8], [2.0, 47.3, 0.7], [7.0, 51.6, 0.6]], anvil: 50,
-      jet: [[-30, 41], [-15, 45], [-3, 48.5], [8, 52], [22, 55]],
+      // no front: a hot, humid air mass – thunderstorms grow from the afternoon heat
+      lows: [],
+      // heat thunderstorms over France, Germany, the Alps and the Balkans
+      // scattered, not in a line: each grows where the ground heats most (hills, mountains)
+      storms: [[3.5, 48.8, 0.8], [7.8, 49.9, 0.7], [10.6, 47.2, 1.1], [6.2, 45.4, 0.9], [14.3, 46.6, 0.7],
+               [18.6, 44.0, 1.0], [22.6, 42.6, 0.7], [1.2, 44.2, 0.6], [-4.0, 40.7, 0.8], [12.6, 50.7, 0.6]], anvil: 50,
+      jet: [[-30, 52], [-15, 55], [0, 58], [15, 60]],
       fog: [], snow: [],
       cells: [], deck: [[-32, -9.5, 24, 39]], fairCu: true, trade: false,
       uth: 0.45
@@ -371,26 +371,41 @@
   const busy = document.getElementById('busy');
   const tasks = SCAPE.taskDialog('channel-tasks');
 
-  const state = { scene: 'herbst', ch: 'vis', time: 'day', seen: {} };
+  const state = { scene: 'herbst', ch: 'vis', time: 'day', seen: {}, probe: null };
+  const badge = SCAPE.badge(frame);
+
+  // what the model has put at pixel k (for the tap readout)
+  const WHAT = ['space', 'cb', 'highCloud', 'frontMid', 'cirrus', 'fog', 'cumulus', 'deck', 'lowOther', 'sea', 'land', 'desert', 'snow'];
+  const classify = k => {
+    if (surf[k] === 255) return 0;
+    if (hiTau[k] > 3) return hiT[k] < -55 ? 1 : 2;
+    if (midTau[k] > 4) return 3;
+    if (hiTau[k] > 0.4) return 4;
+    if (lowTau[k] > 3) return lowDT[k] > 0 ? 5 : lowDT[k] <= -14 ? 6 : lowDT[k] === -7 ? 7 : 8;
+    return 9 + surf[k];
+  };
 
   // ============ PICTURES: 3 channels × day/night per scene, computed once ============
   const cache = {};                       // cache[scene][time][ch] = canvas
   const renderAll = key => {
     const sc = SCENES[key];
     buildScene(sc);
-    const out = {};
+    const out = { what: new Uint8Array(N), val: {} };
+    for (let k = 0; k < N; k++) out.what[k] = classify(k);
     for (const time of ['day', 'night']) {
       const utc = sc[time];
       out[time] = {};
+      const v = out.val[time] = { vis: new Float32Array(N), ir: new Float32Array(N), wv: new Float32Array(N), dark: new Uint8Array(N) };
+      for (let k = 0; k < N; k++) if (surf[k] !== 255) {
+        v.vis[k] = visValue(k, utc); v.ir[k] = irValue(k, utc); v.wv[k] = wvValue(k); v.dark[k] = sunCos(k, utc) <= 0 ? 1 : 0;
+      }
       for (const ch of ['vis', 'ir', 'wv']) {
         const c = document.createElement('canvas'); c.width = NW; c.height = NH;
         const cx = c.getContext('2d'), img = cx.createImageData(NW, NH), d = img.data, scale = SCALE[ch];
         for (let k = 0; k < N; k++) {
           let col;
           if (surf[k] === 255) col = SPACE;
-          else if (ch === 'vis') col = scale(visShown(visValue(k, utc)));
-          else if (ch === 'ir') col = scale(irValue(k, utc));
-          else col = scale(wvValue(k));
+          else col = scale(ch === 'vis' ? visShown(v.vis[k]) : v[ch][k]);
           d[4 * k] = col[0]; d[4 * k + 1] = col[1]; d[4 * k + 2] = col[2]; d[4 * k + 3] = 255;
         }
         cx.putImageData(img, 0, 0);
@@ -454,7 +469,49 @@
       for (let i = 1; i < line.length; i++) ctx.lineTo(x + line[i][0] * w, y + line[i][1] * h);
     }
     ctx.stroke(); ctx.restore();
+
+    if (state.probe) {
+      const px = x + (state.probe.i + 0.5) / NW * w, py = y + (state.probe.j + 0.5) / NH * h;
+      ctx.strokeStyle = C.probe; ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.arc(px, py, 9, 0, 2 * Math.PI);
+      ctx.moveTo(px - 18, py); ctx.lineTo(px - 9, py); ctx.moveTo(px + 9, py); ctx.lineTo(px + 18, py);
+      ctx.moveTo(px, py - 18); ctx.lineTo(px, py - 9); ctx.moveTo(px, py + 9); ctx.lineTo(px, py + 18);
+      ctx.stroke();
+      ctx.strokeStyle = '#FFFFFF'; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(px, py, 11, 0, 2 * Math.PI); ctx.stroke();
+    }
   };
+
+  // ---- tap: the values of all three channels at that point, and what is there ----
+  const roVis = document.getElementById('ro-vis'), roIr = document.getElementById('ro-ir'), roWv = document.getElementById('ro-wv');
+  const roWhat = document.getElementById('ro-what');
+  const cells = [...document.querySelectorAll('.probe-grid > div[data-ch]')];
+  const updateProbe = () => {
+    cells.forEach(el => el.classList.toggle('current', el.dataset.ch === state.ch));
+    const p = state.probe, c = cache[state.scene];
+    if (!p || !c) return;
+    const k = p.j * NW + p.i, v = c.val[state.time];
+    if (c.what[k] === 0) roVis.textContent = roIr.textContent = roWv.textContent = '–';
+    else {
+      roVis.textContent = v.dark[k] ? T.readout.night : Math.round(v.vis[k] * 100) + ' %';
+      roIr.textContent = fmt(v.ir[k]) + ' °C';
+      roWv.textContent = fmt(v.wv[k]) + ' °C';
+    }
+    roWhat.textContent = T.what[WHAT[c.what[k]]];
+  };
+  const pick = e => {
+    const r = canvas.getBoundingClientRect();
+    const fx = (e.clientX - r.left - box.x) / box.w, fy = (e.clientY - r.top - box.y) / box.h;
+    if (fx < 0 || fx >= 1 || fy < 0 || fy >= 1) return;
+    state.probe = { i: Math.floor(fx * NW), j: Math.floor(fy * NH) };
+    badge.hide();
+    draw(); updateProbe();
+  };
+  let dragging = false;
+  canvas.addEventListener('pointerdown', e => { dragging = true; canvas.setPointerCapture(e.pointerId); pick(e); });
+  canvas.addEventListener('pointermove', e => { if (dragging) pick(e); });
+  canvas.addEventListener('pointerup', () => { dragging = false; });
+  canvas.addEventListener('pointercancel', () => { dragging = false; });
 
   const startScan = from => {
     if (!from || window.matchMedia('(prefers-reduced-motion: reduce)').matches) { scan = null; draw(); return; }
@@ -555,7 +612,7 @@
 
   // ============ INPUT ============
   const press = (btns, attr, val) => btns.forEach(b => b.setAttribute('aria-pressed', String(b.dataset[attr] === val)));
-  const show = from => { startScan(from); checkTasks(); };
+  const show = from => { startScan(from); checkTasks(); updateProbe(); };
 
   chips.forEach(c => c.addEventListener('click', () => {
     if (c.dataset.ch === state.ch) return;
@@ -597,6 +654,8 @@
   resize();
   drawLegend();
   checkTasks();
+  updateProbe();
+  badge.show(T.badge);
   window.addEventListener('resize', () => { resize(); drawLegend(); });
   if (window.ResizeObserver) new ResizeObserver(() => { resize(); }).observe(frame);
 
