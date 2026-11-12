@@ -134,7 +134,7 @@ tools/make-land.js  rebuilds data/land.js from the npm packages world-atlas and 
 **After changing anything in `css/`, `js/`, `content/`, `theme/` or the AR
 page template, run `python3 build.py`** – it rewrites both AR pages and
 refreshes the copies in `mtg-satellite-ar2/`, so that folder stays
-self-contained (e.g. for Netlify Drop). Do not edit the copies or the
+self-contained (e.g. for Netlify Drop). It also stamps every local script and stylesheet in all pages with `?v=<date>` so that browsers load the new files after an update. Do not edit the copies or the
 generated `satellit.html` / `mtg-satellite-ar2/index.html` by hand. The
 start page and chapters 1–3 are plain HTML files.
 

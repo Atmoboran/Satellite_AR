@@ -86,7 +86,7 @@ TEXTS.bahnen = {
     zoomOutAria: 'Herauszoomen',
     followAria: 'Kamera dreht sich mit der Erde',
     speed: 'Tempo',
-    speeds: ['1 s = 1 min', '1 s = 5 min', '1 s = 30 min'],
+    speeds: ['1 s = 5 min', '1 s = 30 min', '1 s = 1 h'],
     infoAria: 'Bedienung erklären',
     note: '<p><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4l14 8-14 8V4z" fill="currentColor"/></svg></span> lässt die Zeit laufen oder hält sie an. <b>Tempo</b>: wie viel Zeit pro Sekunde vergeht.</p><p><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5"/></svg></span> startet wieder um 8:30 Uhr und löscht die Streifen.</p><p><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="5"/><path d="M12 7v10"/><path d="M4.5 9.5A8 8 0 0 1 18 6.3"/><path d="M18 2.5v4h-4"/><path d="M19.5 14.5A8 8 0 0 1 6 17.7"/><path d="M6 21.5v-4h4"/></svg></span> <b>Mitdrehen</b>: Die Kamera dreht sich mit der Erde. Dann sieht man besonders gut, dass der GEO-Satellit stillsteht.</p><p><b>Ziehen</b> am Bild dreht die Ansicht. <b>Zoomen</b>: zwei Finger auseinander, Strg + Mausrad oder die Knöpfe <b>+</b> und <b>−</b> im Bild. Die Größen und Abstände sind maßstabsgetreu – nur die Satelliten sind viel größer gezeichnet.</p><p>Bei <b>GEO</b> dreht sich die Kamera automatisch mit der Erde, damit der Satellit im Bild bleibt. Schalte „Mitdrehen“ aus, um zu sehen, wie Erde und Satellit sich gemeinsam drehen.</p>'
   },

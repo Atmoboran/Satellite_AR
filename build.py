@@ -158,6 +158,22 @@ CHAPTER_ONLY = shutil.ignore_patterns('start.de.js', 'bahnen.*', 'kanaele.*', 'm
                                       'geo.js', 'video.js', 'tasks-dialog.js')
 
 here = os.path.dirname(os.path.abspath(__file__))
+
+
+def stamp_all():
+    # Version stamp on every local script and stylesheet (?v=...), so browsers
+    # load the new files after an update instead of old copies from their cache.
+    import re
+    import time
+    v = time.strftime('%Y%m%d%H%M')
+    pages = [os.path.join(here, f) for f in os.listdir(here) if f.endswith('.html')]
+    pages.append(os.path.join(here, 'mtg-satellite-ar2', 'index.html'))
+    for page in pages:
+        with open(page, encoding='utf-8') as fh:
+            html = fh.read()
+        html = re.sub(r'((?:src|href)="(?:js|css|theme|content|data)/[^"?]+\.(?:js|css))(?:\?v=\d+)?"', r'\1?v=' + v + '"', html)
+        with open(page, 'w', encoding='utf-8') as fh:
+            fh.write(html)
 for folder, v in VARIANTS.items():
     out = os.path.join(here, folder)
     with open(os.path.join(out, v['file']), 'w', encoding='utf-8') as f:
@@ -167,3 +183,5 @@ for folder, v in VARIANTS.items():
             shutil.rmtree(os.path.join(out, d), ignore_errors=True)
             shutil.copytree(os.path.join(here, d), os.path.join(out, d), ignore=CHAPTER_ONLY)
 print('ok')
+stamp_all()
+print('stamped')
