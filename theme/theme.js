@@ -61,14 +61,14 @@ THEME.satellit = {
 
 // ---- Chapter 1 (bahnen.html): the globe with the LEO and GEO orbits -------
 // Flat colours only: day and night are two flat tones each, the instrument's
-// view is a yellow tint (bright now, pale for "seen in the last 12 hours").
+// view is a purple tint (strong now, lilac for "seen during the last orbits").
 THEME.orbits = {
   space: '#28348B',                       // stage background (= --stage-dark)
   oceanDay: '#80C0DA', landDay: '#B0D8C0',
   oceanNight: '#1F6C8E', landNight: '#007B73',
-  seenNow: '#FFE547',                     // inside the instrument's view right now
-  seenNowMix: 0.72,
-  seenEarlier: '#FFF487',                 // seen within the last 12 hours
+  seenNow: '#523E91',                     // inside the instrument's view right now (purple, not to be taken for sunlight)
+  seenNowMix: 0.5,
+  seenEarlier: '#C5B8DB',                 // seen during the last orbits (lilac)
   seenEarlierMix: 0.6,                    // the last orbit; each older one paler
   orbit: '#FFFFFF', orbitOther: '#C5B8DB',
   satellite: '#FFE547', satelliteLine: '#000000',

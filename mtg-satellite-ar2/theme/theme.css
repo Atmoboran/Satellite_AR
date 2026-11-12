@@ -101,8 +101,8 @@
   --stage-dark: var(--c-navy);         /* behind the globe and the satellite image (= THEME.orbits.space) */
   --mode-leo: var(--c-orange);         /* LEO chip and labels */
   --mode-geo: var(--c-purple);         /* GEO chip and labels */
-  --seen: var(--c-yellow);             /* "im Blick" swatch (= THEME.orbits.seenNow) */
-  --seen-pale: var(--c-yellow-pale);   /* "schon gesehen" swatch */
+  --seen: var(--c-purple-2);             /* "im Blick" swatch (= THEME.orbits.seenNow) */
+  --seen-pale: var(--c-lilac);   /* "schon gesehen" swatch */
   --place: var(--c-red);               /* Offenbach */
   --quiz-done: var(--c-pale-green);    /* a solved task */
   --video-bg: var(--c-navy);

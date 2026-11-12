@@ -13,7 +13,7 @@ TEXTS.bahnen = {
 
   place: { name: 'Offenbach', lon: 8.77, lat: 50.10 },   // LOCAL
 
-  stageAria: 'Die Erde mit der Bahn eines Wettersatelliten. Gelb: der Bereich, den der Satellit gerade sieht.',
+  stageAria: 'Die Erde mit der Bahn eines Wettersatelliten. Lila: der Bereich, den der Satellit gerade sieht.',
   badge: 'Zieh zum Drehen · zwei Finger zum Zoomen',
   insetLabel: 'Blick des Satelliten',
   insetClose: 'Blick des Satelliten schließen',
@@ -88,7 +88,7 @@ TEXTS.bahnen = {
     speed: 'Tempo',
     speeds: ['1 s = 1 min', '1 s = 5 min', '1 s = 30 min'],
     infoAria: 'Bedienung erklären',
-    note: '<p><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4l14 8-14 8V4z" fill="currentColor"/></svg></span> lässt die Zeit laufen oder hält sie an. <b>Tempo</b>: wie viel Zeit pro Sekunde vergeht.</p><p><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5"/></svg></span> startet wieder um 8:30 Uhr und löscht die gelben Streifen.</p><p><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="5"/><path d="M12 7v10"/><path d="M4.5 9.5A8 8 0 0 1 18 6.3"/><path d="M18 2.5v4h-4"/><path d="M19.5 14.5A8 8 0 0 1 6 17.7"/><path d="M6 21.5v-4h4"/></svg></span> <b>Mitdrehen</b>: Die Kamera dreht sich mit der Erde. Dann sieht man besonders gut, dass der GEO-Satellit stillsteht.</p><p><b>Ziehen</b> am Bild dreht die Ansicht. <b>Zoomen</b>: zwei Finger auseinander, Strg + Mausrad oder die Knöpfe <b>+</b> und <b>−</b> im Bild. Die Größen und Abstände sind maßstabsgetreu – nur die Satelliten sind viel größer gezeichnet.</p><p>Bei <b>GEO</b> dreht sich die Kamera automatisch mit der Erde, damit der Satellit im Bild bleibt. Schalte „Mitdrehen“ aus, um zu sehen, wie Erde und Satellit sich gemeinsam drehen.</p>'
+    note: '<p><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4l14 8-14 8V4z" fill="currentColor"/></svg></span> lässt die Zeit laufen oder hält sie an. <b>Tempo</b>: wie viel Zeit pro Sekunde vergeht.</p><p><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5"/></svg></span> startet wieder um 8:30 Uhr und löscht die Streifen.</p><p><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="5"/><path d="M12 7v10"/><path d="M4.5 9.5A8 8 0 0 1 18 6.3"/><path d="M18 2.5v4h-4"/><path d="M19.5 14.5A8 8 0 0 1 6 17.7"/><path d="M6 21.5v-4h4"/></svg></span> <b>Mitdrehen</b>: Die Kamera dreht sich mit der Erde. Dann sieht man besonders gut, dass der GEO-Satellit stillsteht.</p><p><b>Ziehen</b> am Bild dreht die Ansicht. <b>Zoomen</b>: zwei Finger auseinander, Strg + Mausrad oder die Knöpfe <b>+</b> und <b>−</b> im Bild. Die Größen und Abstände sind maßstabsgetreu – nur die Satelliten sind viel größer gezeichnet.</p><p>Bei <b>GEO</b> dreht sich die Kamera automatisch mit der Erde, damit der Satellit im Bild bleibt. Schalte „Mitdrehen“ aus, um zu sehen, wie Erde und Satellit sich gemeinsam drehen.</p>'
   },
 
   tasks: {
@@ -97,7 +97,7 @@ TEXTS.bahnen = {
     pass: 'Schalte auf LEO und warte, bis der Satellit Offenbach sieht.',
     donePass: 'Überflug! Ein paar Minuten lang ist Offenbach im Blick – dann ist der Satellit schon weiter.',
     day: 'Lass den LEO-Satelliten einen ganzen Tag lang fliegen. Wie viel von der Erde hat er gesehen?',
-    doneDay: 'In 24 Stunden schafft er gut 14 Runden. Dabei sieht er fast die ganze Erde – aber jeden Ort nur zu bestimmten Zeiten: Offenbach zum Beispiel vormittags und abends. Die hellgelben Streifen zeigen nur seine letzten 5 Runden.'
+    doneDay: 'In 24 Stunden schafft er gut 14 Runden. Dabei sieht er fast die ganze Erde – aber jeden Ort nur zu bestimmten Zeiten: Offenbach zum Beispiel vormittags und abends. Die hellila Streifen zeigen nur seine letzten 5 Runden.'
   },
 
   merke: {
@@ -112,7 +112,7 @@ TEXTS.bahnen = {
     },
     leo: {
       title: 'Mehr zur LEO-Bahn',
-      body: '<p>Die Bahn im Modell entspricht den europäischen Wettersatelliten <b>Metop</b>: 817 km hoch, eine Runde in 101 Minuten. Sie führt fast über die Pole – darum heißen solche Satelliten auch <b>polarumlaufend</b>.</p><p>Die Bahn ist <b>sonnensynchron</b>: Der Satellit überquert den Äquator auf dem Weg nach Süden immer um etwa 9:30 Uhr Ortszeit. So sind die Lichtverhältnisse bei jedem Überflug ähnlich.</p><p>Der gelbe Streifen ist etwa 2900 km breit. So breit ist der Bereich, den das Bildinstrument (AVHRR) bei jedem Überflug abtastet. Andere Instrumente an Bord sehen schmalere Streifen.</p>'
+      body: '<p>Die Bahn im Modell entspricht den europäischen Wettersatelliten <b>Metop</b>: 817 km hoch, eine Runde in 101 Minuten. Sie führt fast über die Pole – darum heißen solche Satelliten auch <b>polarumlaufend</b>.</p><p>Die Bahn ist <b>sonnensynchron</b>: Der Satellit überquert den Äquator auf dem Weg nach Süden immer um etwa 9:30 Uhr Ortszeit. So sind die Lichtverhältnisse bei jedem Überflug ähnlich.</p><p>Der lila Streifen ist etwa 2900 km breit. So breit ist der Bereich, den das Bildinstrument (AVHRR) bei jedem Überflug abtastet. Andere Instrumente an Bord sehen schmalere Streifen.</p>'
     },
     geo: {
       title: 'Mehr zur GEO-Bahn',
@@ -120,7 +120,7 @@ TEXTS.bahnen = {
     },
     simple: {
       title: 'Was ist im Modell vereinfacht?',
-      body: '<p>Größen und Abstände von Erde und Bahnen sind maßstabsgetreu. Die Satelliten selbst sind viel zu groß gezeichnet – in echt wären sie winzige Punkte.</p><p>Die Sonne steht im Modell still über dem Äquator, wie zur Tag-und-Nacht-Gleiche im Frühling und Herbst. Dass die Erde im Laufe des Jahres um die Sonne wandert, ist weggelassen; ein Tag dauert im Modell 24 Stunden.</p><p>Gelb heißt „im Blick des Bildinstruments“ – bei Tag und bei Nacht. Infrarot-Messungen funktionieren auch nachts (mehr dazu in Kapitel 3). Hellgelb sind die Streifen der letzten 5 Runden (gut 8 Stunden); ältere verschwinden, damit man den neuesten Streifen immer erkennt.</p>'
+      body: '<p>Größen und Abstände von Erde und Bahnen sind maßstabsgetreu. Die Satelliten selbst sind viel zu groß gezeichnet – in echt wären sie winzige Punkte.</p><p>Die Sonne steht im Modell still über dem Äquator, wie zur Tag-und-Nacht-Gleiche im Frühling und Herbst. Dass die Erde im Laufe des Jahres um die Sonne wandert, ist weggelassen; ein Tag dauert im Modell 24 Stunden.</p><p>Lila heißt „im Blick des Bildinstruments“ – bei Tag und bei Nacht. Infrarot-Messungen funktionieren auch nachts (mehr dazu in Kapitel 3). Hellila sind die Streifen der letzten 5 Runden (gut 8 Stunden); ältere verschwinden, damit man den neuesten Streifen immer erkennt.</p>'
     },
     sources: {
       title: 'Quellen',

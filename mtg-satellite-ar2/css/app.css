@@ -338,3 +338,8 @@
 .scene-seg .chip-btn[aria-pressed="true"], .time-seg .chip-btn[aria-pressed="true"] { background: var(--active); color: var(--active-ink); }
 .scene-text { font-size: 15px; line-height: 1.5; margin: 0 0 12px; min-height: 4.5em; }
 .busy { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 5; background: var(--paper); color: var(--ink); border: var(--line-width) solid var(--line); padding: 8px 12px; font-weight: var(--fw-medium); font-size: 13px; letter-spacing: .05em; text-transform: var(--caps); }
+/* chapter 2: the satellite's view closes with ×, opens again with a button */
+.inset { pointer-events: auto; }
+.inset-close { position: absolute; right: 0; top: 0; width: 26px; height: 22px; padding: 0; border: 0; background: var(--ink-inverse); color: var(--ink); font-size: 18px; line-height: 1; cursor: pointer; }
+.inset-open { position: absolute; right: 10px; top: 10px; z-index: 3; min-height: 34px; padding: 4px 10px; border: var(--line-width) solid var(--line); background: var(--paper); color: var(--ink); font-weight: var(--fw-medium); font-size: 11px; letter-spacing: .05em; text-transform: var(--caps); cursor: pointer; }
+.inset-label { padding-right: 30px; }

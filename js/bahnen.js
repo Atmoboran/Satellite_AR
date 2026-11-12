@@ -1,8 +1,8 @@
 // Chapter 1: two perspectives – a weather satellite in low Earth orbit (LEO,
 // like Metop) and one in geostationary orbit (GEO, like Meteosat-12).
 // The globe is drawn pixel by pixel in flat CD colours: land/sea, day/night,
-// the area the satellite's imager sees right now (yellow) and, for LEO, what
-// it has seen during its last 5 orbits (pale yellow; older stripes fade out,
+// the area the satellite's imager sees right now (purple) and, for LEO, what
+// it has seen during its last 5 orbits (lilac; older stripes fade out,
 // so there is always a fresh one). Earth and orbits are to scale; only the
 // satellite symbols are far too big. Drag turns the view; pinch, Ctrl + wheel
 // or the +/− buttons zoom (towards the finger or the mouse pointer).
@@ -301,7 +301,7 @@
       if (!lo || a < lo.a) lo = { a, q };
       if (!hi || a > hi.a) hi = { a, q };
     }
-    ctx.strokeStyle = C.seenNow; ctx.lineWidth = 1.5; ctx.globalAlpha = 0.85;
+    ctx.strokeStyle = C.seenEarlier; ctx.lineWidth = 1.5; ctx.globalAlpha = 0.9;
     ctx.beginPath();
     ctx.moveTo(sScreen[0], sScreen[1]); ctx.lineTo(lo.q[0], lo.q[1]);
     ctx.moveTo(sScreen[0], sScreen[1]); ctx.lineTo(hi.q[0], hi.q[1]);
