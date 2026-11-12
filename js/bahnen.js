@@ -25,7 +25,9 @@
   const GEO_LON = 0;                         // Meteosat-12 at 0°
   const GEO_VIEW = Math.acos(R / GEO_R);     // edge of the Earth disc seen from GEO (≈ 81°)
   const KEEP_ORBITS = 5;                     // pale yellow: what the last 5 orbits saw
-  const MEMORY = KEEP_ORBITS * LEO_T;        // ≈ 8.4 hours
+  // Stripes are kept and removed as whole orbits; an orbit counts from the
+  // southernmost point of the track, so no stripe ends in mid-picture.
+  const orbitNo = t => Math.floor((U0 + 2 * Math.PI * t / LEO_T + Math.PI / 2) / (2 * Math.PI));
   const SUN = [1, 0, 0];
 
   const earthAngle = t => ((START_UTC - 12) * 3600 + t) * W_E;   // Greenwich faces the Sun at 12:00 UTC
@@ -219,6 +221,7 @@
     const ea = earthAngle(state.t), ca = Math.cos(ea), sa = Math.sin(ea);
     const follow = state.follow, shift = follow ? 0 : ea, TAU = 2 * Math.PI;
     const crho = Math.cos(rho), t = state.t, s0 = sub[0], s1 = sub[1], s2 = sub[2];
+    const nowOrbit = orbitNo(t);
     for (let i = 0, n = bw * bh; i < n; i++) {
       const o = i * 4;
       if (!IN[i]) { d[o + 3] = 0; continue; }
@@ -231,8 +234,8 @@
       let k = md[ROW[i] * mw + Math.min(mw - 1, (lf * mw) | 0)] + (sunDot < 0 ? 2 : 0);
       if (ex * s0 + ey * s1 + VZ[i] * s2 > crho) k += 4;
       else if (useMemory) {
-        const age = t - seen[GROW[i] * GW + Math.min(GW - 1, (lf * GW) | 0)];
-        if (age < MEMORY) k += 8 + 4 * Math.floor(age / LEO_T);
+        const ago = nowOrbit - orbitNo(seen[GROW[i] * GW + Math.min(GW - 1, (lf * GW) | 0)]);
+        if (ago >= 0 && ago < KEEP_ORBITS) k += 8 + 4 * ago;
       }
       const col = PAL[k];
       d[o] = col[0]; d[o + 1] = col[1]; d[o + 2] = col[2]; d[o + 3] = 255;
@@ -348,14 +351,12 @@
     const s = Math.max(1, Math.min(1.8, Math.min(W, H) / 420));
 
     // behind the Earth
-    if (mode === 'geo') strokeOrbit(ORBITS.leo, cam, cx, cy, k, true, C.orbitOther, 1.5, 0.7);
     strokeOrbit(ORBITS[mode], cam, cx, cy, k, true, C.orbit, 2, 0.45);
     if (ss[2] < 0) drawSatellite(ss[0], ss[1], s);
 
     drawGlobe(cam, cx, cy, R * k, sub, rho, mode === 'leo');
 
     // in front of the Earth
-    if (mode === 'geo') strokeOrbit(ORBITS.leo, cam, cx, cy, k, false, C.orbitOther, 1.5, 0.9);
     strokeOrbit(ORBITS[mode], cam, cx, cy, k, false, C.orbit, 2, 1);
     if (ss[2] >= 0) { drawCone(sp, cam, cx, cy, k, rho, ss); drawSatellite(ss[0], ss[1], s); }
 
@@ -377,11 +378,6 @@
       if (dd > bestD) { bestD = dd; best = q; }
     }
     if (best) label(T.modes[mode].label, best[0] + (best[0] > W / 2 ? -10 : 10), best[1], best[0] > W / 2 ? 'right' : 'left', true);
-    if (mode === 'geo') {
-      let lb = null;
-      for (const p of ORBITS.leo) { const q = project(p, cam, cx, cy, k); if (!lb || q[1] > lb[1]) lb = q; }
-      ctx.globalAlpha = 0.85; label(T.modes.leo.label, lb[0], lb[1] + 14, 'center'); ctx.globalAlpha = 1;
-    }
 
     drawInset(sp, mode, t);
   };

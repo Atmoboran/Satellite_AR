@@ -5,7 +5,7 @@ TEXTS.description = 'Passive und aktive Fernerkundung: Strahlung empfangen oder 
 
 TEXTS.messen = {
   poster: {
-    kicker: 'Kapitel 3',
+    kicker: 'Kapitel 4',
     headline: 'Wie misst ein Satel–<br>lit eigentlich?',
     lead: 'Ein Wettersatellit ist keine gewöhnliche Kamera. Er misst Strahlung – entweder die, die von der Erde kommt, oder ein Signal, das er selbst losschickt.'
   },

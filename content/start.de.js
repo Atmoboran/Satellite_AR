@@ -35,12 +35,12 @@ TEXTS.start = {
 
   chaptersTitle: 'Entdecke in vier Kapiteln',
   cards: [
+    { title: 'Der Satellit in AR', text: 'Der Wettersatellit MTG-I1 als 3D-Modell – auf dem Handy in deinem Raum.' },
     { title: 'Zwei Perspek–<br>tiven', text: 'Warum fliegen manche Wettersatelliten tief und schnell – und andere hängen scheinbar still über einem Ort?' },
     { title: 'Mit welchen Augen?', text: 'Sichtbares Licht, Infrarot, Wasserdampf: Dieselbe Wetterlage sieht in jedem Messkanal anders aus.' },
-    { title: 'Wie misst ein Satellit?', text: 'Strahlung empfangen oder selbst ein Signal aussenden: passive und aktive Fernerkundung.' },
-    { title: 'Der Satellit in AR', text: 'Der Wettersatellit MTG-I1 als 3D-Modell – auf dem Handy in deinem Raum.' }
+    { title: 'Wie misst ein Satellit?', text: 'Strahlung empfangen oder selbst ein Signal aussenden: passive und aktive Fernerkundung.' }
   ],
   go: 'Los →',
 
-  sources: 'Fakten: EUMETSAT, ESA, NASA. Video: EUMETSAT. Die Wetterlage in Kapitel 2 ist ein berechnetes Beispiel, keine echte Aufnahme.'
+  sources: 'Fakten: EUMETSAT, ESA, NASA. Video: EUMETSAT. Die Wetterlage in Kapitel 3 ist ein berechnetes Beispiel, keine echte Aufnahme.'
 };

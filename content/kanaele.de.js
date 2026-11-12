@@ -5,16 +5,22 @@ TEXTS.description = 'Sichtbares Licht, Infrarot und Wasserdampf: dieselbe Wetter
 
 TEXTS.kanaele = {
   poster: {
-    kicker: 'Kapitel 2',
+    kicker: 'Kapitel 3',
     headline: 'Mit welchen<br>Augen?',
-    lead: 'Ein Wettersatellit misst Strahlung in verschiedenen Wellenlängen. Jeder Messkanal verrät etwas anderes über dieselbe Wetterlage. Schalte um, tippe ins Bild und vergleiche.'
+    lead: 'Ein Wettersatellit misst Strahlung in verschiedenen Wellenlängen. Jeder Messkanal verrät etwas anderes über dieselbe Wetterlage. Schalte um, wechsle die Wetterlage und vergleiche.'
   },
 
   stageAria: 'Satellitenbild von Europa, Nordafrika und dem Atlantik aus der Sicht eines geostationären Wettersatelliten im gewählten Messkanal.',
   channelAria: 'Messkanal wählen',
-  badge: 'Tippe ins Bild: Was misst der Satellit hier?',
   stageNote: 'Berechnetes Beispiel · Blick von Meteosat',
   computing: 'Wetterlage wird berechnet …',
+  sceneTitle: 'Wetterlage',
+  sceneAria: 'Wetterlage wählen',
+  scenes: {
+    herbst: { label: 'Herbst', text: '<b>Oktober:</b> Ein Tief über dem Atlantik schickt eine Kaltfront nach Europa. Über Mitteleuropa liegt unter einem Hoch zäher Nebel, über dem warmen Mittelmeer brodeln Gewitter.' },
+    sommer: { label: 'Sommer', text: '<b>Juli, Nachmittag:</b> Vor einer Kaltfront wachsen über Frankreich, Deutschland und den Alpen kräftige Gewitter. Vor Portugal und Marokko liegt eine flache Wolkendecke über dem kühlen Meer, die Sahara ist glühend heiß.' },
+    winter: { label: 'Winter', text: '<b>Januar:</b> Kalte Luft aus dem Norden. Skandinavien und Osteuropa sind verschneit, über der Nordsee entstehen in der Kaltluft Schauerwolken. Über Norditalien dreht sich ein Mittelmeertief (Genuatief), in Ungarn hält sich Nebel.' }
+  },
 
   channels: {
     vis: {
@@ -64,40 +70,12 @@ TEXTS.kanaele = {
     }
   },
 
-  readout: {
-    vis: 'Sichtbar 0,6 <span class="nc">µm</span>',
-    ir: 'Infrarot 10,5 <span class="nc">µm</span>',
-    wv: 'Wasserdampf 6,3 <span class="nc">µm</span>',
-    here: 'Was ist hier?',
-    none: 'Tippe ins Bild',
-    night: 'dunkel'
-  },
-
-  // What the model has put at the tapped point.
-  what: {
-    space: 'Weltraum – hinter dem Rand der Erde',
-    cb: 'Gewitterwolke (Cumulonimbus) – Oberkante etwa 12 km hoch',
-    frontHigh: 'Wolkenband einer Kaltfront – hohe, dicke Wolken',
-    frontMid: 'Mittelhohe Wolken vor der Front (3–6 km)',
-    comma: 'Wolkenwirbel eines Tiefdruckgebiets',
-    cirrus: 'Dünne Eiswolken (Cirrus) in etwa 10 km Höhe',
-    fog: 'Nebel bzw. Hochnebel – Oberkante nur etwa 1 km hoch',
-    cumulus: 'Niedrige Haufenwolken in kalter Meeresluft',
-    lowOther: 'Tiefe Wolken (unter 2 km)',
-    snow: 'Schnee in den Alpen – keine Wolke!',
-    desert: 'Wüste (Sahara), wolkenfrei',
-    land: 'Land, wolkenfrei',
-    sea: 'Meer, wolkenfrei'
-  },
-
   controls: {
-    time: 'Uhrzeit (UTC)',
-    timeValue: h => String(Math.floor(h)).padStart(2, '0') + ':' + String(Math.round((h % 1) * 60)).padStart(2, '0') + ' UTC',
-    playAria: 'Den Tag ablaufen lassen',
-    pauseAria: 'Anhalten',
-    coastAria: 'Küstenlinien ein- oder ausblenden',
+    timeAria: 'Tag oder Nacht',
+    day: 'Tag',
+    night: 'Nacht',
     infoAria: 'Bedienung erklären',
-    note: '<p><b>Sichtbar / Infrarot / Wasserdampf</b> oben im Bild wählt den Messkanal. Der Satellit tastet die Erde dabei Zeile für Zeile ab – von Süden nach Norden.</p><p><b>Tippen</b> ins Bild setzt das rote Fadenkreuz: Darunter stehen die Messwerte aller drei Kanäle an dieser Stelle.</p><p><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4l14 8-14 8V4z" fill="currentColor"/></svg></span> lässt den Tag ablaufen (eine Stunde pro Sekunde), der Regler stellt die Uhrzeit ein. <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 15c3-1 4-5 7-5s3 4 6 3 3-4 5-4"/></svg></span> blendet die Küstenlinien ein oder aus.</p>'
+    note: '<p><b>Sichtbar / Infrarot / Wasserdampf</b> über dem Bild wählt den Messkanal. Der Satellit tastet die Erde dabei Zeile für Zeile ab – von Süden nach Norden.</p><p><b>Wetterlage</b> wechselt zwischen drei typischen Situationen. <b>Tag / Nacht</b> zeigt dieselbe Lage mit und ohne Sonnenlicht – die Wolken bleiben dabei stehen.</p>'
   },
 
   spectrum: {
@@ -111,12 +89,12 @@ TEXTS.kanaele = {
   },
 
   tasks: {
-    night: 'Stell die Uhrzeit auf Nacht (zum Beispiel 22:00 UTC). Was zeigt jetzt der sichtbare Kanal – und was der Infrarotkanal?',
+    night: 'Schalte auf Nacht und vergleiche den sichtbaren Kanal mit Infrarot.',
     doneNight: 'Nachts ist das sichtbare Bild dunkel – es fehlt das Sonnenlicht. Das Infrarotbild bleibt: Wärmestrahlung gibt es Tag und Nacht.',
-    cold: 'Finde im Infrarotbild die kälteste Wolkenoberkante und tippe darauf.',
-    doneCold: 'Unter −55 °C! So kalt ist es nur ganz oben in hochreichenden Gewitterwolken, etwa 12 km über dem Meer.',
-    fog: 'Über Mitteleuropa liegt Nebel – im sichtbaren Bild gut zu sehen. Schalte auf Wasserdampf und tippe auf die Stelle. Was siehst du?',
-    doneFog: 'Nichts vom Nebel! Der Wasserdampfkanal sieht nur die Luft in 5 bis 10 km Höhe. Was darunter liegt, bleibt verborgen.'
+    fog: 'Herbst: Über Mitteleuropa liegt Nebel – im sichtbaren Bild gut zu sehen. Schalte auf Wasserdampf. Ist er noch da?',
+    doneFog: 'Nichts vom Nebel! Der Wasserdampfkanal sieht nur die Luft in 5 bis 10 km Höhe. Was darunter liegt, bleibt verborgen.',
+    snow: 'Winter: Vergleiche Sichtbar und Infrarot. Woran erkennst du, was Schnee am Boden ist und was Wolke?',
+    doneSnow: 'Im sichtbaren Bild sind Schnee und Wolken beide hell. Im Infrarotbild sind hohe Wolken viel kälter als der verschneite Boden – und im Wasserdampfbild ist der Schnee gar nicht zu sehen.'
   },
 
   merke: {
@@ -143,7 +121,7 @@ TEXTS.kanaele = {
     },
     model: {
       title: 'Ist das ein echtes Satellitenbild?',
-      body: '<p>Nein – die Wetterlage ist <b>berechnet</b>, damit man sie anfassen kann: Für jeden Punkt legt ein Modell fest, wo Wolken sind, wie hoch und wie dick, wie warm Boden und Meer sind und wie feucht die obere Luft ist (eine Lage, wie sie im Oktober vorkommen kann). Daraus berechnet die Seite für jeden Kanal, was ein Satellit messen würde: das zurückgeworfene Sonnenlicht und die Wärmestrahlung nach dem Planckschen Strahlungsgesetz.</p><p>Vereinfacht ist unter anderem: Wolkenschatten, die schräge Sonne am Rand und die Feinheiten der Strahlung in der Atmosphäre fehlen. Die Küstenlinien stammen von Natural Earth.</p>'
+      body: '<p>Nein – die Wetterlage ist <b>berechnet</b>, damit man sie anfassen kann: Für jeden Punkt legt ein Modell fest, wo Wolken sind, wie hoch und wie dick, wie warm Boden und Meer sind und wie feucht die obere Luft ist (drei Lagen, wie sie im Herbst, Sommer und Winter vorkommen). Daraus berechnet die Seite für jeden Kanal, was ein Satellit messen würde: das zurückgeworfene Sonnenlicht und die Wärmestrahlung nach dem Planckschen Strahlungsgesetz.</p><p>Vereinfacht ist unter anderem: Wolkenschatten, die schräge Sonne am Rand und die Feinheiten der Strahlung in der Atmosphäre fehlen. Die Küstenlinien stammen von Natural Earth.</p>'
     },
     sources: {
       title: 'Quellen',

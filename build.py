@@ -117,8 +117,8 @@ PAGE = Template('''<!DOCTYPE html>
 </html>
 ''')
 
-NAV = '\n    <nav class="nav" data-t-aria="chapters.aria">\n      <a href="index.html"><span data-t="chapters.start"></span></a>\n      <a href="bahnen.html"><span class="num">1</span><span data-t="chapters.one"></span></a>\n      <a href="kanaele.html"><span class="num">2</span><span data-t="chapters.two"></span></a>\n      <a href="messen.html"><span class="num">3</span><span data-t="chapters.three"></span></a>\n      <a href="satellit.html" aria-current="page"><span class="num">4</span><span data-t="chapters.four"></span></a>\n    </nav>'
-PAGER = '\n\n  <div class="next-part split">\n    <a class="btn big" href="messen.html"><span aria-hidden="true">←</span> <span data-t="chapters.toThree"></span></a>\n    <a class="btn big primary" href="index.html"><span data-t="chapters.toStart"></span> <span aria-hidden="true">→</span></a>\n  </div>'
+NAV = '\n    <nav class="nav" data-t-aria="chapters.aria">\n      <a href="index.html"><span data-t="chapters.start"></span></a>\n      <a href="satellit.html" aria-current="page"><span class="num">1</span><span data-t="chapters.ar"></span></a>\n      <a href="bahnen.html"><span class="num">2</span><span data-t="chapters.bahnen"></span></a>\n      <a href="kanaele.html"><span class="num">3</span><span data-t="chapters.kanaele"></span></a>\n      <a href="messen.html"><span class="num">4</span><span data-t="chapters.messen"></span></a>\n    </nav>'
+PAGER = '\n\n  <div class="next-part split">\n    <a class="btn big" href="index.html"><span aria-hidden="true">←</span> <span data-t="chapters.toStart"></span></a>\n    <a class="btn big primary" href="bahnen.html"><span data-t="chapters.toBahnen"></span> <span aria-hidden="true">→</span></a>\n  </div>'
 
 # free view only: choose the satellite (the true-scale page is calibrated for MTG-I1)
 PICKER = '''

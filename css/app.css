@@ -331,3 +331,10 @@
 .sat-seg .chip-btn { justify-content: center; min-height: 46px; font-size: 14px; }
 .sat-seg .chip-btn[aria-pressed="true"] { background: var(--active); color: var(--active-ink); }
 .lab-post .hint .info { vertical-align: -6px; }
+/* chapter 3 (channels): weather situation, day/night, "being computed" */
+.scene-seg, .time-seg { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin: 0 0 8px; }
+.time-seg { grid-template-columns: repeat(2, minmax(0, 1fr)); flex: 1; margin: 0; }
+.scene-seg .chip-btn, .time-seg .chip-btn { justify-content: center; min-height: 46px; }
+.scene-seg .chip-btn[aria-pressed="true"], .time-seg .chip-btn[aria-pressed="true"] { background: var(--active); color: var(--active-ink); }
+.scene-text { font-size: 15px; line-height: 1.5; margin: 0 0 12px; min-height: 4.5em; }
+.busy { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 5; background: var(--paper); color: var(--ink); border: var(--line-width) solid var(--line); padding: 8px 12px; font-weight: var(--fw-medium); font-size: 13px; letter-spacing: .05em; text-transform: var(--caps); }

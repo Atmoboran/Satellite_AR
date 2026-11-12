@@ -18,10 +18,10 @@
   <div class="top-right">
     <nav class="nav" data-t-aria="chapters.aria">
       <a href="index.html"><span data-t="chapters.start"></span></a>
-      <a href="bahnen.html"><span class="num">1</span><span data-t="chapters.one"></span></a>
-      <a href="kanaele.html" aria-current="page"><span class="num">2</span><span data-t="chapters.two"></span></a>
-      <a href="messen.html"><span class="num">3</span><span data-t="chapters.three"></span></a>
-      <a href="satellit.html"><span class="num">4</span><span data-t="chapters.four"></span></a>
+      <a href="satellit.html"><span class="num">1</span><span data-t="chapters.ar"></span></a>
+      <a href="bahnen.html"><span class="num">2</span><span data-t="chapters.bahnen"></span></a>
+      <a href="kanaele.html" aria-current="page"><span class="num">3</span><span data-t="chapters.kanaele"></span></a>
+      <a href="messen.html"><span class="num">4</span><span data-t="chapters.messen"></span></a>
     </nav>
     <button type="button" class="view-toggle"></button>
   </div>
@@ -50,18 +50,29 @@
       </div>
       <div class="stage-frame fill wide dark" id="stage-frame">
         <canvas class="layer" id="image" role="img" data-t-aria="kanaele.stageAria"></canvas>
+        <p class="busy" id="busy" hidden data-t="kanaele.computing"></p>
         <p class="stage-note stage-note-top" data-t="kanaele.stageNote"></p>
       </div>
     </div>
 
     <div class="lab-post">
       <p class="model-note muted" data-t="kanaele.stageNote"></p>
-      <div class="readout-grid cols probe-grid" aria-live="polite">
-        <div data-ch="vis"><span data-t-html="kanaele.readout.vis"></span><b id="ro-vis">–</b></div>
-        <div data-ch="ir"><span data-t-html="kanaele.readout.ir"></span><b id="ro-ir">–</b></div>
-        <div data-ch="wv"><span data-t-html="kanaele.readout.wv"></span><b id="ro-wv">–</b></div>
+      <p class="legend-title" data-t="kanaele.sceneTitle"></p>
+      <div class="seg scene-seg" role="group" data-t-aria="kanaele.sceneAria">
+        <button type="button" class="chip-btn" data-scene="herbst" aria-pressed="true"><span data-t="kanaele.scenes.herbst.label"></span></button>
+        <button type="button" class="chip-btn" data-scene="sommer" aria-pressed="false"><span data-t="kanaele.scenes.sommer.label"></span></button>
+        <button type="button" class="chip-btn" data-scene="winter" aria-pressed="false"><span data-t="kanaele.scenes.winter.label"></span></button>
       </div>
-      <p class="readout here"><span data-t="kanaele.readout.here"></span> <span id="ro-what" data-t="kanaele.readout.none"></span></p>
+      <p class="scene-text" id="scene-text"></p>
+
+      <div class="ctl-row">
+        <div class="seg time-seg" role="group" data-t-aria="kanaele.controls.timeAria">
+          <button type="button" class="chip-btn" data-time="day" aria-pressed="true"><span data-t="kanaele.controls.day"></span></button>
+          <button type="button" class="chip-btn" data-time="night" aria-pressed="false"><span data-t="kanaele.controls.night"></span></button>
+        </div>
+        <button type="button" class="info" aria-controls="controls-help" data-t-aria="kanaele.controls.infoAria"></button>
+      </div>
+      <div class="info-note" id="controls-help" hidden data-t-html="kanaele.controls.note"></div>
 
       <div class="legend" id="legend">
         <p class="legend-title" id="legend-title"></p>
@@ -69,21 +80,6 @@
         <div class="legend-ticks" id="legend-ticks"></div>
         <div class="legend-ends"><span id="legend-low"></span><span id="legend-high"></span></div>
       </div>
-
-      <div class="ctl-row">
-        <button type="button" class="btn icon" id="time-play" aria-pressed="false" data-t-aria="kanaele.controls.playAria">
-          <svg id="time-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4l14 8-14 8V4z" fill="currentColor"/></svg>
-        </button>
-        <label class="select-field range-field">
-          <span class="row"><span class="select-label" data-t="kanaele.controls.time"></span><output id="time-out"></output></span>
-          <input type="range" id="time" min="0" max="24" step="0.25" value="12">
-        </label>
-        <button type="button" class="btn icon" id="coast-btn" aria-pressed="true" data-t-aria="kanaele.controls.coastAria">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 15c3-1 4-5 7-5s3 4 6 3 3-4 5-4"/></svg>
-        </button>
-        <button type="button" class="info" aria-controls="controls-help" data-t-aria="kanaele.controls.infoAria"></button>
-      </div>
-      <div class="info-note" id="controls-help" hidden data-t-html="kanaele.controls.note"></div>
 
       <div class="mode-card" id="mode-card">
         <h2 id="mode-title"></h2>
@@ -122,8 +118,8 @@
     <div id="channel-tasks">
       <ol class="quiz-list">
         <li class="quiz-item" data-task="night"><p class="quiz-q" data-t="kanaele.tasks.night"></p><p class="quiz-feedback" data-t="kanaele.tasks.doneNight"></p></li>
-        <li class="quiz-item" data-task="cold"><p class="quiz-q" data-t="kanaele.tasks.cold"></p><p class="quiz-feedback" data-t="kanaele.tasks.doneCold"></p></li>
         <li class="quiz-item" data-task="fog"><p class="quiz-q" data-t="kanaele.tasks.fog"></p><p class="quiz-feedback" data-t="kanaele.tasks.doneFog"></p></li>
+        <li class="quiz-item" data-task="snow"><p class="quiz-q" data-t="kanaele.tasks.snow"></p><p class="quiz-feedback" data-t="kanaele.tasks.doneSnow"></p></li>
       </ol>
     </div>
   </dialog>
@@ -138,8 +134,8 @@
   </div>
 
   <div class="next-part split">
-    <a class="btn big" href="bahnen.html"><span aria-hidden="true">←</span> <span data-t="chapters.toOne"></span></a>
-    <a class="btn big primary" href="messen.html"><span data-t="chapters.toThree"></span> <span aria-hidden="true">→</span></a>
+    <a class="btn big" href="bahnen.html"><span aria-hidden="true">←</span> <span data-t="chapters.toBahnen"></span></a>
+    <a class="btn big primary" href="messen.html"><span data-t="chapters.toMessen"></span> <span aria-hidden="true">→</span></a>
   </div>
 </main>
 

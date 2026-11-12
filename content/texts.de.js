@@ -32,15 +32,15 @@ window.TEXTS = {
   chapters: {
     aria: 'Kapitel',
     start: 'Start',
-    one: 'Bahnen',
-    two: 'Kanäle',
-    three: 'Messen',
-    four: 'AR',
+    ar: 'AR',
+    bahnen: 'Bahnen',
+    kanaele: 'Kanäle',
+    messen: 'Messen',
     toStart: 'Zum Start',
-    toOne: 'Kapitel 1: Zwei Perspektiven',
-    toTwo: 'Kapitel 2: Mit welchen Augen?',
-    toThree: 'Kapitel 3: Wie misst ein Satellit?',
-    toFour: 'Kapitel 4: Der Satellit in AR'
+    toAr: 'Kapitel 1: Der Satellit in AR',
+    toBahnen: 'Kapitel 2: Zwei Perspektiven',
+    toKanaele: 'Kapitel 3: Mit welchen Augen?',
+    toMessen: 'Kapitel 4: Wie misst ein Satellit?'
   },
 
   // The tasks pop-up of chapters 1–3 (js/tasks-dialog.js).

@@ -6,7 +6,7 @@ TEXTS.description = 'Tief und schnell oder weit weg und scheinbar still: die zwe
 
 TEXTS.bahnen = {
   poster: {
-    kicker: 'Kapitel 1',
+    kicker: 'Kapitel 2',
     headline: 'Zwei Perspek–<br>tiven',
     lead: 'Manche Wettersatelliten flitzen tief über die Erde, andere stehen scheinbar still über einem Ort. Schalte zwischen LEO und GEO um und vergleiche, was sie sehen.'
   },
@@ -118,7 +118,7 @@ TEXTS.bahnen = {
     },
     simple: {
       title: 'Was ist im Modell vereinfacht?',
-      body: '<p>Größen und Abstände von Erde und Bahnen sind maßstabsgetreu. Die Satelliten selbst sind viel zu groß gezeichnet – in echt wären sie winzige Punkte.</p><p>Die Sonne steht im Modell still über dem Äquator, wie zur Tag-und-Nacht-Gleiche im Frühling und Herbst. Dass die Erde im Laufe des Jahres um die Sonne wandert, ist weggelassen; ein Tag dauert im Modell 24 Stunden.</p><p>Gelb heißt „im Blick des Bildinstruments“ – bei Tag und bei Nacht. Infrarot-Messungen funktionieren auch nachts (mehr dazu in Kapitel 2). Hellgelb sind die Streifen der letzten 5 Runden (gut 8 Stunden); ältere verschwinden, damit man den neuesten Streifen immer erkennt.</p>'
+      body: '<p>Größen und Abstände von Erde und Bahnen sind maßstabsgetreu. Die Satelliten selbst sind viel zu groß gezeichnet – in echt wären sie winzige Punkte.</p><p>Die Sonne steht im Modell still über dem Äquator, wie zur Tag-und-Nacht-Gleiche im Frühling und Herbst. Dass die Erde im Laufe des Jahres um die Sonne wandert, ist weggelassen; ein Tag dauert im Modell 24 Stunden.</p><p>Gelb heißt „im Blick des Bildinstruments“ – bei Tag und bei Nacht. Infrarot-Messungen funktionieren auch nachts (mehr dazu in Kapitel 3). Hellgelb sind die Streifen der letzten 5 Runden (gut 8 Stunden); ältere verschwinden, damit man den neuesten Streifen immer erkennt.</p>'
     },
     sources: {
       title: 'Quellen',

@@ -1,18 +1,23 @@
-// Chapter 2: the same weather seen in three channels of a geostationary
+// Chapter 3: the same weather seen in three channels of a geostationary
 // imager (like the FCI on Meteosat-12): visible 0.6 µm, infrared 10.5 µm,
-// water vapour 6.3 µm.
+// water vapour 6.3 µm – for several weather situations, by day and by night.
 //
-// The weather is a model scene, not a photograph: for every pixel the code
-// first decides the physical state (surface type and temperature, cloud
-// layers with optical thickness and top temperature, humidity of the upper
-// troposphere). Each channel is then computed from that state with its own
-// physics, so the three pictures differ for the right reasons:
+// The weather is a model, not a photograph: a scene (SCENES below) lists
+// lows with their fronts, thunderstorms, fog, snow cover, jet-stream cirrus,
+// shower cells in cold air and the season. From it the code decides for every
+// pixel the physical state (surface type and temperature, cloud layers with
+// optical thickness and top temperature, humidity of the upper troposphere).
+// Each channel is then computed from that state with its own physics, so the
+// pictures differ for the right reasons:
 //   VIS – sunlight reflected by surface and clouds (two-stream adding),
 //         times the cosine of the sun's zenith angle: dark at night.
 //   IR  – thermal emission: surface radiance passed up through the cloud
 //         layers (emissivity from optical thickness), Planck at 10.5 µm.
 //   WV  – emission of the upper-tropospheric water vapour; only clouds above
 //         the emitting layer show, the surface and low clouds never do.
+// The clouds stand still: day and night only change sunlight and the
+// temperature of the ground. All six pictures of a scene (3 channels × day /
+// night) are computed once and kept.
 (() => {
   'use strict';
   const G = window.GEO, C = window.THEME.channels, T = window.TEXTS.kanaele;
@@ -69,132 +74,218 @@
 
   // distance (degrees, local east scaled by cos lat) from a point to a polyline,
   // and on which side (+1 east / right of the direction of travel)
+  // third value: how far the point lies beyond the ends of the line (0 alongside
+  // it) – "ahead of" or "behind" a front fades out there instead of ending in a
+  // straight cut
   const polyDist = (x, y, pts) => {
-    let best = Infinity, side = 1;
+    let best = Infinity, side = 1, over = 0;
+    const last = pts.length - 2;
     for (let k = 0; k + 1 < pts.length; k++) {
       const [ax, ay] = pts[k], [bx, by] = pts[k + 1];
       const dx = bx - ax, dy = by - ay, L = dx * dx + dy * dy;
-      const t = Math.max(0, Math.min(1, ((x - ax) * dx + (y - ay) * dy) / L));
+      const tr = ((x - ax) * dx + (y - ay) * dy) / L, t = Math.max(0, Math.min(1, tr));
       const px = ax + t * dx - x, py = ay + t * dy - y, d = Math.hypot(px, py);
-      if (d < best) { best = d; side = (dx * (y - ay) - dy * (x - ax)) > 0 ? 1 : -1; }
+      if (d < best) {
+        best = d; side = (dx * (y - ay) - dy * (x - ax)) > 0 ? 1 : -1;
+        over = (k === 0 && tr < 0 ? -tr : k === last && tr > 1 ? tr - 1 : 0) * Math.sqrt(L);
+      }
     }
-    return [best, side];
+    return [best, side, over];
   };
   const toXY = ([lo, la]) => [lo * Math.cos(la * D2R), la];
 
-  // ============ THE WEATHER (a day in mid-October) ============
-  const LOW = [-16, 56];                                                       // Atlantic low
-  const COLD_FRONT = [[-14, 55], [-10, 52], [-8, 48], [-9, 44], [-12, 40], [-17, 35.5], [-23, 31.5]].map(toXY);
-  const WARM_FRONT = [[-14, 55], [-8, 57.5], [-1, 58.5], [6, 58]].map(toXY);
-  const JET = [[-32, 26.5], [-18, 28.5], [-4, 31], [10, 31.5], [24, 30.5], [36, 29]].map(toXY);
-  const STORMS = [[14.6, 38.4, 1.5], [18.2, 36.8, 1.15], [11.2, 40.6, 0.9], [20.6, 39.6, 1.0], [16.2, 41.6, 0.6]];
-  const DECL = -8.5;                                                           // sun's latitude in mid-October
+  // ============ THE WEATHER SITUATIONS ============
+  // Positions in degrees longitude / latitude. Temperatures in °C (daily mean
+  // at the given latitude, change per degree further north).
+  //   lows:   centre, cold and warm front (polylines), whether it has a comma
+  //           cloud, latitudes of its dry slot behind the cold front
+  //   storms: [lon, lat, radius] of thunderstorm anvils; anvil: direction the
+  //           upper wind stretches them to (degrees, 0 = east, 90 = north)
+  //   fog:    ellipses [lon, lat, rx, ry] where fog/low stratus may lie (land)
+  //   snow:   ellipses [lon, lat, rx, ry, share] of snow cover (land)
+  //   cells:  boxes [lon0, lon1, lat0, lat1] of shower cells over the sea in cold air
+  //   deck:   boxes of flat stratocumulus over a cold sea
+  //   fairCu: fair-weather cumulus over land in summer
+  const SCENES = {
+    herbst: {
+      decl: -8.5, day: 12, night: 0,
+      sea: [24, 0.42], land: [21, 0.62], desert: 27, med: 2, ampLand: 6,
+      lows: [{ c: [-16, 56], comma: true, dry: [41, 57],
+        cold: [[-14, 55], [-10, 52], [-8, 48], [-9, 44], [-12, 40], [-17, 35.5], [-23, 31.5]],
+        warm: [[-14, 55], [-8, 57.5], [-1, 58.5], [6, 58]] }],
+      storms: [[14.6, 38.4, 1.5], [18.2, 36.8, 1.15], [11.2, 40.6, 0.9], [20.6, 39.6, 1.0], [16.2, 41.6, 0.6]], anvil: 37,
+      jet: [[-32, 26.5], [-18, 28.5], [-4, 31], [10, 31.5], [24, 30.5], [36, 29]],
+      fog: [[12.5, 50.4, 7.5, 2.6]],
+      snow: [[10.3, 46.5, 4.4, 0.85, 0.47]],
+      cells: [[-40, -9, 38, 60]], deck: [], fairCu: false, trade: true,
+      uth: 0.42
+    },
+    sommer: {
+      decl: 21.5, day: 14, night: 2,
+      sea: [27, 0.38], land: [29, 0.5], desert: 37, med: 2, ampLand: 8,
+      lows: [{ c: [-12, 57], comma: true, dry: [44, 58],
+        cold: [[-10, 56], [-5, 53], [-1.5, 50], [-1, 46.5], [-3.5, 43.5]],
+        warm: [[-10, 56], [-3, 58.5], [5, 59.5]] }],
+      // a line of thunderstorms ahead of the front, over France, Germany, the Alps and the Balkans
+      storms: [[3.2, 50.6, 0.9], [5.6, 49.3, 1.2], [8.4, 48.2, 1.0], [10.6, 47.0, 1.15], [13.4, 46.4, 0.8],
+               [16.8, 45.6, 0.9], [20.2, 44.6, 0.8], [2.0, 47.3, 0.7], [7.0, 51.6, 0.6]], anvil: 50,
+      jet: [[-30, 41], [-15, 45], [-3, 48.5], [8, 52], [22, 55]],
+      fog: [], snow: [],
+      cells: [], deck: [[-32, -9.5, 24, 39]], fairCu: true, trade: false,
+      uth: 0.45
+    },
+    winter: {
+      decl: -21, day: 12, night: 0,
+      sea: [17, 0.48], land: [11, 0.95], desert: 16, med: 1, ampLand: 4,
+      lows: [{ c: [9.5, 43.6], comma: true, dry: [36, 43.5],
+        cold: [[10.5, 43], [12.4, 40.5], [12.8, 37.6], [11, 34.5], [8.5, 31.5]],
+        warm: [[10.5, 43], [14.5, 44.6], [19, 45.4], [23, 45]] }],
+      storms: [[16.5, 38.6, 0.8], [18.8, 36.9, 0.7]], anvil: 60,
+      jet: [[-32, 28], [-18, 29], [-6, 31], [4, 32.5]],
+      fog: [[19.5, 47, 2.6, 1.2], [8.5, 45.1, 2.4, 0.55]],
+      // snow over Scandinavia, the Baltic, Poland and the east, and on the Alps
+      snow: [[22, 62, 16, 8.5, 0.18], [24, 55, 12, 4.5, 0.32], [10.3, 46.5, 4.6, 1.0, 0.4]],
+      cells: [[-25, 12, 54, 70]], deck: [], fairCu: false, trade: false,
+      uth: 0.32
+    }
+  };
 
-  // per pixel state
+  // per pixel state of the current scene
   const surf = new Uint8Array(N);        // 0 sea, 1 land, 2 desert, 3 snow, 255 space
   const albedo = new Float32Array(N);
   const tMean = new Float32Array(N), tAmp = new Float32Array(N);
-  const lowTau = new Float32Array(N), lowDT = new Float32Array(N), lowKind = new Uint8Array(N);   // 1 fog, 2 cumulus, 3 other
+  const lowTau = new Float32Array(N), lowDT = new Float32Array(N);
   const midTau = new Float32Array(N);
-  const hiTau = new Float32Array(N), hiT = new Float32Array(N), hiKind = new Uint8Array(N);      // 1 Cb, 2 front, 3 comma, 4 cirrus
+  const hiTau = new Float32Array(N), hiT = new Float32Array(N);
   const uth = new Float32Array(N);
+  let decl = 0;
 
-  const buildScene = () => {
+  const inEll = (lo, la, e) => Math.hypot((lo - e[0]) / e[2], (la - e[1]) / e[3]);
+  const inBox = (lo, la, b) => lo > b[0] && lo < b[1] && la > b[2] && la < b[3];
+
+  const buildScene = sc => {
     G.landMask();
-    const [lx, ly] = toXY(LOW);
+    decl = sc.decl;
+    const lows = sc.lows.map(L => ({ ...L, cxy: toXY(L.c), coldXY: L.cold.map(toXY), warmXY: L.warm.map(toXY) }));
+    const storms = sc.storms.map(([lo, la, r]) => [toXY([lo, la])[0], la, r]);
+    const jet = sc.jet.map(toXY);
+    const ac = Math.cos(sc.anvil * D2R), as = Math.sin(sc.anvil * D2R);
     for (let k = 0; k < N; k++) {
       const lo = lon[k], la = lat[k];
       if (lo !== lo) { surf[k] = 255; continue; }
       const x = lo * Math.cos(la * D2R), y = la;
       const land = G.isLand(lo, la);
+      const n1 = fbm(x * 0.55, y * 0.55, 21), n2 = fbm(x * 1.6, y * 1.6, 22);
 
       // ---- surface ----
       let s = land ? 1 : 0;
       const df = land && lo > -17 ? smooth(35, 30.5, la + 2 * (fbm(x * 0.5, y * 0.5, 9) - 0.5)) : 0;   // desert share
       if (df > 0.5) s = 2;
-      if (land && ((lo - 10.3) / 4.4) ** 2 + ((la - 46.5) / 0.85) ** 2 < 1 && fbm(x * 1.4, y * 1.4, 11) > 0.47) s = 3;
+      // snow thins out towards the edge of its area (more and more gaps), no hard rim
+      if (land) for (const e of sc.snow) { const r = inEll(lo, la, e); if (r < 1.25 && fbm(x * 1.4, y * 1.4, 11) > e[4] + 0.5 * Math.max(0, r - 0.55)) s = 3; }
       surf[k] = s;
-      const med = !land && lo > -5.5 && la < 45.5 && la > 30 ? 2 : 0;
-      if (s === 0) { albedo[k] = 0.06; tMean[k] = 24 - 0.42 * (la - 30) + med; tAmp[k] = 0.3; }
-      else if (s === 3) { albedo[k] = 0.72; tMean[k] = -4; tAmp[k] = 3; }
+      const med = !land && lo > -5.5 && la < 45.5 && la > 30 ? sc.med : 0;
+      const tLand = sc.land[0] - sc.land[1] * (la - 30);
+      if (s === 0) { albedo[k] = 0.06; tMean[k] = sc.sea[0] - sc.sea[1] * (la - 30) + med; tAmp[k] = 0.3; }
+      else if (s === 3) { albedo[k] = 0.62 + 0.15 * n2; tMean[k] = Math.min(-3, tLand - 4); tAmp[k] = 3; }
       else {
         const aL = 0.13 + 0.06 * fbm(x * 0.8, y * 0.8, 3), aD = 0.30 + 0.1 * fbm(x * 0.6, y * 0.6, 5);
         albedo[k] = aL + (aD - aL) * df;
-        tMean[k] = (21 - 0.62 * (la - 30)) * (1 - df) + (27 - 0.2 * (la - 25)) * df;
-        tAmp[k] = 6 + 6 * df;
+        tMean[k] = tLand * (1 - df) + (sc.desert - 0.2 * (la - 25)) * df;
+        tAmp[k] = sc.ampLand + 6 * df;
       }
 
-      // ---- the front ----
-      const [dc, side] = polyDist(x, y, COLD_FRONT);
-      const [dw] = polyDist(x, y, WARM_FRONT);
-      const n1 = fbm(x * 0.55, y * 0.55, 21), n2 = fbm(x * 1.6, y * 1.6, 22);
-      const band = Math.exp(-((dc / 1.7) ** 2)) * (0.55 + 0.9 * n1);
-      const ahead = side > 0 ? Math.exp(-((Math.max(0, dc - 1) / 3.6) ** 2)) * smooth(0.35, 0.6, n1 + 0.15 * n2) * smooth(57.5, 54.5, la) : 0;
-      const warm = Math.exp(-((dw / 2.6) ** 2)) * (0.6 + 0.6 * n2);
-      // the comma: a spiral round the low
-      const rx = x - lx, ry = y - ly, r = Math.hypot(rx, ry), th = Math.atan2(ry, rx);
-      const arm = Math.max(0, Math.cos(th - r * 0.42 + 2.2)) ** 1.6;
-      const comma = (arm * Math.exp(-((r / 7.5) ** 2)) * smooth(0.6, 1.8, r)) * (0.6 + 0.8 * n2);
-      // dry slot: behind the cold front, south of the low
-      const dry = side < 0 ? Math.exp(-(((dc - 3.2) / 2.0) ** 2)) * smooth(41, 46, la) * smooth(57, 53, la) : 0;
+      // ---- lows: frontal cloud bands, comma, dry slot ----
+      let band = 0, ahead = 0, warm = 0, comma = 0, dry = 0, behind = false, dcMin = Infinity;
+      for (const L of lows) {
+        const [dc, side, over] = polyDist(x, y, L.coldXY);
+        const endFade = Math.exp(-((over / 1.5) ** 2));
+        const [dw] = polyDist(x, y, L.warmXY);
+        const north = L.c[1];
+        band = Math.max(band, Math.exp(-((dc / 1.7) ** 2)) * (0.55 + 0.9 * n1));
+        if (side > 0) ahead = Math.max(ahead, endFade * Math.exp(-((Math.max(0, dc - 1) / 3.6) ** 2)) * smooth(0.35, 0.6, n1 + 0.15 * n2) * smooth(north + 1.5, north - 1.5, la));
+        warm = Math.max(warm, Math.exp(-((dw / 2.6) ** 2)) * (0.6 + 0.6 * n2));
+        if (L.comma) {
+          const rx = x - L.cxy[0], ry = y - L.cxy[1], r = Math.hypot(rx, ry), th = Math.atan2(ry, rx);
+          const arm = Math.max(0, Math.cos(th - r * 0.42 + 2.2)) ** 1.6;
+          comma = Math.max(comma, arm * Math.exp(-((r / 7.5) ** 2)) * smooth(0.6, 1.8, r) * (0.6 + 0.8 * n2));
+        }
+        if (side < 0) {
+          dry = Math.max(dry, endFade * Math.exp(-(((dc - 3.2) / 2.0) ** 2)) * smooth(L.dry[0], L.dry[0] + 5, la) * smooth(L.dry[1], L.dry[1] - 4, la));
+          if (dc < dcMin) { dcMin = dc; behind = true; }
+        } else if (dc < dcMin) { dcMin = dc; behind = false; }
+      }
 
-      let hT = 0, hK = 0, hTop = -45;
+      let hT = 0, hTop = -45;
       const front = Math.max(band, 0.8 * warm) * (1 - 0.9 * dry);
-      if (front > 0.25) { hT = 9 * (front - 0.25) * (0.7 + 0.6 * n2); hK = 2; hTop = -44 - 6 * n2; }
-      if (comma > 0.3 && comma * 10 > hT) { hT = 10 * (comma - 0.3) + hT * 0.3; hK = 3; hTop = -40 - 6 * n1; }
-      midTau[k] = (14 * Math.max(ahead, band) * (1 - dry) + 8 * comma) * (0.6 + 0.8 * n2);
+      if (front > 0.25) { hT = 9 * (front - 0.25) * (0.7 + 0.6 * n2); hTop = -44 - 6 * n2; }
+      if (comma > 0.3 && comma * 10 > hT) { hT = 10 * (comma - 0.3) + hT * 0.3; hTop = -40 - 6 * n1; }
+      let mid = (14 * Math.max(ahead, band) * (1 - dry) + 8 * comma) * (0.6 + 0.8 * n2);
 
-      // ---- thunderstorms over the warm Mediterranean ----
-      for (const [sx0, sy, sr] of STORMS) {
-        const [sx] = toXY([sx0, sy]);
-        // anvils stretch towards the north-east with the upper wind
+      // ---- thunderstorms: anvils stretched by the upper wind ----
+      let stormQ = 0;
+      for (const [sx, sy, sr] of storms) {
         const ex = x - sx, ey = y - sy;
-        const u = (ex * 0.8 + ey * 0.6), v = (-ex * 0.6 + ey * 0.8);
+        const u = ex * ac + ey * as, v = -ex * as + ey * ac;
         const dd = Math.hypot((u - 0.35 * sr) / 1.45, v) / sr;
+        stormQ += Math.exp(-((Math.hypot(ex - 0.5 * ac, ey - 0.5 * as) / (2.3 * sr)) ** 2));
         const edge = 1 + 0.35 * (fbm(x * 2.2, y * 2.2, 31) - 0.5);
         if (dd < edge) {
           const core = Math.exp(-((dd / 0.33) ** 2));
           const tau = 45 * smooth(edge, edge * 0.55, dd) + 30 * core;
-          if (tau > hT) { hT = tau; hK = 1; hTop = -56 - 11 * core - 2 * n2; }
-          midTau[k] += 20 * smooth(edge, 0.3, dd);
+          if (tau > hT) { hT = tau; hTop = -56 - 11 * core - 2 * n2; }
+          mid += 20 * smooth(edge, 0.3, dd);
         }
       }
+      midTau[k] = mid;
 
-      // ---- jet-stream cirrus over North Africa ----
-      const [dj] = polyDist(x, y, JET);
+      // ---- jet-stream cirrus ----
+      const [dj] = polyDist(x, y, jet);
       const streak = smooth(0.42, 0.7, fbm(x * 0.35 + y * 0.5, y * 2.4 - x * 0.2, 41, 5));
       const ci = 2.2 * Math.exp(-((dj / 1.9) ** 2)) * streak;
-      if (ci > 0.15 && hT < 0.4) { hT = ci; hK = 4; hTop = -48 - 5 * n1; }
-      hiTau[k] = hT; hiKind[k] = hK; hiT[k] = hTop;
+      if (ci > 0.15 && hT < 0.4) { hT = ci; hTop = -48 - 5 * n1; }
+      hiTau[k] = hT; hiT[k] = hTop;
 
       // ---- low clouds ----
-      let lt = 0, lk = 0, ld = -6;
-      // fog / low stratus under high pressure over Central Europe
-      if (land && s !== 3) {
-        const e = Math.hypot((lo - 12.5) / 7.5, (la - 50.4) / 2.6);
-        const f = fbm(x * 0.9, y * 0.9, 51) + 0.32 * (1 - e) - (la < 47.8 ? 0.4 : 0);
-        if (f > 0.5) { lt = 18 * smooth(0.5, 0.56, f); lk = 1; ld = +1.5; }
+      let lt = 0, ld = -6;
+      // fog / low stratus under high pressure: as warm as the ground below
+      if (land && s !== 3) for (const e of sc.fog) {
+        const f = fbm(x * 0.9, y * 0.9, 51) + 0.32 * (1 - inEll(lo, la, e)) - 0.06;
+        if (f > 0.5) { lt = Math.max(lt, 18 * smooth(0.5, 0.56, f)); ld = +1.5; }
       }
-      // open cells of cumulus in the cold air behind the front
-      if (!land && side < 0 && dc > 3.5 && la > 38 && la < 60 && lo < -9) {
-        const cells = smooth(0.52, 0.66, fbm(x * 2.1, y * 2.1, 61, 3));
-        if (cells > 0) { lt = 5 * cells; lk = 2; ld = -14; }
+      // shower cells over the sea in cold air (behind a front or in an outbreak)
+      if (!land) for (const b of sc.cells) {
+        if (!inBox(lo, la, b) || (!behind && dcMin < 3.5)) continue;
+        const cells = smooth(0.52, 0.66, fbm(x * 2.1, y * 2.1, 61, 3)) * smooth(b[2], b[2] + 3, la);
+        if (cells > 0) { lt = 5 * cells; ld = -14; }
       }
-      // under the front and the comma
+      // flat stratocumulus over a cold sea
+      if (!land) for (const b of sc.deck) {
+        // soft edges: the deck thins out towards the sides of its box
+        const edge = Math.min(smooth(b[0], b[0] + 4, lo), smooth(b[1], b[1] - 4, lo), smooth(b[2], b[2] + 3, la), smooth(b[3], b[3] - 3, la));
+        if (edge <= 0) continue;
+        const d = smooth(0.42, 0.52, fbm(x * 0.8, y * 0.8, 91) + 0.25 * edge - 0.12);
+        if (d > 0) { lt = Math.max(lt, 9 * d); ld = -7; }
+      }
+      // fair-weather cumulus over land on a summer afternoon
+      if (sc.fairCu && land && df < 0.5 && la > 40 && la < 58) {
+        const cu = smooth(0.6, 0.7, fbm(x * 3.2, y * 3.2, 95, 3));
+        if (cu > 0) { lt = Math.max(lt, 4 * cu); ld = -16; }
+      }
+      // under the fronts and the comma
       const under = Math.max(band, comma, 0.6 * ahead);
-      if (under > 0.3 && lt < 8) { lt = 10 * under; lk = 3; ld = -9; }
+      if (under > 0.3 && lt < 8) { lt = 10 * under; ld = -9; }
       // a few trade-wind cumulus far out over the subtropical Atlantic
-      if (!land && la < 34 && lo < -16 && lt === 0) {
+      if (sc.trade && !land && la < 34 && lo < -16 && lt === 0) {
         const tc = smooth(0.6, 0.7, fbm(x * 2.6, y * 2.6, 71, 3));
-        if (tc > 0) { lt = 3 * tc; lk = 3; ld = -8; }
+        if (tc > 0) { lt = 3 * tc; ld = -8; }
       }
-      lowTau[k] = lt; lowKind[k] = lk; lowDT[k] = ld;
+      lowTau[k] = lt; lowDT[k] = ld;
 
       // ---- humidity of the upper troposphere (0 … 1) ----
-      const sub = smooth(36, 30, la);                                   // dry subtropics
-      let q = 0.42 + 0.3 * (fbm(x * 0.4 + y * 0.3, y * 0.9, 81) - 0.5) - 0.24 * sub;
-      q += 0.55 * Math.max(band, 0.8 * warm, comma) + 0.3 * ahead;
-      for (const [sx0, sy, sr] of STORMS) { const [sx] = toXY([sx0, sy]); q += 0.6 * Math.exp(-((Math.hypot(x - sx - 0.5, y - sy - 0.4) / (2.3 * sr)) ** 2)); }
+      const subtrop = smooth(36, 30, la);
+      let q = sc.uth + 0.3 * (fbm(x * 0.4 + y * 0.3, y * 0.9, 81) - 0.5) - 0.24 * subtrop;
+      q += 0.55 * Math.max(band, 0.8 * warm, comma) + 0.3 * ahead + 0.6 * Math.min(1.2, stormQ);
       q += 0.35 * Math.exp(-((dj / 2.2) ** 2));
       q *= 1 - 0.8 * dry * (0.75 + 0.5 * n1);
       uth[k] = Math.max(0.03, Math.min(1, q));
@@ -215,7 +306,7 @@
     return tMean[k] + tAmp[k] * Math.cos(2 * Math.PI * (lst - 14) / 24);
   };
   const sunCos = (k, utc) => {
-    const h = (lon[k] + (utc - 12) * 15) * D2R, p = lat[k] * D2R, d = DECL * D2R;
+    const h = (lon[k] + (utc - 12) * 15) * D2R, p = lat[k] * D2R, d = decl * D2R;
     return Math.sin(p) * Math.sin(d) + Math.cos(p) * Math.cos(d) * Math.cos(h);
   };
 
@@ -249,16 +340,6 @@
     return planckInv(lam, B) - K;
   };
 
-  const describe = k => {
-    if (surf[k] === 255) return T.what.space;
-    if (hiTau[k] > 3) return T.what[['', 'cb', 'frontHigh', 'comma', 'cirrus'][hiKind[k]] || 'frontHigh'];
-    if (midTau[k] > 4) return T.what.frontMid;
-    if (hiTau[k] > 0.4 && hiKind[k] === 4) return T.what.cirrus;
-    if (lowTau[k] > 3) return T.what[['', 'fog', 'cumulus', 'lowOther'][lowKind[k]]];
-    return T.what[['sea', 'land', 'desert', 'snow'][surf[k]]];
-  };
-  const isFog = k => lowKind[k] === 1 && lowTau[k] > 4 && hiTau[k] < 0.5 && midTau[k] < 2;
-
   // ============ COLOURS ============
   const rgb = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
   const scaleFn = stops => {
@@ -284,39 +365,41 @@
   const canvas = document.getElementById('image');
   const ctx = canvas.getContext('2d');
   const chips = [...document.querySelectorAll('.chip-btn[data-ch]')];
-  const cells = [...document.querySelectorAll('.probe-grid > div[data-ch]')];
-  const timeIn = document.getElementById('time');
-  const timeOut = document.getElementById('time-out');
-  const playBtn = document.getElementById('time-play');
-  const playIcon = document.getElementById('time-icon');
-  const coastBtn = document.getElementById('coast-btn');
-  const roVis = document.getElementById('ro-vis'), roIr = document.getElementById('ro-ir'), roWv = document.getElementById('ro-wv');
-  const roWhat = document.getElementById('ro-what');
-  const badge = SCAPE.badge(frame);
+  const sceneBtns = [...document.querySelectorAll('[data-scene]')];
+  const timeBtns = [...document.querySelectorAll('[data-time]')];
+  const sceneText = document.getElementById('scene-text');
+  const busy = document.getElementById('busy');
   const tasks = SCAPE.taskDialog('channel-tasks');
 
-  const state = { ch: 'vis', utc: 12, probe: null, coasts: true, playing: false, seenNight: { vis: false, ir: false } };
+  const state = { scene: 'herbst', ch: 'vis', time: 'day', seen: {} };
 
-  // ============ IMAGES ============
-  const imgCanvas = { vis: document.createElement('canvas'), ir: document.createElement('canvas'), wv: document.createElement('canvas') };
-  Object.values(imgCanvas).forEach(c => { c.width = NW; c.height = NH; });
-  const values = { vis: new Float32Array(N), ir: new Float32Array(N), wv: new Float32Array(N) };
-
-  const renderChannel = ch => {
-    const c = imgCanvas[ch], cx = c.getContext('2d'), img = cx.createImageData(NW, NH), d = img.data;
-    const vals = values[ch], utc = state.utc, sc = SCALE[ch];
-    for (let k = 0; k < N; k++) {
-      let col;
-      if (surf[k] === 255) col = SPACE;
-      else {
-        const v = ch === 'vis' ? visValue(k, utc) : ch === 'ir' ? irValue(k, utc) : wvValue(k);
-        vals[k] = v;
-        col = sc(ch === 'vis' ? visShown(v) : v);
+  // ============ PICTURES: 3 channels × day/night per scene, computed once ============
+  const cache = {};                       // cache[scene][time][ch] = canvas
+  const renderAll = key => {
+    const sc = SCENES[key];
+    buildScene(sc);
+    const out = {};
+    for (const time of ['day', 'night']) {
+      const utc = sc[time];
+      out[time] = {};
+      for (const ch of ['vis', 'ir', 'wv']) {
+        const c = document.createElement('canvas'); c.width = NW; c.height = NH;
+        const cx = c.getContext('2d'), img = cx.createImageData(NW, NH), d = img.data, scale = SCALE[ch];
+        for (let k = 0; k < N; k++) {
+          let col;
+          if (surf[k] === 255) col = SPACE;
+          else if (ch === 'vis') col = scale(visShown(visValue(k, utc)));
+          else if (ch === 'ir') col = scale(irValue(k, utc));
+          else col = scale(wvValue(k));
+          d[4 * k] = col[0]; d[4 * k + 1] = col[1]; d[4 * k + 2] = col[2]; d[4 * k + 3] = 255;
+        }
+        cx.putImageData(img, 0, 0);
+        out[time][ch] = c;
       }
-      d[4 * k] = col[0]; d[4 * k + 1] = col[1]; d[4 * k + 2] = col[2]; d[4 * k + 3] = 255;
     }
-    cx.putImageData(img, 0, 0);
+    cache[key] = out;
   };
+  const picture = () => cache[state.scene] && cache[state.scene][state.time][state.ch];
 
   // coastlines in canvas fractions, projected once
   const COASTS = (() => {
@@ -346,45 +429,35 @@
     draw();
   };
 
-  // the scan: a new channel appears row by row from south to north
+  // a new picture appears row by row from south to north, as the imager scans
   let scan = null;
   const draw = () => {
     ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
     ctx.fillStyle = C.space; ctx.fillRect(0, 0, W, H);
+    const pic = picture();
+    if (!pic) return;
     ctx.imageSmoothingEnabled = true;
     const { x, y, w, h } = box;
     if (scan) {
-      ctx.drawImage(imgCanvas[scan.from], x, y, w, h);
-      const f = scan.f, rows = Math.round(NH * f), sy = NH - rows;
-      if (rows > 0) ctx.drawImage(imgCanvas[state.ch], 0, sy, NW, rows, x, y + h * sy / NH, w, h * rows / NH);
+      ctx.drawImage(scan.from, x, y, w, h);
+      const rows = Math.round(NH * scan.f), sy = NH - rows;
+      if (rows > 0) ctx.drawImage(pic, 0, sy, NW, rows, x, y + h * sy / NH, w, h * rows / NH);
       ctx.fillStyle = C.coast; ctx.fillRect(x, y + h * sy / NH - 1.5, w, 3);
-    } else ctx.drawImage(imgCanvas[state.ch], x, y, w, h);
+    } else ctx.drawImage(pic, x, y, w, h);
 
-    if (state.coasts) {
-      ctx.save(); ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip();
-      ctx.strokeStyle = C.coast; ctx.globalAlpha = 0.75; ctx.lineWidth = 1; ctx.lineJoin = 'round';
-      ctx.beginPath();
-      for (const line of COASTS) {
-        ctx.moveTo(x + line[0][0] * w, y + line[0][1] * h);
-        for (let i = 1; i < line.length; i++) ctx.lineTo(x + line[i][0] * w, y + line[i][1] * h);
-      }
-      ctx.stroke(); ctx.restore();
+    // coastlines, for orientation
+    ctx.save(); ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip();
+    ctx.strokeStyle = C.coast; ctx.globalAlpha = 0.75; ctx.lineWidth = 1; ctx.lineJoin = 'round';
+    ctx.beginPath();
+    for (const line of COASTS) {
+      ctx.moveTo(x + line[0][0] * w, y + line[0][1] * h);
+      for (let i = 1; i < line.length; i++) ctx.lineTo(x + line[i][0] * w, y + line[i][1] * h);
     }
-
-    if (state.probe) {
-      const px = x + (state.probe.i + 0.5) / NW * w, py = y + (state.probe.j + 0.5) / NH * h;
-      ctx.strokeStyle = C.probe; ctx.lineWidth = 2.5;
-      ctx.beginPath();
-      ctx.arc(px, py, 9, 0, 2 * Math.PI);
-      ctx.moveTo(px - 18, py); ctx.lineTo(px - 9, py); ctx.moveTo(px + 9, py); ctx.lineTo(px + 18, py);
-      ctx.moveTo(px, py - 18); ctx.lineTo(px, py - 9); ctx.moveTo(px, py + 9); ctx.lineTo(px, py + 18);
-      ctx.stroke();
-      ctx.strokeStyle = '#FFFFFF'; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(px, py, 11, 0, 2 * Math.PI); ctx.stroke();
-    }
+    ctx.stroke(); ctx.restore();
   };
 
   const startScan = from => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { scan = null; draw(); return; }
+    if (!from || window.matchMedia('(prefers-reduced-motion: reduce)').matches) { scan = null; draw(); return; }
     scan = { from, f: 0, t0: performance.now() };
     const step = now => {
       if (!scan) return;
@@ -395,27 +468,13 @@
     requestAnimationFrame(step);
   };
 
-  // ============ READOUTS, LEGEND, CARD ============
+  // ============ LEGEND, CARD ============
   const fmt = v => (Math.round(v) === 0 ? '0' : String(Math.round(v)).replace('-', '−'));
-  const updateProbe = () => {
-    const p = state.probe;
-    if (!p) return;
-    const k = p.j * NW + p.i;
-    if (surf[k] === 255) { roVis.textContent = roIr.textContent = roWv.textContent = '–'; }
-    else {
-      const v = visValue(k, state.utc);
-      roVis.textContent = sunCos(k, state.utc) <= 0 ? T.readout.night : Math.round(v * 100) + ' %';
-      roIr.textContent = fmt(irValue(k, state.utc)) + ' °C';
-      roWv.textContent = fmt(wvValue(k)) + ' °C';
-    }
-    roWhat.textContent = describe(k);
-  };
-
   const legendBar = document.getElementById('legend-bar');
   const drawLegend = () => {
     const ch = state.ch, L = T.channels[ch];
     document.getElementById('legend-title').textContent = L.legendTitle;
-    document.getElementById('legend-low').textContent = ch === 'vis' ? L.legendLow : L.legendLow;
+    document.getElementById('legend-low').textContent = L.legendLow;
     document.getElementById('legend-high').textContent = L.legendHigh;
     const w = legendBar.clientWidth || 300;
     legendBar.width = w; legendBar.height = 18;
@@ -446,7 +505,6 @@
     document.getElementById('mode-title').textContent = c.title;
     document.getElementById('mode-sub').innerHTML = c.sub;
     document.getElementById('mode-bullets').innerHTML = c.bullets.map(b => '<li>' + b + '</li>').join('');
-    cells.forEach(el => el.classList.toggle('current', el.dataset.ch === state.ch));
     drawSpectrum();
   };
 
@@ -486,91 +544,62 @@
   };
 
   // ============ TASKS ============
-  const isNight = () => {
-    // night over the centre of the picture (≈ 45° N, 5° E)
-    const h = (5 + (state.utc - 12) * 15) * D2R, p = 45 * D2R, d = DECL * D2R;
-    return Math.sin(p) * Math.sin(d) + Math.cos(p) * Math.cos(d) * Math.cos(h) < -0.05;
-  };
   const checkTasks = () => {
-    if (isNight() && (state.ch === 'vis' || state.ch === 'ir')) state.seenNight[state.ch] = true;
-    if (state.seenNight.vis && state.seenNight.ir) tasks.done('night');
-    const p = state.probe;
-    if (!p) return;
-    const k = p.j * NW + p.i;
-    if (surf[k] === 255) return;
-    if (state.ch === 'ir' && irValue(k, state.utc) < -55) tasks.done('cold');
-    if (state.ch === 'wv' && isFog(k)) tasks.done('fog');
+    const k = state.scene + '|' + state.time + '|' + state.ch;
+    state.seen[k] = true;
+    const seen = (sc, t, ch) => state.seen[sc + '|' + t + '|' + ch];
+    if (['herbst', 'sommer', 'winter'].some(sc => seen(sc, 'night', 'vis') && seen(sc, 'night', 'ir'))) tasks.done('night');
+    if (seen('herbst', 'day', 'vis') && seen('herbst', 'day', 'wv')) tasks.done('fog');
+    if (seen('winter', 'day', 'vis') && seen('winter', 'day', 'ir')) tasks.done('snow');
   };
 
   // ============ INPUT ============
-  const setChannel = ch => {
-    if (ch === state.ch) return;
-    const from = state.ch;
-    state.ch = ch;
-    chips.forEach(c => c.setAttribute('aria-pressed', String(c.dataset.ch === ch)));
-    setCard(); drawLegend(); updateProbe(); checkTasks();
-    startScan(from);
-  };
-  chips.forEach(c => c.addEventListener('click', () => setChannel(c.dataset.ch)));
+  const press = (btns, attr, val) => btns.forEach(b => b.setAttribute('aria-pressed', String(b.dataset[attr] === val)));
+  const show = from => { startScan(from); checkTasks(); };
 
-  const setTime = h => {
-    state.utc = ((h % 24) + 24) % 24;
-    timeIn.value = String(Math.round(state.utc * 4) / 4);
-    timeOut.textContent = T.controls.timeValue(Math.round(state.utc * 4) / 4);
-    renderChannel('vis'); renderChannel('ir');
-    draw(); updateProbe(); checkTasks();
+  chips.forEach(c => c.addEventListener('click', () => {
+    if (c.dataset.ch === state.ch) return;
+    const from = picture();
+    state.ch = c.dataset.ch;
+    press(chips, 'ch', state.ch);
+    setCard(); drawLegend();
+    show(from);
+  }));
+  timeBtns.forEach(b => b.addEventListener('click', () => {
+    if (b.dataset.time === state.time) return;
+    const from = picture();
+    state.time = b.dataset.time;
+    press(timeBtns, 'time', state.time);
+    show(from);
+  }));
+  // a new scene is computed on its first use (about a second); show that it is coming
+  const setScene = key => {
+    const from = picture();
+    state.scene = key;
+    press(sceneBtns, 'scene', key);
+    sceneText.innerHTML = T.scenes[key].text;
+    if (cache[key]) { show(from); return; }
+    busy.hidden = false;
+    sceneBtns.forEach(b => { b.disabled = true; });
+    setTimeout(() => {
+      renderAll(key);
+      busy.hidden = true;
+      sceneBtns.forEach(b => { b.disabled = false; });
+      show(from);
+    }, 30);
   };
-  timeIn.addEventListener('input', () => { stopPlay(); setTime(Number(timeIn.value)); });
-
-  let playTimer = 0;
-  const ICON_PLAY = '<path d="M6 4l14 8-14 8V4z" fill="currentColor"/>';
-  const ICON_PAUSE = '<rect x="6" y="4" width="4" height="16" fill="currentColor"/><rect x="14" y="4" width="4" height="16" fill="currentColor"/>';
-  const stopPlay = () => {
-    state.playing = false; clearInterval(playTimer);
-    playIcon.innerHTML = ICON_PLAY; playBtn.setAttribute('aria-pressed', 'false'); playBtn.setAttribute('aria-label', T.controls.playAria);
-  };
-  playBtn.addEventListener('click', () => {
-    if (state.playing) { stopPlay(); return; }
-    state.playing = true;
-    playIcon.innerHTML = ICON_PAUSE; playBtn.setAttribute('aria-pressed', 'true'); playBtn.setAttribute('aria-label', T.controls.pauseAria);
-    playTimer = setInterval(() => setTime(state.utc + 0.25), 250);   // one hour per second
-  });
-
-  coastBtn.addEventListener('click', () => {
-    state.coasts = !state.coasts;
-    coastBtn.setAttribute('aria-pressed', String(state.coasts));
-    draw();
-  });
-
-  const pick = e => {
-    const r = canvas.getBoundingClientRect();
-    const fx = (e.clientX - r.left - box.x) / box.w, fy = (e.clientY - r.top - box.y) / box.h;
-    if (fx < 0 || fx >= 1 || fy < 0 || fy >= 1) return;
-    state.probe = { i: Math.floor(fx * NW), j: Math.floor(fy * NH) };
-    badge.hide();
-    draw(); updateProbe(); checkTasks();
-  };
-  let dragging = false;
-  canvas.addEventListener('pointerdown', e => { dragging = true; canvas.setPointerCapture(e.pointerId); pick(e); });
-  canvas.addEventListener('pointermove', e => { if (dragging) pick(e); });
-  canvas.addEventListener('pointerup', () => { dragging = false; });
-  canvas.addEventListener('pointercancel', () => { dragging = false; });
+  sceneBtns.forEach(b => b.addEventListener('click', () => { if (b.dataset.scene !== state.scene) setScene(b.dataset.scene); }));
 
   // ============ START ============
-  buildScene();
-  renderChannel('vis'); renderChannel('ir'); renderChannel('wv');
+  renderAll(state.scene);
+  sceneText.innerHTML = T.scenes[state.scene].text;
   setCard();
-  setTime(12);
   resize();
   drawLegend();
-  badge.show(T.badge);
+  checkTasks();
   window.addEventListener('resize', () => { resize(); drawLegend(); });
   if (window.ResizeObserver) new ResizeObserver(() => { resize(); }).observe(frame);
 
   // for tests
-  window.KANAELE = { state, setChannel, setTime, NW, NH, at: (lo, la) => {
-    let best = -1, bd = Infinity;
-    for (let k = 0; k < N; k++) { if (surf[k] === 255) continue; const d = (lon[k] - lo) ** 2 + (lat[k] - la) ** 2; if (d < bd) { bd = d; best = k; } }
-    return { i: best % NW, j: Math.floor(best / NW), vis: visValue(best, state.utc), ir: irValue(best, state.utc), wv: wvValue(best), what: describe(best) };
-  }, probeAt: (i, j) => { state.probe = { i, j }; draw(); updateProbe(); checkTasks(); } };
+  window.KANAELE = { state, setScene, SCENES, cache };
 })();
