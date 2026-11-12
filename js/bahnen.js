@@ -117,6 +117,10 @@
   const roTime = document.getElementById('ro-time');
   const roBelow = document.getElementById('ro-below');
   const roPlace = document.getElementById('ro-place');
+  // the satellite's view can be closed and opened again
+  const insetBox = document.getElementById('inset'), insetOpen = document.getElementById('inset-open');
+  document.getElementById('inset-close').addEventListener('click', () => { insetBox.hidden = true; insetOpen.hidden = false; });
+  insetOpen.addEventListener('click', () => { insetBox.hidden = false; insetOpen.hidden = true; resize(); });
   const badge = SCAPE.badge(frame);
   badge.show(T.badge);
   const tasks = SCAPE.taskDialog('orbit-tasks');
@@ -320,19 +324,15 @@
 
   // Scale (px per km) and the Earth's centre on screen. LEO: the Earth fills
   // two thirds of the picture. GEO: as big as possible while the satellite
-  // (in front of and below the Earth when the camera faces it) still fits.
-  // Then the visitor's zoom and offset on top.
+  // still fits below it in the starting view (seen from 12° above the
+  // equator). The Earth always stays in the middle of the picture, however
+  // the view is turned; the visitor's zoom and offset come on top.
+  const GEO_DROP = GEO_R * Math.sin(12 * D2R);
   const baseFraming = () => {
     const z = state.zoom, ease = z * z * (3 - 2 * z), m = Math.min(W, H);
     const kLeo = 0.33 * m / R;
-    const drop = GEO_R * Math.sin(state.el);                   // the satellite's offset below the centre, in km
-    const kGeo = Math.min(0.36 * m / R, 0.80 * H / (Math.abs(drop) + R + 1500));
-    const top = Math.min(-R, drop) * kGeo, bottom = Math.max(R, drop) * kGeo;
-    const cyGeo = H / 2 - (top + bottom) / 2;
-    return {
-      k: Math.exp(Math.log(kLeo) + (Math.log(kGeo) - Math.log(kLeo)) * ease),
-      cy: H * 0.54 + (cyGeo - H * 0.54) * ease
-    };
+    const kGeo = Math.min(0.36 * m / R, 0.44 * H / (GEO_DROP + 900));
+    return { k: Math.exp(Math.log(kLeo) + (Math.log(kGeo) - Math.log(kLeo)) * ease), cy: H / 2 };
   };
   const framing = () => {
     const b = baseFraming();
@@ -370,28 +370,22 @@
     }
 
     // orbit name at its rightmost point
-    let best = null, bestD = -1;
-    for (const p of ORBITS[mode]) {
-      const q = project(p, cam, cx, cy, k);
-      if (q[2] < 0 || q[0] < 60 || q[0] > W - 60 || q[1] < 0.2 * H || q[1] > 0.85 * H) continue;
-      const dd = Math.hypot(q[0] - ss[0], q[1] - ss[1]);
-      if (dd > bestD) { bestD = dd; best = q; }
-    }
-    if (best) label(T.modes[mode].label, best[0] + (best[0] > W / 2 ? -10 : 10), best[1], best[0] > W / 2 ? 'right' : 'left', true);
 
     drawInset(sp, mode, t);
   };
 
   // ---- what the satellite sees: a camera on the satellite, looking down ----
   const drawInset = (P, mode, t) => {
+    if (insetBox.hidden) return;
     const n = inset.width;
     if (!n) return;
     if (!insetImg || insetImg.width !== n) insetImg = ictx.createImageData(n, n);
     const d = insetImg.data;
     const f = G.norm(G.scale(P, -1));
     // north up; near the poles (where north is straight below) the flight direction
-    let upRef = [0, 0, 1];
-    if (Math.abs(f[2]) > 0.94) upRef = G.sub(leoPos(t + 1), P);
+    // LEO: flight direction up (turns smoothly along the orbit, no jump over
+    // the poles); GEO: north up
+    const upRef = mode === 'leo' ? G.sub(leoPos(t + 1), P) : [0, 0, 1];
     const up = G.norm(G.sub(upRef, G.scale(f, G.dot(upRef, f))));
     const right = G.cross(f, up);
     const tanH = mode === 'leo' ? Math.tan(56 * D2R) : Math.tan(Math.asin(R / G.len(P)) * 1.08);

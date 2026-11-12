@@ -54,7 +54,8 @@
           <button type="button" class="zoom-btn" id="zoom-in" data-t-aria="bahnen.controls.zoomInAria"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
           <button type="button" class="zoom-btn" id="zoom-out" data-t-aria="bahnen.controls.zoomOutAria"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/></svg></button>
         </div>
-        <div class="inset" aria-hidden="true"><canvas id="inset-canvas"></canvas><span class="inset-label" data-t="bahnen.insetLabel"></span></div>
+        <div class="inset" id="inset"><canvas id="inset-canvas" aria-hidden="true"></canvas><span class="inset-label" data-t="bahnen.insetLabel"></span><button type="button" class="inset-close" id="inset-close" data-t-aria="bahnen.insetClose">&times;</button></div>
+        <button type="button" class="inset-open" id="inset-open" hidden data-t="bahnen.insetOpen"></button>
       </div>
     </div>
 
@@ -81,7 +82,7 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5"/></svg>
         </button>
         <button type="button" class="btn icon" id="sim-follow" aria-pressed="false" data-t-aria="bahnen.controls.followAria">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M4 12h16M12 4c3 3 3 13 0 16"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="5"/><path d="M12 7v10"/><path d="M4.5 9.5A8 8 0 0 1 18 6.3"/><path d="M18 2.5v4h-4"/><path d="M19.5 14.5A8 8 0 0 1 6 17.7"/><path d="M6 21.5v-4h4"/></svg>
         </button>
         <button type="button" class="info" aria-controls="controls-help" data-t-aria="bahnen.controls.infoAria"></button>
       </div>
