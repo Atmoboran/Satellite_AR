@@ -27,7 +27,7 @@
   const tasks = SCAPE.taskDialog('measure-tasks');
 
   const state = {
-    mode: 'passive', inst: { passive: 'vis', active: 'pulse' }, night: false,
+    mode: 'passive', inst: { passive: 'vis', active: 'pulse' }, night: false, satX: 0.5,
     packets: [], pulse: null, echoes: [],
     arrivals: { sun: 0, ground: 0, cloud: 0, vapour: 0 }, seenNight: { vis: false, ir: false }
   };
@@ -47,10 +47,20 @@
       yG, km: h => yG - h * (yG - yT) / 12,
       seaX: sx + W * (narrow ? 0.12 : 0.17), xb: sx, target: [sx + W * 0.3, yG],
       cloud: [sx - W * 0.15, sx + W * 0.15], rain: [sx - W * 0.1, sx + W * 0.1], cirrus: [sx - W * 0.32, sx + W * 0.28],
-      s: Math.max(0.8, Math.min(1.6, Math.min(W, H) / 480))
+      s: Math.max(0.8, Math.min(1.6, Math.min(W, H) / 480)),
+      satBase: sx
     };
+    placeSat();
     const cw = chart.clientWidth || 300;
     chart.width = Math.round(cw * DPR); chart.height = Math.round(170 * DPR);
+  };
+
+  // Active mode: the visitor moves the satellite sideways (slider or drag in
+  // the picture) to measure the profile at different places.
+  const placeSat = () => {
+    if (!g.yG) return;
+    const x = state.mode === 'active' ? Math.max(0.08, Math.min(0.92, state.satX)) * W : g.satBase;
+    g.sat[0] = x; g.xb = x;
   };
 
   // ============ SCENE ============
@@ -211,22 +221,27 @@
   };
 
   // ---- active: pulses and echoes ----
-  // targets straight below the satellite: height (km) and echo strength
-  // (as for a radar: rain and cloud strong, thin ice cloud weak, dust none)
-  const TARGETS = [
-    { key: 'cirrus', h: 10.5, s: 0.15 },
-    { key: 'cloud', h: 3.9, s: 0.45 },
-    { key: 'cloud', h: 2.6, s: 0.55 },
-    { key: 'cloud', h: 1.4, s: 0.6 },
-    { key: 'rain', h: 0.6, s: 0.85 },
-    { key: 'ground', h: 0, s: 1 }
-  ];
+  // what lies straight below x: height (km) and echo strength, as for a radar
+  // (rain and cloud strong, thin ice cloud weak, dust none, the ground strongest)
+  const targetsAt = x => {
+    const t = [];
+    if (x > g.cirrus[0] && x < g.cirrus[1]) t.push({ key: 'cirrus', h: 10.5, s: 0.15 });
+    const top = cloudTop(x);
+    if (top !== null) {
+      t.push({ key: 'cloud', h: top - 0.1, s: 0.45 });
+      if (top > 2.2) t.push({ key: 'cloud', h: (top + 1) / 2, s: 0.55 });
+      t.push({ key: 'cloud', h: 1.3, s: 0.6 });
+    }
+    if (x > g.rain[0] && x < g.rain[1]) t.push({ key: 'rain', h: 0.6, s: 0.85 });
+    t.push({ key: 'ground', h: 0, s: x > g.seaX ? 0.8 : 1 });
+    return t;
+  };
 
   const sendPulse = () => {
     if (state.mode !== 'active') return;
     badge.hide();
     state.echoes = [];
-    state.pulse = { y: g.sat[1] + 16 * g.s, hit: new Set(), stopY: g.yG, pending: 0 };
+    state.pulse = { x: g.xb, targets: targetsAt(g.xb), y: g.sat[1] + 16 * g.s, hit: new Set(), stopY: g.yG, pending: 0 };
     pulseBtn.disabled = true;
   };
   pulseBtn.addEventListener('click', sendPulse);
@@ -237,12 +252,12 @@
     const v = SPEED() * 0.75;
     if (p.y === null) return;
     p.y += v * dt;
-    for (const [i, tg] of TARGETS.entries()) {
+    for (const [i, tg] of p.targets.entries()) {
       const ty = g.km(tg.h);
       if (p.hit.has(i) || p.y < ty || ty > p.stopY + 1) continue;
       p.hit.add(i);
       p.pending++;
-      addPacket([[g.xb, ty], [g.xb, g.sat[1] + 16 * g.s]], C.radar, 1 + 3.5 * tg.s, { echo: { key: tg.key, h: tg.h, strength: tg.s } });
+      addPacket([[p.x, ty], [p.x, g.sat[1] + 16 * g.s]], C.radar, 1 + 3.5 * tg.s, { echo: { key: tg.key, h: tg.h, strength: tg.s } });
     }
     if (p.y >= p.stopY) p.y = null;
   };
@@ -254,14 +269,15 @@
     const col = C.radar;
     const top = g.sat[1] + 16 * g.s, half = W * 0.045;
     ctx.fillStyle = col; ctx.globalAlpha = 0.16;
-    ctx.beginPath(); ctx.moveTo(g.xb - 2, top); ctx.lineTo(g.xb + 2, top);
+    const bx = p.x;
+    ctx.beginPath(); ctx.moveTo(bx - 2, top); ctx.lineTo(bx + 2, top);
     const bottom = p.stopY;
     const hw = half * (bottom - top) / (g.yG - top);
-    ctx.lineTo(g.xb + hw, bottom); ctx.lineTo(g.xb - hw, bottom); ctx.closePath(); ctx.fill(); ctx.globalAlpha = 1;
+    ctx.lineTo(bx + hw, bottom); ctx.lineTo(bx - hw, bottom); ctx.closePath(); ctx.fill(); ctx.globalAlpha = 1;
     if (p.y !== null) {
       const w = Math.max(6, half * (p.y - top) / (g.yG - top)) + 4 * g.s;
       ctx.strokeStyle = col; ctx.lineWidth = 4 * g.s;
-      ctx.beginPath(); ctx.moveTo(g.xb - w, p.y - 4 * g.s); ctx.quadraticCurveTo(g.xb, p.y + 6 * g.s, g.xb + w, p.y - 4 * g.s); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(bx - w, p.y - 4 * g.s); ctx.quadraticCurveTo(bx, p.y + 6 * g.s, bx + w, p.y - 4 * g.s); ctx.stroke();
     }
   };
 
@@ -290,11 +306,15 @@
     }
     // echo profile: height (km) against echo strength
     title.textContent = T.chart.profile;
-    const x0 = 40, x1 = cw - 70, y0 = ch - 14, y1 = 10;
+    const x0 = 40, x1 = cw - 70, y0 = ch - 26, y1 = 10;
     const Y = h => y0 - h / 12 * (y0 - y1);
     cctx.strokeStyle = C.grid; cctx.lineWidth = 1; cctx.textAlign = 'right'; cctx.fillStyle = C.ink;
     for (const h of [0, 3, 6, 9, 12]) { cctx.beginPath(); cctx.moveTo(x0, Y(h)); cctx.lineTo(x1, Y(h)); cctx.stroke(); cctx.fillText(h + ' km', x0 - 5, Y(h)); }
-    cctx.strokeStyle = C.ink; cctx.lineWidth = 1.5; cctx.beginPath(); cctx.moveTo(x0, y1); cctx.lineTo(x0, y0); cctx.stroke();
+    cctx.strokeStyle = C.ink; cctx.lineWidth = 1.5; cctx.beginPath(); cctx.moveTo(x0, y1); cctx.lineTo(x0, y0); cctx.lineTo(x1, y0); cctx.stroke();
+    // x axis: how strong the echo is (no unit – relative)
+    cctx.textAlign = 'left'; cctx.fillStyle = C.ink; cctx.fillText(T.chart.weak, x0, y0 + 14);
+    cctx.textAlign = 'right'; cctx.fillText(T.chart.strong, x1, y0 + 14);
+    cctx.textAlign = 'center'; cctx.fillStyle = '#4d4d4d'; cctx.fillText(T.chart.strength, (x0 + x1) / 2, y0 + 14);
     const col = C.radar;
     const seen = new Set();
     for (const e of state.echoes) {
@@ -317,6 +337,8 @@
     modeChips.forEach(c => c.setAttribute('aria-pressed', String(c.dataset.mode === state.mode)));
     instChips.forEach(c => { c.hidden = c.dataset.for !== state.mode; c.setAttribute('aria-pressed', String(c.dataset.inst === key)); });
     pulseBtn.hidden = state.mode !== 'active';
+    satField.hidden = state.mode !== 'active';
+    placeSat();
     nightBtn.hidden = state.mode !== 'passive';
     document.querySelector('.inst-seg').hidden = state.mode !== 'passive';
     document.getElementById('mode-card').style.setProperty('--obj', state.mode === 'passive' ? 'var(--c-gold)' : 'var(--c-cyan)');
@@ -338,6 +360,17 @@
     if (state.mode === 'passive' && state.night && (inst() === 'vis' || inst() === 'ir')) state.seenNight[inst()] = true;
     if (state.seenNight.vis && state.seenNight.ir) tasks.done('night');
   };
+  // move the satellite: slider, or drag in the picture (active mode)
+  const satField = document.getElementById('sat-field'), satPos = document.getElementById('sat-pos');
+  satPos.addEventListener('input', () => { state.satX = Number(satPos.value) / 100; placeSat(); });
+  let dragSat = false;
+  const dragTo = e => { const r = canvas.getBoundingClientRect(); state.satX = (e.clientX - r.left) / r.width; satPos.value = String(Math.round(Math.max(0.08, Math.min(0.92, state.satX)) * 100)); placeSat(); };
+  canvas.addEventListener('pointerdown', e => { if (state.mode !== 'active') return; dragSat = true; canvas.setPointerCapture(e.pointerId); dragTo(e); badge.hide(); });
+  canvas.addEventListener('pointermove', e => { if (dragSat) dragTo(e); });
+  const endSat = () => { dragSat = false; };
+  canvas.addEventListener('pointerup', endSat);
+  canvas.addEventListener('pointercancel', endSat);
+
   modeChips.forEach(c => c.addEventListener('click', () => { if (state.mode === c.dataset.mode) return; state.mode = c.dataset.mode; clearRun(); updateUI(); checkNight(); }));
   instChips.forEach(c => c.addEventListener('click', () => { state.inst[state.mode] = c.dataset.inst; clearRun(); updateUI(); checkNight(); }));
   nightBtn.addEventListener('click', () => {

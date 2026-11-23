@@ -354,7 +354,7 @@
 
     // behind the Earth
     strokeOrbit(ORBITS[mode], cam, cx, cy, k, true, C.orbit, 2, 0.45);
-    if (ss[2] < 0) drawSatellite(ss[0], ss[1], s);
+    if (ss[2] < 0) { drawCone(sp, cam, cx, cy, k, rho, ss); drawSatellite(ss[0], ss[1], s); }
 
     drawGlobe(cam, cx, cy, R * k, sub, rho, mode === 'leo');
 

@@ -15,7 +15,7 @@ TEXTS.messen = {
   instAria: 'Kanal oder Instrument wählen',
   stageNote: 'Schema · nicht maßstäblich',
   badgePassive: 'Schau: Woher kommt die Strahlung?',
-  badgeActive: 'Tippe auf „Impuls senden“',
+  badgeActive: 'Verschieb den Satelliten und sende einen Impuls',
 
   modes: { passive: 'Passiv', active: 'Aktiv' },
 
@@ -76,7 +76,9 @@ TEXTS.messen = {
   },
 
   chart: {
-    profile: 'Echo – zuerst von oben, zuletzt vom Boden',
+    profile: 'Echos: Höhe (senkrecht) und Stärke (waagerecht)',
+    weak: 'schwach',
+    strong: 'stark',
     height: 'Höhe',
     strength: 'Stärke des Echos',
     waiting: 'Sende einen Impuls, um das Echo zu sehen.',
@@ -90,9 +92,10 @@ TEXTS.messen = {
 
   controls: {
     pulse: 'Impuls senden',
+    position: 'Satellit verschieben',
     nightAria: 'Tag oder Nacht',
     infoAria: 'Bedienung erklären',
-    note: '<p>Oben im Bild wählst du das Messprinzip: <b>passiv</b> (Strahlung empfangen) oder <b>aktiv</b> (selbst ein Signal senden). Darunter den Kanal oder das Instrument.</p><p>Passiv: <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 14A8 8 0 1 1 10 4a6 6 0 0 0 10 10z"/></svg></span> schaltet zwischen Tag und Nacht um.</p><p>Aktiv: <b>Impuls senden</b> schickt ein Signal los. Im Diagramm erscheinen die Echos – in der Reihenfolge, in der sie zurückkommen.</p><p>Alles läuft in Zeitlupe: In Wirklichkeit ist ein Radar-Impuls nach 2 bis 3 Tausendstelsekunden wieder zurück.</p>'
+    note: '<p>Oben im Bild wählst du das Messprinzip: <b>passiv</b> (Strahlung empfangen) oder <b>aktiv</b> (selbst ein Signal senden). Darunter den Kanal oder das Instrument.</p><p>Passiv: <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 14A8 8 0 1 1 10 4a6 6 0 0 0 10 10z"/></svg></span> schaltet zwischen Tag und Nacht um.</p><p>Aktiv: <b>Impuls senden</b> schickt ein Signal los. Im Diagramm erscheinen die Echos – in der Reihenfolge, in der sie zurückkommen: senkrecht die Höhe, aus der ein Echo kommt, waagerecht, wie stark es ist. <b>Verschiebe den Satelliten</b> (Regler oder im Bild ziehen), um an anderen Stellen zu messen: über der Wolke, über dem Regen, über klarem Himmel oder über dem Meer.</p><p>Alles läuft in Zeitlupe: In Wirklichkeit ist ein Radar-Impuls nach 2 bis 3 Tausendstelsekunden wieder zurück.</p>'
   },
 
   tasks: {

@@ -11,7 +11,7 @@
 .ar-launch { display: flex; width: 100%; margin: 10px 0 0; justify-content: flex-start; text-align: left; }
 .ar-launch[hidden] { display: none; }
 .ar-launch > span { min-width: 0; }
-:root[data-view="desktop"] .ar-launch { width: min(100%, calc(100svh - var(--head-h) - var(--fit-offset, 230px))); margin: 10px auto 0; }
+:root[data-view="desktop"] .ar-launch { width: 100%; margin: 10px 0 0; }
 
 /* While AR runs (WebXR in the browser), only the model is shown, full screen. */
 #stage-frame:has(model-viewer[ar-status="session-started"]) {

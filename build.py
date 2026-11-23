@@ -27,7 +27,7 @@ PAGE = Template('''<!DOCTYPE html>
 <link rel="stylesheet" href="css/kit.css">
 <link rel="stylesheet" href="css/app.css">
 </head>
-<body>
+<body class="full-stage">
 
 <header class="top">
   $logo
@@ -55,7 +55,7 @@ PAGE = Template('''<!DOCTYPE html>
 <main class="page">
   <div class="lab">$picker
     <div class="lab-stage">
-      <div class="stage-frame square fit" id="stage-frame">
+      <div class="stage-frame fill" id="stage-frame">
         <model-viewer
           id="viewer"
           src="MTGI.glb"$ios
@@ -139,7 +139,7 @@ VARIANTS = {
         variant='standard',
         title='Wettersatelliten in AR',
         ios='', arscale='auto',
-        extra='\n          auto-rotate\n          rotation-per-second="8deg"',
+        extra='\n          auto-rotate\n          auto-rotate-delay="400"\n          rotation-per-second="8deg"',
         orbit='35deg 75deg auto', minorbit='auto auto auto', maxorbit='auto auto auto'),
     'mtg-satellite-ar2': dict(
         file='index.html',
@@ -148,7 +148,7 @@ VARIANTS = {
         variant='truescale',
         title='MTG-I1 in Originalgröße – Wettersatellit in AR',
         ios='\n          ios-src="MTGI.usdz"', arscale='fixed',
-        extra='\n          auto-rotate\n          rotation-per-second="8deg"\n          disable-zoom',
+        extra='\n          auto-rotate\n          auto-rotate-delay="400"\n          rotation-per-second="8deg"\n          disable-zoom',
         orbit='35deg 75deg 15m', minorbit='auto auto 15m', maxorbit='auto auto 15m'),
 }
 

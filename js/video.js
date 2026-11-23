@@ -17,10 +17,10 @@
 
   // Quality: YouTube no longer lets an embedded player choose it
   // (setPlaybackQuality / vq do nothing); it picks it from the player's size
-  // in device pixels. So the player is laid out small – about 480 device
-  // pixels high – and scaled up with CSS to fill the square. Softer, but it
+  // in device pixels. So the player is laid out small – about 360 device
+  // pixels high (TARGET) – and scaled up with CSS to fill the square. Softer, but it
   // loads less and runs more smoothly on phones.
-  const TARGET = 480;
+  const TARGET = 360;
   // YouTube needs at least 200 × 200 CSS pixels, so never smaller than that.
   const layoutH = () => Math.max(200, Math.min(box.clientHeight, Math.round(TARGET / (window.devicePixelRatio || 1))));
   // Scale the player from its real, measured size (whatever YouTube made of
